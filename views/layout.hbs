@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{title}}</title>
+  {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> --}}
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+<body>
+  <nav>
+    <h1>test kitchen</h1>
+    <button><a href="/recipes/newRecipe">create new</a></button>
+    <button><a href="/recipes/user">user homepage</a></button>
+    <button><a href="/signup">signup</a></button>
+    <button><a href="/login">login</a></button>
+    <form action="/logout" method="post"><button>logout</button></form>
+  </nav>
+
+  {{{body}}}
+
+  <footer>
+    <p>some cool information will go down here</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/javascripts/script.js"></script>
+</body>
+</html>
