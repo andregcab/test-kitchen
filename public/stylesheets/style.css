@@ -1,8 +1,39 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
+html, body {
+  padding: 0px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  height: 100%;
+  position: relative; }
 
 a {
   color: #00B7FF; }
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: space-around; }
+
+#body-div {
+  min-height: 100vh;
+  /* will cover the 100% of viewport */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center; }
+
+footer {
+  bottom: 0;
+  width: 100%; }
+
+.user-recipes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%; }
+
+.top-buttons {
+  display: flex;
+  align-content: space-around; }
 
 /*# sourceMappingURL=style.css.map */

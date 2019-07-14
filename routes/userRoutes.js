@@ -26,7 +26,7 @@ router.post('/signup', (req, res, next)=>{
   .then((newUser)=>{
     req.session.currentUser = newUser;
     console.log('yay');
-    console.log(newUser)
+    // console.log(newUser)
     req.login(newUser, (err) => {
       if(err) {
         next(err);

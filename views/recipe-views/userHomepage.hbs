@@ -1,5 +1,21 @@
-<h1>THIS IS THE USER HOMEPAGE AND LOTS OF COOL RECIPES WILL BE SHOWN HERE</h1>
+<div class="user-recipes">
+
+<div class="top-buttons">
+  <form action="/recipes/newRecipe"><button>create new recipe</button></form>
+  <form action="#"><button>Button to create new recipe from URL.....</button></form>
+</div>
 
 
-<form action="/recipes/newRecipe"><button>create new recipe</button></form>
-<form action="/recipes/userRecipes"><button>go to single recipe (test)</button></form>
+<div class="the-recipes">
+
+{{#each userRecipes}}
+<div class="each-recipe">
+<h1>{{this.name}}</h1>
+
+<a href="/recipes/userRecipe/{{this._id}}">take me to this recipe</a>
+</div>
+{{/each}}
+
+</div>
+
+</div>

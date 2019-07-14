@@ -17,17 +17,17 @@ const recipeSchema = new Schema({
   image: {
     type: String
   },
-  tags: {
-    type: Array
-  },
-  notes: {
-    type: Array
-  },
+  tags: [
+    {type: String}
+  ],
+  notes: [
+    {type: String}
+  ],
   instructions: {
     type: String
   },
-  detailedInstructions: {
-    type: Array
+  rating: {
+    type: Number
   }
 }, {
   timestamps: true

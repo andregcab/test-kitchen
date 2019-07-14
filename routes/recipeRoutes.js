@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const Recipe = require('../models/Recipe')
 const uploadMagic = require('../config/cloudinary-setup');
+const mongoose     = require('mongoose');
 const ensureLogin = require("connect-ensure-login");
 
 
@@ -65,10 +66,14 @@ const ensureLogin = require("connect-ensure-login");
 
 
 router.get('/user', /*ensureLogin.ensureLoggedIn(),*/ (req, res, next) => { //this will render the user homepage with all the user's recipes
-console.log(req.user);
-  Recipe.find({ownerId: req.user._id})
+
+
+  Recipe.find({ownerId: mongoose.Types.ObjectId(req.user._id)})
   .then((allUserRecipes)=>{
+    // console.log("=-=-=-=-=-=-=-=-=", allUserRecipes)
     res.render('recipe-views/userHomepage', {userRecipes: allUserRecipes})
+
+    // const recpie = new Recipe({name: doc.name, instructions: doc.analalyzed[0].steps})
   })
   .catch((err)=>{
     next(err);
@@ -81,22 +86,23 @@ router.get('/newRecipe', (req, res, next)=> { //this renders the page to enter c
 })
 
 
-router.post('/create-new-recipe', /*uploadMagic.single('image'),*/ (req, res, next)=>{ //takes all the new recipe information to upload to database
+router.post('/create-new-recipe', uploadMagic.single('image'), (req, res, next)=>{ //takes all the new recipe information to upload to database
+  console.log(req.body)
   let ownerId = req.user._id
   let name = req.body.name;
   let source = req.body.source;
-  // let image = req.file.url || '';
   let tags = req.body.tags;
   let notes = req.body.notes;
   let instructions = req.body.instructions;
-  let detailedInstructions = req.body.detailedInstructions;
+  // let image = req.file.url || '';
 
-  let newRecipe = {ownerId: ownerId, name: name, source: source, tags: tags, /*image: image,*/ notes: notes, instructions: instructions, detailedInstructions: detailedInstructions}
+  let newRecipe = {ownerId: ownerId, name: name, source: source, tags: tags, /*image: image,*/ notes: notes, instructions: instructions}
+  console.log(newRecipe)
   Recipe.create(newRecipe)
   .then((newlyCreatedRecipe)=>{
 
     req.flash('error', (`Successfully added ${newlyCreatedRecipe.name}`))
-    console.log(newlyCreatedRecipe._id)
+    // console.log(newlyCreatedRecipe._id)
     res.redirect(`/recipes/userRecipe/${newlyCreatedRecipe._id}`)
   })
   .catch((err)=>{
@@ -107,9 +113,10 @@ router.post('/create-new-recipe', /*uploadMagic.single('image'),*/ (req, res, ne
 router.get('/userRecipe/:id', (req, res, next) => { //this will render each individual recipe for the user
   // console.log("<>><>><><><><><><>><><><><>><><><><><><><><<>");
 
-  Recipe.find({ownerId: req.params.id})
+  Recipe.findById(req.params.id)
   .then((theSinlgeRecipe)=>{
-    // console.log("-------------- ", theSingleRecipe);
+
+    // console.log(theSinlgeRecipe);
     
     res.render('recipe-views/recipe', {recipeDetails: theSinlgeRecipe})
   })

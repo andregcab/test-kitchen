@@ -10,15 +10,17 @@
 </head>
 <body>
   <nav>
-    <h1>test kitchen</h1>
-    <button><a href="/recipes/newRecipe">create new</a></button>
-    <button><a href="/recipes/user">user homepage</a></button>
+    <a href="/">TEST KITCHEN</a>
+    <button><a href="/recipes/newRecipe">create new recipe(login first)</a></button>
+    <button><a href="/recipes/user">user homepage(login first)</a></button>
     <button><a href="/signup">signup</a></button>
     <button><a href="/login">login</a></button>
     <form action="/logout" method="post"><button>logout</button></form>
   </nav>
 
+  <div id="body-div">
   {{{body}}}
+  </div>
 
   <footer>
     <p>some cool information will go down here</p>
@@ -28,3 +30,4 @@
   <script src="/javascripts/script.js"></script>
 </body>
 </html>
+ 
