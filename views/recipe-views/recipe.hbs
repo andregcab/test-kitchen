@@ -10,3 +10,25 @@
 <h2>{{recipeDetails.source}}</h2>
 
 <h2>{{recipeDetails.instructions}}</h2>
+
+{{#each recipeDetails.ingredientsList}}
+  <p>{{this.name}}</p>
+
+<h3>IMPERIAL</h3>
+  <p>{{this.measures.us.amount}}</p>
+  <p>{{this.measures.us.unitShort}}</p>
+<h3>METRIC</h3>
+  <p>{{this.measures.metric.amount}}</p>
+  <p>{{this.measures.metric.unitShort}}</p>
+{{/each}}
+
+
+
+{{#each recipeDetails.detailedInstructions.0.steps}}
+<div>{{this.step}}</div>
+  
+{{/each}}
+
+
+
+<br><br><br><br><br><br><br>

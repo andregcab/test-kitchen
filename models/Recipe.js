@@ -4,18 +4,21 @@ mongoose.plugin(schema => { schema.options.usePushEach = true; });
 const Schema   = mongoose.Schema;
 
 
+let missingInfo = "Sorry, it look like we're missing an ingredient! Please add this section manually"
+
+
 const recipeSchema = new Schema({
   ownerId: {
     type: Schema.Types.ObjectId, ref: "User"
   },
   name: {
-    type: String
+    type: String, default: missingInfo
   },
   source: {
     type: String
   },
   image: {
-    type: String
+    type: String, default: missingInfo
   },
   tags: [
     {type: String}
@@ -24,8 +27,14 @@ const recipeSchema = new Schema({
     {type: String}
   ],
   instructions: {
-    type: String
+    type: String, default: missingInfo
   },
+  detailedInstructions: [
+    {type: Object, default: missingInfo}
+  ],
+  ingredientsList: [
+    {type: Object, default: missingInfo}
+  ],
   rating: {
     type: Number
   }

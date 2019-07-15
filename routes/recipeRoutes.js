@@ -4,6 +4,8 @@ const Recipe = require('../models/Recipe')
 const uploadMagic = require('../config/cloudinary-setup');
 const mongoose     = require('mongoose');
 const ensureLogin = require("connect-ensure-login");
+var unirest = require('unirest');
+
 
 
 
@@ -94,6 +96,8 @@ router.post('/create-new-recipe', uploadMagic.single('image'), (req, res, next)=
   let tags = req.body.tags;
   let notes = req.body.notes;
   let instructions = req.body.instructions;
+  // let detailedInstructions = req.body.detailedInstructions;
+  // let ingredientsList = req.body.ingredientsList;
   // let image = req.file.url || '';
 
   let newRecipe = {ownerId: ownerId, name: name, source: source, tags: tags, /*image: image,*/ notes: notes, instructions: instructions}
@@ -108,9 +112,12 @@ router.post('/create-new-recipe', uploadMagic.single('image'), (req, res, next)=
   .catch((err)=>{
     next(err);
   })
-})
+}) 
 
-router.get('/userRecipe/:id', (req, res, next) => { //this will render each individual recipe for the user
+
+
+
+router.get('/userRecipe/:id', (req, res, next) => { 
   // console.log("<>><>><><><><><><>><><><><>><><><><><><><><<>");
 
   Recipe.findById(req.params.id)
@@ -124,6 +131,57 @@ router.get('/userRecipe/:id', (req, res, next) => { //this will render each indi
     next(err);
   })
 });
+
+
+
+// unirest.get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=https://greenkitchenstories.com/summer-rice-salad/")
+// .header("X-RapidAPI-Key", "e0f0a6f945mshf10650157739c5fp1b2b31jsne341caa9b0b8")
+// .header("X-RapidAPI-Host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
+// .end(function (result) {
+//   // console.log(result.status, result.headers, result.body);
+//   // console.log(result.body);
+//   Recipe.create({name: result.body.title, source: result.body.sourceUrl, image: result.body.image, instructions: result.body.instructions});
+// });
+
+
+router.get('/testview', (req, res, next) =>{
+  Recipe.find({_id: mongoose.Types.ObjectId('5d2ca614390d9312e14106b8')})
+  .then((testRecipe)=>{
+    // console.log("=-=-=-=-=-=-=-=-=", testRecipe[0].name)
+    res.render('recipe-views/recipe', {recipeDetails: testRecipe[0]})
+
+    // const recpie = new Recipe({name: doc.name, instructions: doc.analalyzed[0].steps})
+  })
+  .catch((err)=>{
+    next(err);
+  })
+
+});
+
+
+router.post('/create', (req, res, next) => {
+
+  console.log("------------------------------------------------", req.body)
+
+  unirest.get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=" + req.body.sourceURL)
+    .header("X-RapidAPI-Key", "e0f0a6f945mshf10650157739c5fp1b2b31jsne341caa9b0b8")
+    .header("X-RapidAPI-Host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
+    .end(function (result) {
+      // console.log(result.status, result.headers, result.body);
+      // console.log(result.body);
+      Recipe.create({ownerId: req.user._id, name: result.body.title, source: result.body.sourceUrl, image: result.body.image, instructions: result.body.instructions, detailedInstructions: result.body.analyzedInstructions, ingredientsList: result.body.extendedIngredients})
+      .then((newRecipe)=>{
+        console.log('yay', newRecipe)
+        res.redirect('/recipes/user');
+      })
+      .catch((err)=>{
+        console.log('noo')
+        next(err);
+      })
+  }); 
+
+
+})
 
 // router.post('/celebrities/delete/:id', (req, res, next) => {
 //   Celebrity.findByIdAndRemove(req.params.id)

@@ -2,7 +2,15 @@
 
 <div class="top-buttons">
   <form action="/recipes/newRecipe"><button>create new recipe</button></form>
-  <form action="#"><button>Button to create new recipe from URL.....</button></form>
+
+  <form action="/recipes/create" method="POST">
+    <label for="">Enter URL</label>
+    <input type="text" name="sourceURL" id="">
+    <button>create new recipe from URL</button>
+  </form>
+
+  <button><a href="/recipes/newRecipe">create new recipe(login first)</a></button>
+
 </div>
 
 

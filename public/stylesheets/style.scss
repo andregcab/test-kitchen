@@ -1,39 +1,108 @@
 html, body {
   padding: 0px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  margin: 0px;
   // display: flex;
   // flex-direction: column;
   // align-content: space-around;
   height: 100%;
-  position: relative;
-}
-
-a {
-  color: #00B7FF;
+  // position: relative;
 }
 
 nav{
  display: flex;
  justify-content: center;
- align-items: center;
- align-content: space-around;
-
+ padding: 75px 0 150px 0;
 }
+
+#title-div{
+  vertical-align: bottom;
+}
+
+#main-title{
+  text-decoration: none;
+  color: black;
+  font-size: 7em;
+  margin-left: 485px;
+  padding-right: 150px;
+  line-height: 0;
+  letter-spacing: 2px;
+}
+
+#buttons-div{
+  display: flex;
+  align-self: flex-end;
+}
+
+#buttons-div a, #buttons-div button{
+  text-decoration: none;
+  color: black;
+  margin: 0 12px 0 12px;
+  font-size: 18px;
+  letter-spacing: .5px;
+}
+
+
+#logout{
+  background:none;
+  border:none; 
+  padding:0!important;
+  font: inherit;
+  /*border is optional*/
+  // border-bottom:1px solid #444; 
+  cursor: pointer;
+  color:inherit;
+}
+
+
+
+
+
+
 
 #body-div{
  min-height: 100vh; /* will cover the 100% of viewport */
  overflow: hidden;
- display: flex;
- flex-direction: column;
- position: relative;
- align-items: center;
 //  padding-bottom: 100px; /* height of your footer */
 }
 
-footer{
-  bottom: 0;
-  width: 100%;
+.homepage-div{
+  display: flex;
+  padding: 0 100px 100px 100px;
 }
+
+#homepage-image{
+  padding: 0 100px 0 100px;
+  border-right: 1px solid rgb(172, 172, 172);
+}
+
+#homepage-image img{
+  width: 550px;
+}
+
+#intro-div{
+  width: 500px;
+  align-self: center;
+  // padding: 0 100px 100px 100px;
+  margin-left: 50px;
+}
+
+#intro-div h1{
+  font-size: 3.6em;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+#intro-div h4{
+  font-size: 1.3em;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 35px;
+  text-align: center;
+}
+
+
+
+
 
 
 
@@ -46,7 +115,42 @@ footer{
   height: 100%;
 }
 
-.top-buttons{
+
+
+
+
+
+
+
+
+footer{
+  bottom: 0;
+  width: 100%;
+  background-color: #F5ECEA;
+  color: rgb(107, 106, 106);
+  height: 150px;
+  padding: 0;
+  margin: 0;
   display: flex;
-  align-content: space-around;
+  align-items: center;
+  justify-content: space-between;
 }
+
+#footer-info{
+  margin-left: 20px;
+}
+
+#footer-info p{
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  width: 250px;
+}
+
+#footer-links{
+  margin-right: 20px;
+}
+
+
+
+
+

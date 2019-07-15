@@ -6,16 +6,25 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{title}}</title>
   {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> --}}
+  <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville|Playfair+Display&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 <body>
+
   <nav>
-    <a href="/">TEST KITCHEN</a>
-    <button><a href="/recipes/newRecipe">create new recipe(login first)</a></button>
-    <button><a href="/recipes/user">user homepage(login first)</a></button>
-    <button><a href="/signup">signup</a></button>
-    <button><a href="/login">login</a></button>
-    <form action="/logout" method="post"><button>logout</button></form>
+
+    <div id="title-div">
+    <a id="main-title" href="/">test kitchen</a>
+    </div>
+
+    <div id="buttons-div">
+    <a href="/recipes/user">dashboard</a>
+    <a href="/signup">signup</a>
+    <a href="/login">login</a>
+    <form action="/logout" method="post"><button id="logout">logout</button></form>
+    </div>
+
   </nav>
 
   <div id="body-div">
@@ -23,7 +32,13 @@
   </div>
 
   <footer>
-    <p>some cool information will go down here</p>
+    <div id="footer-info">
+      <p>This app was made with love and inspired by my mothers kitchen. Thank you Ironhack staff and my fellow cohorts for the help and support! <br><br> Andre Cabrera 2019</p>
+    </div>
+
+    <div id="footer-links">
+      <p>some links will go here</p>
+    </div>
   </footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
