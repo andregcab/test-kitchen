@@ -1,24 +1,22 @@
 <div id="signup-div">
 
-<h2>Signup</h2>
+  <h3>signup <img id="fork" src="/images/cutlery.png" alt=""></h3>
 
-<form id="user-form" action="/signup" method="POST">
-
-<label>Pick A Username</label>
-<input type="text" name="username">
-
-
-<label>Password</label>
-<input type="text" name="password">
-
-
-
-<button class="waves-effect waves-light btn-large loginsignup">Sign me up</button>
-</form>
-
-<p>
-{{#if msg}}
-{{msg}}
-{{/if}}
-</p>
+  <form id="user-form" action="/signup" method="POST">
+    <div id="form-width" class="row">
+     <div class="input-field col s12">
+        <input name="username" id="last_name" type="text" class="validate">
+        <label for="last_name">Username</label>
+        <p id="error">{{#if msg}}{{msg}}{{/if}}</p>
+      </div>
+      <div class="input-field col s12">
+        <input name="password" id="password" type="password" class="validate">
+        <label for="password">Password</label>
+        <p id="error">{{#if msg}}{{msg}}{{/if}}</p>
+      </div>
+    </div>
+  <button id="sign-up-submit" class="waves-effect waves-teal btn-flat">submit</button>
+  </form>
+  
 </div>
+

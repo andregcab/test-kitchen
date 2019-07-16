@@ -8,10 +8,12 @@ html, body {
   // position: relative;
 }
 
-nav{
+#top-nav{
  display: flex;
  justify-content: center;
- padding: 75px 0 150px 0;
+ padding: 75px 0 50px 0;
+ background-color: rgb(254, 254, 255);
+
 }
 
 #title-div{
@@ -21,7 +23,7 @@ nav{
 #main-title{
   text-decoration: none;
   color: black;
-  font-size: 7em;
+  font-size: 6em;
   margin-left: 485px;
   padding-right: 150px;
   line-height: 0;
@@ -35,8 +37,8 @@ nav{
 
 #buttons-div a, #buttons-div button{
   text-decoration: none;
-  color: black;
-  margin: 0 12px 0 12px;
+  color: rgb(107, 107, 107);
+  margin: 0 12px 0px 12px;
   font-size: 18px;
   letter-spacing: .5px;
 }
@@ -59,15 +61,18 @@ nav{
 
 
 
-#body-div{
- min-height: 100vh; /* will cover the 100% of viewport */
- overflow: hidden;
-//  padding-bottom: 100px; /* height of your footer */
-}
+// #body-div{
+//  min-height: 100vh; /* will cover the 100% of viewport */
+//  overflow: hidden;
+// //  padding-bottom: 100px; /* height of your footer */
+// }
 
 .homepage-div{
   display: flex;
   padding: 0 100px 100px 100px;
+  background-color: rgb(247, 242, 242);
+  padding-top: 100px;
+  margin-bottom: 5px;
 }
 
 #homepage-image{
@@ -80,7 +85,7 @@ nav{
 }
 
 #intro-div{
-  width: 500px;
+  width: 515px;
   align-self: center;
   // padding: 0 100px 100px 100px;
   margin-left: 50px;
@@ -94,11 +99,201 @@ nav{
 }
 
 #intro-div h4{
-  font-size: 1.3em;
+  font-size: 1.25em;
   font-family: 'Montserrat', sans-serif;
   line-height: 35px;
   text-align: center;
 }
+
+#get-started{
+  text-decoration: none;
+  color: #1A936F;
+  margin-top: 30px;
+}
+
+
+#signup-div, #login-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(254, 254, 255);
+  margin-bottom: 5px;
+}
+
+#signup-div h3, #login-div h3{
+  margin-top: 70px;
+  margin-left: 30px; 
+  font-size: 2.5em;
+}
+
+#fork{
+  width: 25px;
+  margin-left: 12px; 
+}
+
+#user-form{
+  width: 800px;
+  padding: 50px 0 190px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sign-up-submit, #log-in-submit{
+  font-size: 20px;
+}
+
+#form-width{
+  width: 550px;
+}
+
+#error{
+  font-size: 15px;
+  color: rgb(105, 105, 105);
+  line-height: 0px;
+}
+
+
+
+
+
+.recipe-div{
+  display: flex;
+  flex-direction: column;
+}
+
+.top-div{
+  display: flex;
+  justify-content: center;
+  padding: 50px 0 50px 0;
+}
+
+#recipe-image{
+  width: 600px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.top-right-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 800px;
+  margin: 20px 0px 25px 50px;
+  margin-left: 100px;
+}
+
+.top-right-div h1 {
+  font-size: 4.8em;
+  font-weight: 300;
+  padding: 40px 240px 0 0;
+  margin: 0;
+}
+
+.top-right-div h4{
+  font-size: 1.5em;
+  width: 70%;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bolder;
+  padding-bottom: 100px;
+}
+
+#tag-div{
+  display: flex;
+}
+
+#tag-div p{
+  font-family: 'Montserrat', sans-serif;
+  margin-left: 15px;
+  border-bottom: 1px solid rgb(146, 146, 146);
+  line-height: 18px;
+}
+
+// .instructions-div{
+//   width: 75%;
+//   align-self: center;
+//   padding: 150px 0 150px 0;
+// }
+
+// .instructions-div p{
+//   font-family: 'Montserrat', sans-serif;
+//   font-size: 1.6em;
+// }
+
+
+.detailed-div{
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 100px;
+}
+
+// #each-ing{
+//   display: flex;
+//   height: 40px;
+//   width: 500px;
+// }
+
+#each-ing p{
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  padding: 0;
+}
+
+// #each-ing p:first-child{
+//   margin-top: 55px;
+// }
+
+#d-instructions{
+  width: 700px;
+}
+
+#d-instructions p{
+  font-family: 'Montserrat', sans-serif;
+}
+
+#d-instructions p:first-child{
+  font-size: 2em;
+  font-weight: 400;
+}
+
+
+.notes-div{
+  display: flex;
+  flex-direction: column;
+  margin: 100px 0 100px 150px;
+  border-top: 1px solid rgb(204, 204, 204);
+  width: 75%;
+}
+
+.notes-div p{
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2em;
+  padding-left: 15px;
+  list-style-type:disc;
+  display:list-item;
+  list-style-position: outside;
+}
+
+#submit-note{
+  font-size: 0.9em;
+}
+
+#note-form{ 
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+}
+
+#form-row{
+  width: 500px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+
+
+
+
 
 
 
@@ -114,12 +309,6 @@ nav{
   width: 100%;
   height: 100%;
 }
-
-
-
-
-
-
 
 
 

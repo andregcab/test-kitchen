@@ -1,34 +1,91 @@
-<h1>HERE IS WHERE ONE SINGLE RECIPE WILL SHOW</h1>
+
+<div class="recipe-div">
+
+
+
+  <div class="top-div">
+
+    <a href="{{recipeDetails.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg" alt=""></a>
+
+    <div class="top-right-div">
+
+      <h1>{{recipeDetails.name}}</h1>
+      <h4>{{recipeDetails.snippet}}</h4>
+
+      <div id="tag-div">
+        {{#each recipeDetails.tags}}
+          <p>{{this}}</p>
+        {{/each}}
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  {{!-- <div class="instructions-div">
+    <p>{{recipeDetails.instructions}}</p>
+  </div> --}}
+
+
+  <div class="detailed-div">
+
+    <div id="d-ingredients">
+
+      {{#each recipeDetails.ingredientsList}}
+        
+
+        {{!-- <p>IMPERIAL</p> --}}
+        <div id="each-ing">
+          {{!-- <p>{{this.measures.us.amount}}</p>
+          <p>{{this.measures.us.unitShort}}</p> --}}
+          <p>{{this.original}}</p>
+        </div>
+        {{!-- <p>METRIC</p>
+        <p>{{this.measures.metric.amount}}</p>
+        <p>{{this.measures.metric.unitShort}}</p> --}}
+      {{/each}}
+
+    </div>
+
+    <div id="d-instructions">
+
+      {{#each recipeDetails.detailedInstructions.0.steps}}
+        <p>{{this.step}}</p>
+      {{/each}}
+
+    </div>
+
+  </div>
+
+
+  <div class="notes-div">
+
+    {{#each recipeDetails.notes}}
+      <p>{{this}}</p>
+    {{/each}}
+
+    <form id="note-form" action="" method="POST">
+      <div id="form-row" class="row">
+
+        <div class="input-field col s12">
+          <textarea name="notes" placeholder="how did it go?" id="notes-input" type="text" class="materialize-textarea"></textarea>
+        </div>
+
+      </div>
+      <button id="submit-note" class="waves-effect waves-teal btn-flat">add note</button>
+    </form>
+
+  </div>
 
 
 
 
 
-<h1>{{recipeDetails.name}}</h1>
-
-
-<h2>{{recipeDetails.source}}</h2>
-
-<h2>{{recipeDetails.instructions}}</h2>
-
-{{#each recipeDetails.ingredientsList}}
-  <p>{{this.name}}</p>
-
-<h3>IMPERIAL</h3>
-  <p>{{this.measures.us.amount}}</p>
-  <p>{{this.measures.us.unitShort}}</p>
-<h3>METRIC</h3>
-  <p>{{this.measures.metric.amount}}</p>
-  <p>{{this.measures.metric.unitShort}}</p>
-{{/each}}
 
 
 
-{{#each recipeDetails.detailedInstructions.0.steps}}
-<div>{{this.step}}</div>
-  
-{{/each}}
 
-
-
-<br><br><br><br><br><br><br>
+</div>

@@ -1,5 +1,30 @@
 
 <div id="login-div">
+
+  <h3>login<img id="fork" src="/images/cutlery.png" alt=""></h3>
+
+  <form id="user-form" action="/login" method="POST">
+    <div id="form-width" class="row">
+     <div class="input-field col s12">
+        <input name="username" id="last_name" type="text" class="validate">
+        <label for="last_name">Username</label>
+        <p id="error">{{#if msg}}{{msg}}{{/if}}</p>
+      </div>
+      <div class="input-field col s12">
+        <input name="password" id="password" type="password" class="validate">
+        <label for="password">Password</label>
+        <p id="error">{{#if msg}}{{msg}}{{/if}}</p>
+      </div>
+    </div>
+  <button id="log-in-submit" class="waves-effect waves-teal btn-flat">submit</button>
+  </form>
+  
+</div>
+
+
+
+{{!-- 
+<div id="login-div">
 <h2>Login</h2>
 
 
@@ -23,4 +48,4 @@
 
 </form>
 
-</div>
+</div> --}}

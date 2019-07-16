@@ -37,6 +37,9 @@ const recipeSchema = new Schema({
   ],
   rating: {
     type: Number
+  },
+  snippet: {
+    type: String
   }
 }, {
   timestamps: true
