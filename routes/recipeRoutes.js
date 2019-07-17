@@ -1,15 +1,10 @@
-const express = require('express');
-const router  = express.Router();
-const Recipe = require('../models/Recipe')
-const uploadMagic = require('../config/cloudinary-setup');
-const mongoose     = require('mongoose');
+const express = require("express");
+const router = express.Router();
+const Recipe = require("../models/Recipe");
+const uploadMagic = require("../config/cloudinary-setup");
+const mongoose = require("mongoose");
 const ensureLogin = require("connect-ensure-login");
-var unirest = require('unirest');
-
-
-
-
-
+var unirest = require("unirest");
 
 // ***-=-=-=-=-Using AXIOS on the front end=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-****
 
@@ -51,10 +46,9 @@ var unirest = require('unirest');
 //   })
 //   .catch((err)=>{
 //       res.json(err);
- 
+
 //   })
 // })
-
 
 // ***-=-=-=-=-Using AXIOS on the front end=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-****
 //V
@@ -63,80 +57,87 @@ var unirest = require('unirest');
 //V
 //**=-=-=-=-=-=Using EXPRESS on the back end */
 
+router.get(
+  "/user",
+  /*ensureLogin.ensureLoggedIn(),*/ (req, res, next) => {
+    //this will render the user homepage with all the user's recipes
 
+    Recipe.find({ ownerId: mongoose.Types.ObjectId(req.user._id) })
+      .then(allUserRecipes => {
+        // console.log("=-=-=-=-=-=-=-=-=", allUserRecipes)
+        res.render("recipe-views/userHomepage", {
+          userRecipes: allUserRecipes
+        });
 
+        // const recpie = new Recipe({name: doc.name, instructions: doc.analalyzed[0].steps})
+      })
+      .catch(err => {
+        next(err);
+      });
+  }
+);
 
-
-router.get('/user', /*ensureLogin.ensureLoggedIn(),*/ (req, res, next) => { //this will render the user homepage with all the user's recipes
-
-
-  Recipe.find({ownerId: mongoose.Types.ObjectId(req.user._id)})
-  .then((allUserRecipes)=>{
-    // console.log("=-=-=-=-=-=-=-=-=", allUserRecipes)
-    res.render('recipe-views/userHomepage', {userRecipes: allUserRecipes})
-
-    // const recpie = new Recipe({name: doc.name, instructions: doc.analalyzed[0].steps})
-  })
-  .catch((err)=>{
-    next(err);
-  })
+router.get("/newRecipe", (req, res, next) => {
+  //this renders the page to enter completely new recipe information from scratch
+  res.render("recipe-views/edit"); //the view file to enter the info
 });
 
+router.post(
+  "/create-new-recipe",
+  uploadMagic.single("image"),
+  (req, res, next) => {
+    //takes all the new recipe information to upload to database
+    console.log(req.body);
+    let ownerId = req.user._id;
+    let name = req.body.name;
+    let source = req.body.source;
+    let tags = req.body.tags;
+    let notes = req.body.notes;
+    let instructions = req.body.instructions;
+    let detailedInstructions = req.body.detailedInstructions;
+    let ingredientsList = req.body.ingredientsList;
+    let rating = req.body.rating;
+    let snippet = req.body.snippet;
+    // let image = req.file.url || '';
 
-router.get('/newRecipe', (req, res, next)=> { //this renders the page to enter completely new recipe information from scratch
-  res.render('recipe-views/newRecipe'); //the view file to enter the info
-})
+    let newRecipe = {
+      ownerId: ownerId,
+      name: name,
+      source: source,
+      tags: tags,
+      /*image: image,*/ notes: notes,
+      instructions: instructions,
+      detailedInstructions: detailedInstructions,
+      ingredientsList: ingredientsList,
+      snippet: snippet,
+      rating: rating
+    };
+    console.log(newRecipe);
+    Recipe.create(newRecipe)
+      .then(newlyCreatedRecipe => {
+        req.flash("error", `Successfully added ${newlyCreatedRecipe.name}`);
+        // console.log(newlyCreatedRecipe._id)
+        res.redirect(`/recipes/userRecipe/${newlyCreatedRecipe._id}`);
+      })
+      .catch(err => {
+        next(err);
+      });
+  }
+);
 
-
-router.post('/create-new-recipe', uploadMagic.single('image'), (req, res, next)=>{ //takes all the new recipe information to upload to database
-  console.log(req.body)
-  let ownerId = req.user._id
-  let name = req.body.name;
-  let source = req.body.source;
-  let tags = req.body.tags;
-  let notes = req.body.notes;
-  let instructions = req.body.instructions;
-  let detailedInstructions = req.body.detailedInstructions;
-  let ingredientsList = req.body.ingredientsList;
-  let rating = req.body.rating;
-  let snippet = req.body.snippet;
-  // let image = req.file.url || '';
-
-  let newRecipe = {ownerId: ownerId, name: name, source: source, tags: tags, /*image: image,*/ notes: notes, instructions: instructions, detailedInstructions:detailedInstructions, ingredientsList:ingredientsList, snippet: snippet, rating: rating}
-  console.log(newRecipe)
-  Recipe.create(newRecipe)
-  .then((newlyCreatedRecipe)=>{
-
-    req.flash('error', (`Successfully added ${newlyCreatedRecipe.name}`))
-    // console.log(newlyCreatedRecipe._id)
-    res.redirect(`/recipes/userRecipe/${newlyCreatedRecipe._id}`)
-  })
-  .catch((err)=>{
-    next(err);
-  })
-}) 
-
-
-
-
-router.get('/userRecipe/:id', (req, res, next) => { 
+router.get("/userRecipe/:id", (req, res, next) => {
   // console.log("<>><>><><><><><><>><><><><>><><><><><><><><<>");
 
   Recipe.findById(req.params.id)
-  .then((theSinlgeRecipe)=>{
+    .then(theSinlgeRecipe => {
+      // console.log(theSinlgeRecipe);
 
-    // console.log(theSinlgeRecipe);
-    
-    res.render('recipe-views/recipe', {recipeDetails: theSinlgeRecipe})
-  })
-  .catch((err)=>{
-    next(err);
-  })
+      res.render("recipe-views/recipe", { recipeDetails: theSinlgeRecipe });
+    })
+    .catch(err => {
+      next(err);
+    });
 });
-
-
-
-
 
 // router.get('/testview', (req, res, next) =>{
 //   Recipe.find({_id: mongoose.Types.ObjectId('5d2ca614390d9312e14106b8')})
@@ -152,55 +153,124 @@ router.get('/userRecipe/:id', (req, res, next) => {
 
 // });
 
+router.post("/create", (req, res, next) => {
+  console.log("------------------------------------------------", req.body);
 
-router.post('/create', (req, res, next) => {
-
-  console.log("------------------------------------------------", req.body)
-
-  unirest.get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=" + req.body.sourceURL)
-    .header("X-RapidAPI-Key", "e0f0a6f945mshf10650157739c5fp1b2b31jsne341caa9b0b8")
-    .header("X-RapidAPI-Host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
-    .end(function (result) {
+  unirest
+    .get(
+      "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=" +
+        req.body.sourceURL
+    )
+    .header(
+      "X-RapidAPI-Key",
+      "e0f0a6f945mshf10650157739c5fp1b2b31jsne341caa9b0b8"
+    )
+    .header(
+      "X-RapidAPI-Host",
+      "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+    )
+    .end(function(result) {
       // console.log(result.status, result.headers, result.body);
-      // console.log(result.body);
-      Recipe.create({ownerId: req.user._id, name: result.body.title, source: result.body.sourceUrl, image: result.body.image, instructions: result.body.instructions, detailedInstructions: result.body.analyzedInstructions, ingredientsList: result.body.extendedIngredients})
-      .then((newRecipe)=>{
-        console.log('yay', newRecipe)
-        res.redirect('/recipes/user');
+      console.log(result.body);
+      Recipe.create({
+        ownerId: req.user._id,
+        name: result.body.title,
+        source: result.body.sourceUrl,
+        image: result.body.image,
+        instructions: result.body.instructions,
+        detailedInstructions: result.body.analyzedInstructions[0].steps,
+        ingredientsList: result.body.extendedIngredients
       })
-      .catch((err)=>{
-        console.log('noo')
-        next(err);
-      })
-  }); 
+        .then(newRecipe => {
+          console.log("yay", newRecipe);
+          res.redirect("/recipes/user");
+        })
+        .catch(err => {
+          console.log("noo");
+          next(err);
+        });
+    });
+});
 
+router.post("/delete/:id", (req, res, next) => {
+  Recipe.findByIdAndRemove(req.params.id)
+    .then(celebRemoved => {
+      req.flash(
+        "error",
+        `Successfully deleted profile for ${celebRemoved.name}`
+      );
+      res.redirect("/celebrities");
+    })
+    .catch(err => {
+      next(err);
+    });
+});
 
-})
-
-// router.post('/celebrities/delete/:id', (req, res, next) => {
-//   Celebrity.findByIdAndRemove(req.params.id)
-//   .then((celebRemoved)=>{
-//     req.flash('error', (`Successfully deleted profile for ${celebRemoved.name}`))
-//     res.redirect('/celebrities');
-//   })
-//   .catch((err)=>{
-//     next(err);
-//   })
-// })
-
-router.get('/edit/:id', (req, res, next) => {
+router.get("/edit/:id", (req, res, next) => {
   Recipe.findById(req.params.id)
-  .then((theRecipeReturned)=>{
-    res.render('recipe-views/edit', {theRecipe: theRecipeReturned});
+    .then(theRecipeReturned => {
+      res.render("recipe-views/edit", { theRecipe: theRecipeReturned });
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+router.post("/add-ing-to-recipe/:id", (req, res, next) => {
+  let theNewIng = req.body.newing;
+  Recipe.findByIdAndUpdate(req.params.id, {
+    $push: { ingredientsList: { original: theNewIng } }
   })
-  .catch((err)=>{
-    next(err);
+    .then(() => {
+      res.redirect(`/recipes/edit/${req.params.id}`);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+router.post("/add-step-to-recipe/:id", (req, res, next) => {
+  let theNewStep = req.body.newstep;
+  Recipe.findByIdAndUpdate(req.params.id, {
+    $push: { detailedInstructions: { step: theNewStep } }
   })
-})
+    .then(() => {
+      res.redirect(`/recipes/edit/${req.params.id}`);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+router.post("/delete-ing/:recipeId/:ingredientIndex", (req, res, next) => {
+  Recipe.findById(req.params.recipeId)
+    .then(recipe => {
+      recipe.ingredientsList.splice(req.params.ingredientIndex, 1);
+      recipe.save().then(() => {
+        res.redirect(`/recipes/edit/${req.params.recipeId}`);
+      });
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+router.post("/delete-step/:recipeId/:stepIndex", (req, res, next) => {
+  Recipe.findById(req.params.recipeId)
+    .then(recipe => {
+      recipe.detailedInstructions.splice(req.params.stepIndex, 1);
+      recipe.save().then(() => {
+        res.redirect(`/recipes/edit/${req.params.recipeId}`);
+      });
+    })
+    .catch(err => {
+      next(err);
+    });
+});
 
 // router.post('/celebrities/update/:id', uploadMagic.single('image'), (req, res, next) => {
 //   const theID = req.params.id;
-  
+
 //   let name = req.body.name;
 //   let occupation = req.body.occupation;
 //   let catchPhrase = req.body.catchPhrase;
@@ -218,24 +288,4 @@ router.get('/edit/:id', (req, res, next) => {
 //   })
 // })
 
-
-
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-// unirest.get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=https://greenkitchenstories.com/summer-rice-salad/")
-// .header("X-RapidAPI-Key", "e0f0a6f945mshf10650157739c5fp1b2b31jsne341caa9b0b8")
-// .header("X-RapidAPI-Host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com")
-// .end(function (result) {
-//   // console.log(result.status, result.headers, result.body);
-//   // console.log(result.body);
-//   Recipe.create({name: result.body.title, source: result.body.sourceUrl, image: result.body.image, instructions: result.body.instructions});
-// });

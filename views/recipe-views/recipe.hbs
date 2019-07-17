@@ -1,11 +1,11 @@
-
 <div class="recipe-div">
 
 
 
   <div class="top-div">
 
-    <a href="{{recipeDetails.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg" alt=""></a>
+    <a href="{{recipeDetails.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg"
+        alt=""></a>
 
     <div class="top-right-div">
 
@@ -14,7 +14,7 @@
 
       <div id="tag-div">
         {{#each recipeDetails.tags}}
-          <p>{{this}}</p>
+        <p>{{this}}</p>
         {{/each}}
       </div>
 
@@ -35,35 +35,35 @@
     <div id="d-ingredients">
       <h5 id="d-title">Indredients</h5>
       {{#each recipeDetails.ingredientsList}}
-        <div id="each-ing">
-          <p>{{this.original}}</p>
-        </div>
+      <div id="each-ing">
+        <p>{{this.original}}</p>
+      </div>
       {{/each}}
 
     </div>
 
     <div id="d-instructions">
       <h5 id="d-title">Preparation</h5>
-      {{#each recipeDetails.detailedInstructions.0.steps}}
-        <p>{{this.step}}</p>
+      {{#each recipeDetails.detailedInstructions}}
+      <p>{{this.step}}</p>
       {{/each}}
 
     </div>
-
   </div>
 
 
   <div class="notes-div">
 
     {{#each recipeDetails.notes}}
-      <p>{{this}}</p>
+    <p>{{this}}</p>
     {{/each}}
 
     <form id="note-form" action="" method="POST">
       <div id="form-row" class="row">
 
         <div class="input-field col s12">
-          <textarea name="notes" placeholder="how did it go?" id="notes-input" type="text" class="materialize-textarea"></textarea>
+          <textarea name="notes" placeholder="how did it go?" id="notes-input" type="text"
+            class="materialize-textarea"></textarea>
         </div>
 
       </div>
