@@ -33,25 +33,17 @@
   <div class="detailed-div">
 
     <div id="d-ingredients">
-
+      <h5 id="d-title">Indredients</h5>
       {{#each recipeDetails.ingredientsList}}
-        
-
-        {{!-- <p>IMPERIAL</p> --}}
         <div id="each-ing">
-          {{!-- <p>{{this.measures.us.amount}}</p>
-          <p>{{this.measures.us.unitShort}}</p> --}}
           <p>{{this.original}}</p>
         </div>
-        {{!-- <p>METRIC</p>
-        <p>{{this.measures.metric.amount}}</p>
-        <p>{{this.measures.metric.unitShort}}</p> --}}
       {{/each}}
 
     </div>
 
     <div id="d-instructions">
-
+      <h5 id="d-title">Preparation</h5>
       {{#each recipeDetails.detailedInstructions.0.steps}}
         <p>{{this.step}}</p>
       {{/each}}

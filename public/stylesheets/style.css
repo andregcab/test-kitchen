@@ -133,6 +133,17 @@ html, body {
   margin: 20px 0px 25px 50px;
   margin-left: 100px; }
 
+.top-right-div-edit {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 800px;
+  margin: 20px 0px 25px 50px;
+  margin-left: 100px; }
+
+#edit-names {
+  font-size: 2.0em; }
+
 .top-right-div h1 {
   font-size: 4.8em;
   font-weight: 300;
@@ -147,13 +158,64 @@ html, body {
   padding-bottom: 100px; }
 
 #tag-div {
-  display: flex; }
+  display: flex;
+  align-items: center; }
 
 #tag-div p {
   font-family: 'Montserrat', sans-serif;
   margin-left: 15px;
   border-bottom: 1px solid #929292;
-  line-height: 18px; }
+  line-height: 18px;
+  margin-bottom: 5px; }
+
+#tag-div a {
+  text-decoration: none;
+  color: #C6DABF;
+  font-size: .7em;
+  margin-left: 15px; }
+
+#tag-div-edit {
+  display: flex;
+  align-items: center; }
+
+#tag-div-edit p {
+  font-family: 'Montserrat', sans-serif;
+  border-bottom: 1px solid #929292;
+  line-height: 18px;
+  margin-bottom: 5px;
+  margin-right: 15px; }
+
+#tag-div-edit a {
+  text-decoration: none;
+  color: #C6DABF;
+  font-size: .7em; }
+
+#eachtag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
+
+#add-tag {
+  width: 22%; }
+
+#each-ing-edit {
+  display: flex;
+  justify-content: center; }
+
+#each-ing-edit a {
+  text-decoration: none;
+  color: #C6DABF;
+  font-size: .7em;
+  align-self: center;
+  margin-left: 10px; }
+
+#ing-input {
+  width: 84%; }
+
+#add-more {
+  text-decoration: none;
+  color: #C6DABF;
+  font-size: 1em; }
 
 .detailed-div {
   display: flex;
@@ -164,6 +226,14 @@ html, body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
   padding: 0; }
+
+#d-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4em;
+  margin-bottom: 25px; }
+
+#d-ingredients p {
+  margin-top: 6px; }
 
 #d-instructions {
   width: 700px; }
@@ -191,7 +261,8 @@ html, body {
   list-style-position: outside; }
 
 #submit-note {
-  font-size: 0.9em; }
+  font-size: 0.9em;
+  color: #C6DABF; }
 
 #note-form {
   display: flex;

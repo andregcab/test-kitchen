@@ -1,0 +1,97 @@
+
+<div class="recipe-div">
+
+  <form action="the POST route that edits the recipe" method="POST" enctype="multipart/form-data">
+
+
+  <div class="top-div">
+
+    <a href="{{theRecipe.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg" alt=""></a>
+
+    <div class="top-right-div-edit">
+
+      <label id="edit-names" for="">Recipe Name</label>
+      <input name="name" placeholder="{{theRecipe.name}}">
+      <label id="edit-names" for="">Recipe Snippet</label>
+      <input name="snippet" placeholder="{{theRecipe.snippet}}">
+
+      <div id="tag-div-edit">
+        {{#each theRecipe.tags}}
+          <div id="eachtag">
+          <p id="tag1">{{this}}</p>
+          <a id="tag2" href="route to delete">delete</a>
+          </div>
+        {{/each}}
+      </div>
+      <div id="add-tag">
+        <label for="">add tag</label>
+        <input name="tags" placeholder="ex. healthy, green, easy">
+        <a id="add-more" href="route to add new element to page">add</a>
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  {{!-- <div class="instructions-div">
+    <p>{{recipeDetails.instructions}}</p>
+  </div> --}}
+
+
+  <div class="detailed-div">
+
+    <div id="d-ingredients">
+      <h5 id="d-title">Indredients</h5>
+      {{#each theRecipe.ingredientsList}}
+        <div id="each-ing-edit">
+          <textarea name="ingredient???" placeholder="{{this.original}}" id="edit-each-ing" type="text" class="materialize-textarea"></textarea>
+          <a href="route to delete">delete</a>
+        </div>
+      {{/each}}
+      <label for="">add ingredient</label>
+      <input id="ing-input" name="tags" placeholder="ex. 3 cloves garlic"><br>
+      <a id="add-more" href="route to add new element to page">add ingredient</a>
+    </div>
+
+    <div id="d-instructions">
+      <h5 id="d-title">Preparation</h5>
+      {{#each theRecipe.detailedInstructions.0.steps}}
+        <p>{{this.step}}</p>
+      {{/each}}
+
+    </div>
+
+  </div>
+
+
+  <div class="notes-div">
+
+    {{#each theRecipe.notes}}
+      <p>{{this}}</p>
+    {{/each}}
+
+    <form id="note-form" action="" method="POST">
+      <div id="form-row" class="row">
+
+        <div class="input-field col s12">
+          <textarea name="notes" placeholder="how did it go?" id="notes-input" type="text" class="materialize-textarea"></textarea>
+        </div>
+
+      </div>
+      <button id="submit-note" class="waves-effect waves-teal btn-flat">add note</button>
+    </form>
+
+  </div>
+
+
+
+
+
+
+  </form>
+
+
+</div>
