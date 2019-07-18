@@ -15,15 +15,13 @@ const recipeSchema = new Schema(
       ref: "User"
     },
     name: {
-      type: String,
-      default: missingInfo
+      type: String
     },
     source: {
       type: String
     },
     image: {
-      type: String,
-      default: missingInfo
+      type: String
     },
     tags: [{ type: String }],
     notes: [{ type: String }],

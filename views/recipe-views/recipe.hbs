@@ -1,11 +1,15 @@
 <div class="recipe-div">
 
-
+  <div id="edit-delete">
+    <a id="editrecipe" href="/recipes/edit/{{recipeDetails._id}}">edit this recipe</a>
+    <form action="/recipes/delete/{{recipeDetails._id}}" method="POST"><button id="deleterecipe"
+        class="waves-effect waves-teal btn-flat">delete this
+        recipe</button></form>
+  </div>
 
   <div class="top-div">
 
-    <a href="{{recipeDetails.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg"
-        alt=""></a>
+    <a id="img-anchor" href="{{recipeDetails.source}}"><img id="recipe-image" src="{{recipeDetails.image}}" alt=""></a>
 
     <div class="top-right-div">
 
@@ -24,12 +28,6 @@
 
 
 
-
-  {{!-- <div class="instructions-div">
-    <p>{{recipeDetails.instructions}}</p>
-  </div> --}}
-
-
   <div class="detailed-div">
 
     <div id="d-ingredients">
@@ -43,7 +41,7 @@
     </div>
 
     <div id="d-instructions">
-      <h5 id="d-title">Preparation</h5>
+      <h5 id="d-title-ins">Preparation</h5>
       {{#each recipeDetails.detailedInstructions}}
       <p>{{this.step}}</p>
       {{/each}}
@@ -58,7 +56,7 @@
     <p>{{this}}</p>
     {{/each}}
 
-    <form id="note-form" action="" method="POST">
+    {{!-- <form id="note-form" action="" method="POST">
       <div id="form-row" class="row">
 
         <div class="input-field col s12">
@@ -68,10 +66,9 @@
 
       </div>
       <button id="submit-note" class="waves-effect waves-teal btn-flat">add note</button>
-    </form>
+    </form> --}}
 
   </div>
-
 
 
 

@@ -1,17 +1,32 @@
 <div class="recipe-div">
 
-  <form action="the POST route that edits the recipe" method="POST" enctype="multipart/form-data">
+  <a id="backtorecipe" href="/recipes/userRecipe/{{theRecipe._id}}">back to recipe</a>
 
 
-    <div class="top-div">
+  <div class="submit-photo-div">
+    <form id="submit-photo-form" action="/recipes/add-image/{{theRecipe._id}}" enctype="multipart/form-data"
+      method="POST">
 
       <div class="file-field input-field">
         <div class="btn">
           <span>Recipe Image</span>
-          <input type="file">
+          <input type="file" name='image' />
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" name='image' type="text" placeholder="Upload file" />
         </div>
       </div>
-      {{!-- <a href="{{theRecipe.source}}"><img id="recipe-image" src="/images/calum-lewis-vA1L1jRTM70-unsplash.jpg" alt=""></a> --}}
+
+      <button>submit</button>
+    </form>
+  </div>
+
+
+  <form id="wholerecipe" action="/recipes/update/{{theRecipe._id}}" method="POST">
+
+
+    <div class="top-div-edit">
+
 
       <div class="top-right-div-edit">
 
@@ -28,14 +43,23 @@
           {{#each theRecipe.tags}}
           <div id="eachtag">
             <p>{{this}}</p>
-            <a href="route to delete">delete</a>
+            <form action="/recipes/delete-tag/{{../theRecipe._id}}/{{@index}}" method="POST">
+              <button id="deletebtntop" class="waves-effect waves-teal btn-flat">delete</button>
+            </form>
           </div>
           {{/each}}
         </div>
         <div id="add-tag">
-          <label for="">add tag</label>
+
+          <form id="addtagform" action="/recipes/add-tag/{{theRecipe._id}}" method="POST">
+            <label id="" for="tags">add tag</label>
+            <input id="" name="tags" placeholder="ex. healthy, green, easy"><br>
+            <button id="add-more" class="waves-effect waves-teal btn-flat">add new</button>
+          </form>
+
+          {{!-- <label for="">add tag</label>
           <input name="tags" placeholder="ex. healthy, green, easy">
-          <a id="add-more" href="route to add new element to page">add</a>
+          <a id="add-more" href="route to add new element to page">add</a> --}}
         </div>
 
       </div>
@@ -45,22 +69,21 @@
 
 
 
-    {{!-- <div class="instructions-div">
-    <p>{{recipeDetails.instructions}}</p>
-  </div> --}}
-
-
     <div class="detailed-div">
 
       <div id="d-ingredients-edit">
         <h5 id="d-titleing">Indredients</h5>
         {{#each theRecipe.ingredientsList}}
         <div id="each-ing-edit">
-          <textarea name="ingredient???" id="edit-each-ing" type="text"
-            class="materialize-textarea">{{this.original}}</textarea>
 
-          <form action="/recipes/delete-ing/{{../theRecipe._id}}/{{@index}}" method="POST">
-            <button>delete</button>
+          <textarea name="ingredient_{{@index}}" id="edit-each-ing" type="text" class="materialize-textarea"
+            form="wholerecipe">{{this.original}}</textarea>
+
+          {{!-- <input type="text" name="ingredient-{{@index}}" id="{{@index}}" value="{{this.original}}"> --}}
+
+
+          <form id="deleteform" action="/recipes/delete-ing/{{../theRecipe._id}}/{{@index}}" method="POST">
+            <button id="deletebtn" class="waves-effect waves-teal btn-flat">delete</button>
           </form>
 
 
@@ -68,11 +91,11 @@
         {{/each}}
 
 
-        <form action="/recipes/add-ing-to-recipe/{{theRecipe._id}}" method="POST">
+        <form id="addnewform" action="/recipes/add-ing-to-recipe/{{theRecipe._id}}" method="POST">
 
           <label id="addi" for="">add ingredient</label>
           <input id="ing-input" name="newing" placeholder="ex. 3 cloves garlic"><br>
-          <button id="add-more">add new</button>
+          <button id="add-more" class="waves-effect waves-teal btn-flat">add new</button>
 
         </form>
 
@@ -84,31 +107,23 @@
         <h5 id="d-title">Preparation</h5>
         {{#each theRecipe.detailedInstructions}}
         <div id="each-ins-edit">
-          <textarea name="instruction???" id="ins-edit-form" type="text"
+          <textarea form="wholerecipe" name="instructions_{{@index}}" id="ins-edit-form" type="text"
             class="materialize-textarea">{{this.step}}</textarea>
 
-          <form action="/recipes/delete-step/{{../theRecipe._id}}/{{@index}}" method="POST">
-            <button>delete</button>
+          <form id="deleteform" action="/recipes/delete-step/{{../theRecipe._id}}/{{@index}}" method="POST">
+            <button id="deletebtn" class="waves-effect waves-teal btn-flat">delete</button>
           </form>
 
         </div>
         {{/each}}
 
-        <form action="/recipes/add-step-to-recipe/{{theRecipe._id}}" method="POST">
+        <form id="addstepform" action="/recipes/add-step-to-recipe/{{theRecipe._id}}" method="POST">
 
           <label id="adds" for="">add step</label>
           <input id="ing-input" name="newstep" placeholder="ex. heat oil in a frying pan and add onions"><br>
-          <button id="add-more">add new</button>
+          <button class="waves-effect waves-teal btn-flat" id="add-more">add new</button>
 
         </form>
-
-
-        {{!-- <div class="add-step">
-      <label id="adds" for="">add step</label>
-      <textarea name="ingredient???" placeholder="ex. heat oil in a frying pan and add onions" id="" type="text" class="materialize-textarea"></textarea>
-      <a id="add-more" href="route to add new element to page">add new</a>
-
-      </div> --}}
 
       </div>
 
@@ -119,29 +134,27 @@
 
       {{#each theRecipe.notes}}
       <p>{{this}}</p>
-      <a id="notedelete" href="route to delete">delete</a>
+      <form action="/recipes/delete-note/{{../theRecipe._id}}/{{@index}}" method="POST">
+        <button id="deletebtnnote" class="waves-effect waves-teal btn-flat">delete</button>
+      </form>
       {{/each}}
 
-      <form id="note-form" action="" method="POST">
-        <div id="form-row" class="row">
 
-          <div class="input-field col s12">
-            <textarea name="notes" placeholder="how did it go?" id="notes-input" type="text"
-              class="materialize-textarea"></textarea>
-          </div>
+      <form id="addnoteform" action="/recipes/add-note/{{theRecipe._id}}" method="POST">
 
-        </div>
-        <button id="submit-note" class="waves-effect waves-teal btn-flat">add note</button>
+        <label id="addnotetitle" for="">add note</label>
+        <input id="notes-input" name="notes" placeholder="how did it go?"><br>
+        <button id="add-more" class="waves-effect waves-teal btn-flat">add new</button>
+
       </form>
 
     </div>
 
 
 
-    <button id="submit-recipe-form" class="waves-effect waves-teal btn-flat">let's get cooking!</button>
-
-
   </form>
 
+  <button type="submit" form="wholerecipe" id="submit-whole-recipe" class="waves-effect waves-teal btn-flat">Update
+    Recipe</button>
 
 </div>

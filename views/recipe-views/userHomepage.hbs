@@ -1,35 +1,56 @@
 <div class="user-recipes">
 
-<h1>Your Recipes</h1>
+  <h1 id="homepage-title">Your Recipes</h1>
+
+  <div class="topmiddle-div">
+
+    <div class="container">
+      <input type="text" value="" placeholder="Search by tags">
+      <button class='waves-effect waves-teal btn-flat'><i class="fa fa-search"></i></button>
+    </div>
 
 
-<div class="top-buttons">
+    <div class="top-buttons">
 
-  <form action="/recipes/newRecipe"><button>create new recipe</button></form>
+      <form id="fromurl" action="/recipes/create" method="POST">
+        {{!-- <label for=""></label> --}}
+        <input placeholder="create new recipe from URL" type="text" name="sourceURL" id="">
+        <button id="url-button" class="waves-effect waves-teal btn-flat">easy bake</button>
+      </form>
+      <p>or,</p>
+      <button class="waves-effect waves-teal btn-flat"><a id="createnew" href="/recipes/newRecipe">start from
+          scratch</a></button>
 
-  <form action="/recipes/create" method="POST">
-    <label for="">Enter URL</label>
-    <input type="text" name="sourceURL" id="">
-    <button>create new recipe from URL</button>
-  </form>
+    </div>
 
-  <button><a href="/recipes/newRecipe">create new recipe(login first)</a></button>
-
-</div>
+  </div>
 
 
-<div class="the-recipes">
+  <div class="the-recipes">
 
-{{#each userRecipes}}
-<div class="each-recipe">
-<h1>{{this.name}}</h1>
+    {{#each userRecipes}}
 
-<a href="/recipes/userRecipe/{{this._id}}">take me to this recipe</a>
-<a href="/recipes/edit/{{this._id}}">edit this recipe</a>
-</div>
-{{/each}}
 
-</div>
+    {{!-- <div class="row">
+      <div class="col s2 m4"> --}}
+    <div class="card">
+      <div class="card-image">
+        <img src="{{this.image}}">
+      </div>
+      <div class="card-content">
+        <h4>{{this.name}}</h4>
+      </div>
+      <div class="card-action">
+        <a href="/recipes/userRecipe/{{this._id}}">see recipe</a>
+      </div>
+    </div>
+    {{!-- </div>
+    </div> --}}
+
+
+    {{/each}}
+
+  </div>
 
 
 
