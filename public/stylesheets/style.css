@@ -89,7 +89,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fefeff;
+  background-color: #faf9f9;
   margin-bottom: 5px; }
 
 #signup-div h3,
@@ -228,6 +228,26 @@ body {
   width: 40%;
   position: absolute; }
 
+.file-field {
+  margin: 54px !important; }
+
+#photo-submit-file-div > input {
+  display: none; }
+
+#button-to-submit-photo {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0 !important;
+  font-size: 1.4em;
+  color: #1a936f;
+  margin-bottom: 20px; }
+
+#file-img {
+  max-width: 100%;
+  object-fit: cover;
+  height: 425px; }
+
 .recipe-div {
   display: flex;
   flex-direction: column; }
@@ -255,7 +275,7 @@ body {
 .top-div-edit {
   display: flex;
   justify-content: center;
-  padding: 50px 0 150px 0; }
+  padding: 50px 0 275px 0; }
 
 #img-anchor {
   padding-left: 70px;
@@ -290,7 +310,8 @@ body {
   width: 70%;
   font-family: "Montserrat", sans-serif;
   font-weight: bolder;
-  padding-bottom: 100px; }
+  padding-bottom: 100px;
+  padding-top: 75px; }
 
 .materialize-textarea {
   margin-right: 15px !important; }

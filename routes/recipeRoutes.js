@@ -264,6 +264,7 @@ router.post("/delete-note/:recipeId/:noteIndex", (req, res, next) => {
 });
 
 router.post("/add-tag/:id", (req, res, next) => {
+  console.log(req.body.tags);
   let theNewTag = req.body.tags;
   Recipe.findByIdAndUpdate(req.params.id, {
     $push: { tags: theNewTag }
@@ -310,27 +311,38 @@ router.post("/blah", (req, res, render) => {
 });
 
 router.post("/update/:id", (req, res, next) => {
-  console.log(req.body);
-  let name = req.body.name;
-  let snippet = req.body.snippet;
-  let ingredientsList = req.body.ingredient;
-  let detailedInstructions = req.body.detailedInstructions;
-
-  let editedRecipe = {
-    name: name,
-    snippet: snippet,
-    ingredientsList: { original: ingredientsList },
-    detailedInstructions: { step: detailedInstructions }
+  // console.log(req.body);8
+  let data = {
+    name: req.body.name,
+    snippet: req.body.snippet
   };
-  // };
-  //
-  // Recipe.findByIdAndUpdate(req.params.id, editedRecipe)
-  //   .then(newlyEditedRecipe => {
-  res.redirect(`/recipes/userRecipe/${req.params.id}`);
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
+  if (req.body[`ingredient_0`]) {
+    data.ingredientsList = [];
+  }
+  for (let i = 0; i < 30; i++) {
+    if (req.body[`ingredient_${i}`]) {
+      data.ingredientsList.push({ original: req.body[`ingredient_${i}`] });
+    }
+  }
+  if (req.body[`instructions_0`]) {
+    data.detailedInstructions = [];
+  }
+  for (let i = 0; i < 30; i++) {
+    if (req.body[`instructions_${i}`]) {
+      data.detailedInstructions.push({
+        step: req.body[`instructions_${i}`]
+      });
+    }
+  }
+  // console.log(data);
+
+  Recipe.findByIdAndUpdate(req.params.id, data)
+    .then(() => {
+      res.redirect(`/recipes/userRecipe/${req.params.id}`);
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 router.post("/delete/:id", (req, res, next) => {

@@ -8,18 +8,28 @@
       method="POST">
 
       <div class="file-field input-field">
-        <div class="btn">
-          <span>Recipe Image</span>
-          <input type="file" name='image' />
-        </div>
-        <div class="file-path-wrapper">
-          <input class="file-path validate" name='image' type="text" placeholder="Upload file" />
+        <div id="photo-submit-file-div">
+          <label for="file-input">
+            <img id="file-img" src="{{theRecipe.image}}" />
+          </label>
+          <input id="file-input" type="file" name='image' />
         </div>
       </div>
 
-      <button>submit</button>
+      <button id="button-to-submit-photo">submit</button>
     </form>
   </div>
+
+  {{!-- <div class="submit-photo-div">
+    <form id="submit-photo-form" action="/recipes/add-image/{{theRecipe._id}}" enctype="multipart/form-data"
+      method="POST">
+      <input type="file" name="image">
+      <img src="{{theRecipe.image}}" />
+    </form>
+    </label>
+
+    <input id="file-input" type="file" />
+  </div> --}}
 
 
   <form id="wholerecipe" action="/recipes/update/{{theRecipe._id}}" method="POST">
@@ -31,12 +41,10 @@
       <div class="top-right-div-edit">
 
         <label id="edit-names" for="names">Recipe Name</label>
-        <textarea name="name" placeholder="{{theRecipe.name}}" id="" type="text"
-          class="materialize-textarea"></textarea>
+        <textarea name="name" id="" type="text" class="materialize-textarea">{{theRecipe.name}}</textarea>
         {{!-- <input name="name" placeholder="{{theRecipe.name}}"> --}}
         <label id="edit-names" for="snippet">Recipe Snippet</label>
-        <textarea name="snippet" placeholder="{{theRecipe.snippet}}" id="" type="text"
-          class="materialize-textarea"></textarea>
+        <textarea name="snippet" id="" type="text" class="materialize-textarea">{{theRecipe.snippet}}</textarea>
         {{!-- <input name="snippet" placeholder="{{theRecipe.snippet}}"> --}}
 
         <div id="tag-div-edit">
@@ -54,7 +62,8 @@
           <form id="addtagform" action="/recipes/add-tag/{{theRecipe._id}}" method="POST">
             <label id="" for="tags">add tag</label>
             <input id="" name="tags" placeholder="ex. healthy, green, easy"><br>
-            <button id="add-more" class="waves-effect waves-teal btn-flat">add new</button>
+            <button type="submit" form="addtagform" id="add-more" class="waves-effect waves-teal btn-flat">add
+              new</button>
           </form>
 
           {{!-- <label for="">add tag</label>
