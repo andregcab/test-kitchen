@@ -135,7 +135,8 @@ body {
 
 .the-recipes {
   display: flex;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  background-color: #f9fbf7; }
 
 .card {
   width: 25vw !important;
