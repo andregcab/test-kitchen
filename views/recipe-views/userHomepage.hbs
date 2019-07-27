@@ -13,8 +13,7 @@
     <div class="top-buttons">
 
       <form id="fromurl" action="/recipes/create" method="POST">
-        {{!-- <label for=""></label> --}}
-        <input placeholder="create new recipe from URL" type="text" name="sourceURL" id="">
+        <input placeholder="create new recipe from URL" type="url" name="sourceURL" id="" required>
         <button id="url-button" class="waves-effect waves-teal btn-flat">easy bake</button>
       </form>
       <p>or,</p>

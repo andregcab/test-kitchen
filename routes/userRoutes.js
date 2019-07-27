@@ -25,7 +25,7 @@ router.post('/signup', (req, res, next)=>{
     })
   .then((newUser)=>{
     req.session.currentUser = newUser;
-    console.log('yay');
+    // console.log('yay');
     // console.log(newUser)
     req.login(newUser, (err) => {
       if(err) {
@@ -40,7 +40,7 @@ router.post('/signup', (req, res, next)=>{
     next(err);
   })
   } else {
-    req.flash('error', 'Please provide all information!')
+    // req.flash('error', 'Please provide all information!')
     res.redirect('/signup');
   }   
 })

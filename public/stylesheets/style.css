@@ -6,8 +6,8 @@ body {
 
 #top-nav {
   display: flex;
-  justify-content: center;
-  padding: 75px 0 50px 0;
+  justify-content: flex-end;
+  padding: 35px 0 35px 0;
   background-color: #fefeff; }
 
 #title-div {
@@ -17,14 +17,17 @@ body {
   text-decoration: none;
   color: black;
   font-size: 3.5em;
-  margin-left: 485px;
-  padding-right: 150px;
-  line-height: 0;
-  letter-spacing: 2px; }
+  padding-right: 300px;
+  line-height: 1.2;
+  letter-spacing: 3px; 
+  text-align: center;
+}
 
 #buttons-div {
   display: flex;
-  align-self: flex-end; }
+  margin-right: 90px; 
+  align-items: flex-end;
+}
 
 #buttons-div a,
 #buttons-div button {
@@ -136,11 +139,13 @@ body {
 .the-recipes {
   display: flex;
   flex-wrap: wrap;
-  background-color: #f9fbf7; }
+  background-color: #f9fbf7; 
+  justify-content: center;
+}
 
 .card {
   width: 25vw !important;
-  margin: 70px; }
+  margin: 55px; }
 
 #homepage-title {
   align-self: center;

@@ -57,9 +57,7 @@ var unirest = require("unirest");
 //V
 //**=-=-=-=-=-=Using EXPRESS on the back end */
 
-router.get(
-  "/user",
-  /*ensureLogin.ensureLoggedIn(),*/ (req, res, next) => {
+router.get( "/user", ensureLogin.ensureLoggedIn(), (req, res, next) => {
     //this will render the user homepage with all the user's recipes
     Recipe.find({ ownerId: mongoose.Types.ObjectId(req.user._id) })
       .then(allUserRecipes => {
@@ -67,7 +65,6 @@ router.get(
           userRecipes: allUserRecipes
         });
 
-        // const recpie = new Recipe({name: doc.name, instructions: doc.analalyzed[0].steps})
       })
       .catch(err => {
         next(err);
@@ -84,48 +81,6 @@ router.get("/newRecipe", (req, res, next) => {
     });
 });
 
-// router.post(
-//   "/create-new-recipe",
-//   // uploadMagic.single("image"),
-//   (req, res, next) => {
-//     //takes all the new recipe information to upload to database
-//     console.log(req.body);
-//     let ownerId = req.user._id;
-//     let name = req.body.name;
-//     let source = req.body.source;
-//     let tags = req.body.tags;
-//     let notes = req.body.notes;
-//     let instructions = req.body.instructions;
-//     let detailedInstructions = req.body.detailedInstructions;
-//     let ingredientsList = req.body.ingredientsList;
-//     let rating = req.body.rating;
-//     let snippet = req.body.snippet;
-//     // let image = req.file.url || '';
-
-//     let newRecipe = {
-//       ownerId: ownerId,
-//       name: name,
-//       source: source,
-//       tags: tags,
-//       /*image: image,*/ notes: notes,
-//       instructions: instructions,
-//       detailedInstructions: detailedInstructions,
-//       ingredientsList: ingredientsList,
-//       snippet: snippet,
-//       rating: rating
-//     };
-//     console.log(newRecipe);
-//     Recipe.create(newRecipe)
-//       .then(newlyCreatedRecipe => {
-//         req.flash("error", `Successfully added ${newlyCreatedRecipe.name}`);
-//         // console.log(newlyCreatedRecipe._id)
-//         res.redirect(`/recipes/userRecipe/${newlyCreatedRecipe._id}`);
-//       })
-//       .catch(err => {
-//         next(err);
-//       });
-//   }
-// );
 
 router.get("/userRecipe/:id", (req, res, next) => {
   // console.log("<>><>><><><><><><>><><><><>><><><><><><><><<>");
@@ -142,8 +97,7 @@ router.get("/userRecipe/:id", (req, res, next) => {
 });
 
 router.post("/create", (req, res, next) => {
-  unirest
-    .get(
+  unirest.get(
       "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/extract?url=" +
         req.body.sourceURL
     )
@@ -306,9 +260,6 @@ router.post("/add-image/:id", multer.single("image"), (req, res, next) => {
     });
 });
 
-router.post("/blah", (req, res, render) => {
-  console.log(req.body);
-});
 
 router.post("/update/:id", (req, res, next) => {
   // console.log(req.body);8
@@ -334,7 +285,6 @@ router.post("/update/:id", (req, res, next) => {
       });
     }
   }
-  // console.log(data);
 
   Recipe.findByIdAndUpdate(req.params.id, data)
     .then(() => {
