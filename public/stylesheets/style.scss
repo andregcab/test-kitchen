@@ -11,8 +11,8 @@ body {
 
 #top-nav {
   display: flex;
-  justify-content: center;
-  padding: 75px 0 50px 0;
+  justify-content: flex-end;
+  padding: 35px 0 50px 0;
   background-color: rgb(254, 254, 255);
 }
 
@@ -23,16 +23,17 @@ body {
 #main-title {
   text-decoration: none;
   color: black;
-  font-size: 3.5em;
-  margin-left: 485px;
-  padding-right: 150px;
-  line-height: 0;
-  letter-spacing: 2px;
+  font-size: 4em;
+  padding-right: 300px;
+  line-height: 1.2;
+  letter-spacing: 4px;
+  text-align: center;
 }
 
 #buttons-div {
   display: flex;
   align-self: flex-end;
+  margin-right: 72px;
 }
 
 #buttons-div a,
@@ -166,13 +167,14 @@ body {
 
 .the-recipes {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   background-color: #f9fbf7;
 }
 
 .card {
   width: 25vw !important;
-  margin: 70px;
+  margin: 50px;
 }
 
 #homepage-title {
