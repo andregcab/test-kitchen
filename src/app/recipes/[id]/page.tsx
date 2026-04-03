@@ -27,6 +27,22 @@ export default async function RecipeDetailPage({
   if (!recipe || !recipe.currentVersion) notFound();
 
   const data = recipe.currentVersion.data as unknown as RecipeData;
+
+  function abbrevUnit(unit: string): string {
+    const map: Record<string, string> = {
+      tablespoon: "tbsp", tablespoons: "tbsp",
+      teaspoon: "tsp", teaspoons: "tsp",
+      cup: "cup", cups: "cup",
+      ounce: "oz", ounces: "oz",
+      pound: "lb", pounds: "lb",
+      gram: "g", grams: "g",
+      kilogram: "kg", kilograms: "kg",
+      milliliter: "ml", milliliters: "ml", millilitre: "ml", millilitres: "ml",
+      liter: "L", liters: "L", litre: "L", litres: "L",
+      "fluid ounce": "fl oz", "fluid ounces": "fl oz",
+    };
+    return map[unit.toLowerCase()] ?? unit;
+  }
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
   const color = getTagColor(recipe.tags ?? []);
 
@@ -138,7 +154,7 @@ export default async function RecipeDetailPage({
 
       {/* ── RECIPE BODY — ingredients + instructions ── */}
       {(data.ingredients.length > 0 || data.instructions.length > 0) && (
-        <div className="max-w-2xl mx-auto px-4 mt-28 flex flex-col gap-8">
+        <div className="max-w-3xl mx-auto px-4 mt-28 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
             <section>
               <h2 className="text-lg font-bold mb-3">Ingredients</h2>
@@ -150,12 +166,12 @@ export default async function RecipeDetailPage({
                     style={{ borderBottom: i < data.ingredients.length - 1 ? "1px solid var(--border)" : "none" }}
                   >
                     <span
-                      className="w-20 flex-shrink-0 text-left font-semibold tabular-nums"
+                      className="w-32 flex-shrink-0 text-left font-semibold tabular-nums"
                       style={{ color: "var(--accent)" }}
                     >
-                      {[ing.amount, ing.unit].filter(Boolean).join(" ")}
+                      {[ing.amount, ing.unit ? abbrevUnit(ing.unit) : ""].filter(Boolean).join(" ")}
                     </span>
-                    <span>
+                    <span className="pl-3">
                       {ing.name}
                       {ing.notes && ` ${ing.notes}`}
                     </span>
