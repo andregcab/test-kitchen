@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +21,7 @@ export default async function VersionHistoryPage({
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <Link
-          href={`/recipes/${id}`}
-          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-          style={{ background: "var(--border)" }}
-          aria-label="Back"
-        >
-          ‹
-        </Link>
+        <BackButton href={`/recipes/${id}`} />
         <div>
           <h1 className="text-2xl font-bold">Version History</h1>
           <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>

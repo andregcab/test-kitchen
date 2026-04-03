@@ -34,11 +34,13 @@ export default function BottomNav() {
 
       <Link
         href="/recipes/new"
-        className="flex items-center justify-center w-14 h-14 rounded-full text-white text-3xl font-light shadow-md"
+        className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-md"
         style={{ background: "var(--accent)" }}
         aria-label="Add recipe"
       >
-        +
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <path d="M11 3V19M3 11H19" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
       </Link>
 
       <button

@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import RecipeForm from "@/components/RecipeForm";
 import { RecipeData } from "@/lib/types";
+import BackButton from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +28,7 @@ export default async function EditRecipePage({
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <Link
-          href={`/recipes/${id}`}
-          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-          style={{ background: "var(--border)" }}
-          aria-label="Back"
-        >
-          ‹
-        </Link>
+        <BackButton href={`/recipes/${id}`} />
         <h1 className="text-2xl font-bold">Edit Recipe</h1>
       </div>
 

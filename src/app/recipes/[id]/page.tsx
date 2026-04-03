@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { RecipeData } from "@/lib/types";
 import DeleteRecipeButton from "@/components/DeleteRecipeButton";
+import BackButton from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -30,14 +31,7 @@ export default async function RecipeDetailPage({
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link
-          href="/recipes"
-          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-          style={{ background: "var(--border)" }}
-          aria-label="Back"
-        >
-          ‹
-        </Link>
+        <BackButton href="/recipes" />
         <h1 className="text-2xl font-bold flex-1 leading-tight">{recipe.title}</h1>
         <Link
           href={`/recipes/${recipe.id}/edit`}
@@ -222,9 +216,9 @@ export default async function RecipeDetailPage({
       </section>
 
       {/* Tags */}
-      {recipe.tags.length > 0 && (
+      {(recipe.tags ?? []).length > 0 && (
         <div className="flex flex-wrap gap-2 mb-8">
-          {recipe.tags.map((tag) => (
+          {(recipe.tags ?? []).map((tag) => (
             <span
               key={tag}
               className="px-3 py-1 rounded-full text-sm font-medium"

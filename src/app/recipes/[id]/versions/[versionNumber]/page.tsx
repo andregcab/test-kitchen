@@ -6,6 +6,7 @@ import { diffRecipes } from "@/lib/diff";
 import VersionDiff from "@/components/VersionDiff";
 import RestoreVersionButton from "@/components/RestoreVersionButton";
 import EditChangeNote from "@/components/EditChangeNote";
+import BackButton from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -49,14 +50,7 @@ export default async function VersionDetailPage({
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link
-          href={`/recipes/${id}/versions`}
-          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-          style={{ background: "var(--border)" }}
-          aria-label="Back"
-        >
-          ‹
-        </Link>
+        <BackButton href={`/recipes/${id}/versions`} />
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">Version {vNum}</h1>

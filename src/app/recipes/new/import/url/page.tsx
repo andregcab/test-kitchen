@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import RecipeForm from "@/components/RecipeForm";
+import BackButton from "@/components/BackButton";
 import { RecipeData } from "@/lib/types";
 
 type State =
@@ -58,25 +59,10 @@ export default function UrlImportPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
-        {backHref ? (
-          <Link
-            href={backHref}
-            className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-            style={{ background: "var(--border)" }}
-            aria-label="Back"
-          >
-            ‹
-          </Link>
-        ) : (
-          <button
-            onClick={() => setState({ stage: "input" })}
-            className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
-            style={{ background: "var(--border)" }}
-            aria-label="Back"
-          >
-            ‹
-          </button>
-        )}
+        <BackButton
+          href={backHref}
+          onClick={backHref ? undefined : () => setState({ stage: "input" })}
+        />
         <h1 className="text-2xl font-bold">Import from website</h1>
       </div>
 
