@@ -4,7 +4,8 @@
       "Bash(npm --version)",
       "Bash(npx --version)",
       "Bash(npm show:*)",
-      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const v=JSON.parse\\(d\\); const stable=v.filter\\(x=>/^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$/.test\\(x\\)\\); console.log\\(stable.slice\\(-10\\)\\);\")"
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const v=JSON.parse\\(d\\); const stable=v.filter\\(x=>/^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$/.test\\(x\\)\\); console.log\\(stable.slice\\(-10\\)\\);\")",
+      "Bash(npm install:*)"
     ]
   }
 }

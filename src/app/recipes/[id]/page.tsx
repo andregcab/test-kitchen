@@ -156,53 +156,65 @@ export default async function RecipeDetailPage({
 
       {/* Version history */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold mb-4">
-          Version History
-          <span
-            className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full"
-            style={{ background: "var(--border)", color: "var(--muted)" }}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">
+            Version History
+            <span
+              className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full"
+              style={{ background: "var(--border)", color: "var(--muted)" }}
+            >
+              {recipe.versions.length}
+            </span>
+          </h2>
+          <Link
+            href={`/recipes/${recipe.id}/versions`}
+            className="text-sm font-medium"
+            style={{ color: "var(--accent)" }}
           >
-            {recipe.versions.length}
-          </span>
-        </h2>
+            See all
+          </Link>
+        </div>
         <ul className="flex flex-col gap-2">
-          {recipe.versions.map((v) => {
+          {recipe.versions.slice(0, 5).map((v) => {
             const isCurrent = v.id === recipe.currentVersionId;
             return (
-              <li
-                key={v.id}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                style={{
-                  background: isCurrent ? "var(--card)" : "transparent",
-                  border: `1px solid ${isCurrent ? "var(--accent)" : "var(--border)"}`,
-                }}
-              >
-                <span
-                  className="text-sm font-bold w-8 text-center"
-                  style={{ color: isCurrent ? "var(--accent)" : "var(--muted)" }}
+              <li key={v.id}>
+                <Link
+                  href={`/recipes/${recipe.id}/versions/${v.versionNumber}`}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:border-[var(--accent)]"
+                  style={{
+                    background: isCurrent ? "var(--card)" : "transparent",
+                    border: `1px solid ${isCurrent ? "var(--accent)" : "var(--border)"}`,
+                  }}
                 >
-                  v{v.versionNumber}
-                </span>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">
-                    {v.changeNote ?? "No change note"}
-                    {isCurrent && (
-                      <span
-                        className="ml-2 text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: "var(--accent)", color: "white" }}
-                      >
-                        current
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
-                    {new Date(v.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
+                  <span
+                    className="text-sm font-bold w-8 text-center flex-shrink-0"
+                    style={{ color: isCurrent ? "var(--accent)" : "var(--muted)" }}
+                  >
+                    v{v.versionNumber}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {v.changeNote ?? "No change note"}
+                      {isCurrent && (
+                        <span
+                          className="ml-2 text-xs px-2 py-0.5 rounded-full align-middle"
+                          style={{ background: "var(--accent)", color: "white" }}
+                        >
+                          current
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
+                      {new Date(v.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <span className="text-xl" style={{ color: "var(--muted)" }}>›</span>
+                </Link>
               </li>
             );
           })}
