@@ -155,11 +155,7 @@ export default async function RecipeDetailPage({
                     </span>
                     <span>
                       {ing.name}
-                      {ing.notes && (
-                        <span className="ml-1 text-sm" style={{ color: "var(--muted)" }}>
-                          ({ing.notes})
-                        </span>
-                      )}
+                      {ing.notes && ` ${ing.notes}`}
                     </span>
                   </li>
                 ))}
