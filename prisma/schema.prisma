@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Recipe {
+  id               String          @id @default(cuid())
+  title            String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  currentVersionId String?         @unique
+  versions         RecipeVersion[]
+  currentVersion   RecipeVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+}
+
+model RecipeVersion {
+  id            String   @id @default(cuid())
+  recipeId      String
+  versionNumber Int
+  changeNote    String?
+  createdAt     DateTime @default(now())
+  data          Json
+  recipe        Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  currentFor    Recipe?  @relation("CurrentVersion")
+
+  @@unique([recipeId, versionNumber])
+}
