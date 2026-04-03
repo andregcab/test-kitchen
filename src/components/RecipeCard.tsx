@@ -81,24 +81,33 @@ export default function RecipeCard({
           )}
         </div>
 
-        {/* Card content */}
-        <div className="p-4">
-          <h2 className="font-bold text-base leading-snug line-clamp-2 mb-2">
+        {/* Card content — fixed layout so all cards align */}
+        <div className="p-4 flex flex-col" style={{ minHeight: 96 }}>
+          {/* Title always reserves 2 lines */}
+          <h2
+            className="font-bold text-base leading-snug mb-auto"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              minHeight: "2.6em",
+            }}
+          >
             {title}
           </h2>
-          <div className="flex items-center gap-3 text-sm" style={{ color: "var(--muted)" }}>
-            {totalTime && (
-              <span className="flex items-center gap-1">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                  <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.3" />
-                  <path d="M6.5 3.5V6.5L8.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                </svg>
-                {totalTime} min
-              </span>
-            )}
-            {data?.servings && (
-              <span>{data.servings} servings</span>
-            )}
+          {/* Stats always at bottom, with placeholders */}
+          <div className="flex items-center gap-3 text-sm mt-3" style={{ color: "var(--muted)" }}>
+            <span className="flex items-center gap-1">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.3" />
+                <path d="M6.5 3.5V6.5L8.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+              </svg>
+              {totalTime ? `${totalTime} min` : "—"}
+            </span>
+            <span>
+              {data?.servings ? `${data.servings} servings` : "—"}
+            </span>
           </div>
         </div>
       </div>
