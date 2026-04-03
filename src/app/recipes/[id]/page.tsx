@@ -148,7 +148,7 @@ export default async function RecipeDetailPage({
                     style={{ borderBottom: i < data.ingredients.length - 1 ? "1px solid var(--border)" : "none" }}
                   >
                     <span
-                      className="w-20 flex-shrink-0 text-right font-semibold tabular-nums"
+                      className="w-20 flex-shrink-0 text-left font-semibold tabular-nums"
                       style={{ color: "var(--accent)" }}
                     >
                       {[ing.amount, ing.unit].filter(Boolean).join(" ")}
