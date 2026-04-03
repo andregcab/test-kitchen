@@ -7,12 +7,20 @@ import { RecipeData, Ingredient, Instruction, emptyRecipeData } from "@/lib/type
 interface Props {
   recipeId?: string;
   initialData?: RecipeData;
+  initialTags?: string[];
   versionNumber?: number;
 }
 
-export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }: Props) {
+export default function RecipeForm({
+  recipeId,
+  initialData,
+  initialTags = [],
+  versionNumber = 1,
+}: Props) {
   const router = useRouter();
   const [data, setData] = useState<RecipeData>(initialData ?? emptyRecipeData());
+  const [tagInput, setTagInput] = useState(initialTags.join(", "));
+  const [tags, setTags] = useState<string[]>(initialTags);
   const [changeNote, setChangeNote] = useState("");
   const [saving, setSaving] = useState(false);
   const isEdit = Boolean(recipeId);
@@ -29,10 +37,12 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
   }
 
   function updateIngredient(i: number, field: keyof Ingredient, value: string) {
-    const updated = data.ingredients.map((ing, idx) =>
-      idx === i ? { ...ing, [field]: value } : ing
+    updateField(
+      "ingredients",
+      data.ingredients.map((ing, idx) =>
+        idx === i ? { ...ing, [field]: value } : ing
+      )
     );
-    updateField("ingredients", updated);
   }
 
   function removeIngredient(i: number) {
@@ -48,22 +58,31 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
   }
 
   function updateInstruction(i: number, value: string) {
-    const updated = data.instructions.map((inst, idx) =>
-      idx === i ? { ...inst, text: value } : inst
+    updateField(
+      "instructions",
+      data.instructions.map((inst, idx) =>
+        idx === i ? { ...inst, text: value } : inst
+      )
     );
-    updateField("instructions", updated);
   }
 
   function removeInstruction(i: number) {
-    const updated = data.instructions
-      .filter((_, idx) => idx !== i)
-      .map((inst, idx) => ({ ...inst, step: idx + 1 }));
-    updateField("instructions", updated);
+    updateField(
+      "instructions",
+      data.instructions
+        .filter((_, idx) => idx !== i)
+        .map((inst, idx) => ({ ...inst, step: idx + 1 }))
+    );
   }
 
-  function updateTags(raw: string) {
-    const tags = raw.split(",").map((t) => t.trim()).filter(Boolean);
-    updateField("tags", tags);
+  function commitTags(raw: string) {
+    const parsed = raw
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    setTags(parsed);
+    // Reformat display string
+    setTagInput(parsed.join(", "));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -71,13 +90,23 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
     if (!data.title.trim()) return;
     setSaving(true);
 
+    // Commit any uncommitted tag input
+    const finalTags = tagInput
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
     const url = isEdit ? `/api/recipes/${recipeId}` : "/api/recipes";
     const method = isEdit ? "PUT" : "POST";
 
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data, changeNote: changeNote || undefined }),
+      body: JSON.stringify({
+        data,
+        tags: finalTags,
+        changeNote: changeNote || undefined,
+      }),
     });
 
     if (res.ok) {
@@ -92,12 +121,13 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
   const inputClass =
     "w-full px-4 py-3 text-base rounded-xl border-2 outline-none focus:border-[var(--accent)] transition-colors bg-[var(--background)]";
   const inputStyle = { borderColor: "var(--border)" };
-  const labelClass = "block text-sm font-semibold mb-1.5";
+  const labelClass = "block text-sm font-semibold mb-2";
+  const sectionClass = "flex flex-col gap-2";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
       {/* Title */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Recipe Name *</label>
         <input
           type="text"
@@ -111,7 +141,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
       </div>
 
       {/* Description */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Description</label>
         <textarea
           value={data.description}
@@ -119,58 +149,61 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
           placeholder="A short description of this recipe…"
           rows={3}
           className={inputClass}
-          style={{ ...inputStyle, minHeight: 88, resize: "vertical" }}
+          style={{ ...inputStyle, resize: "vertical" }}
         />
       </div>
 
       {/* Times & Servings */}
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <label className={labelClass}>Prep (min)</label>
-          <input
-            type="number"
-            min={0}
-            value={data.prepTime ?? ""}
-            onChange={(e) =>
-              updateField("prepTime", e.target.value ? Number(e.target.value) : null)
-            }
-            placeholder="30"
-            className={inputClass}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Cook (min)</label>
-          <input
-            type="number"
-            min={0}
-            value={data.cookTime ?? ""}
-            onChange={(e) =>
-              updateField("cookTime", e.target.value ? Number(e.target.value) : null)
-            }
-            placeholder="45"
-            className={inputClass}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Servings</label>
-          <input
-            type="number"
-            min={1}
-            value={data.servings ?? ""}
-            onChange={(e) =>
-              updateField("servings", e.target.value ? Number(e.target.value) : null)
-            }
-            placeholder="4"
-            className={inputClass}
-            style={inputStyle}
-          />
+      <div className={sectionClass}>
+        <label className={labelClass}>Time &amp; Servings</label>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <p className="text-xs mb-1.5" style={{ color: "var(--muted)" }}>Prep (min)</p>
+            <input
+              type="number"
+              min={0}
+              value={data.prepTime ?? ""}
+              onChange={(e) =>
+                updateField("prepTime", e.target.value ? Number(e.target.value) : null)
+              }
+              placeholder="30"
+              className={inputClass}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <p className="text-xs mb-1.5" style={{ color: "var(--muted)" }}>Cook (min)</p>
+            <input
+              type="number"
+              min={0}
+              value={data.cookTime ?? ""}
+              onChange={(e) =>
+                updateField("cookTime", e.target.value ? Number(e.target.value) : null)
+              }
+              placeholder="45"
+              className={inputClass}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <p className="text-xs mb-1.5" style={{ color: "var(--muted)" }}>Servings</p>
+            <input
+              type="number"
+              min={1}
+              value={data.servings ?? ""}
+              onChange={(e) =>
+                updateField("servings", e.target.value ? Number(e.target.value) : null)
+              }
+              placeholder="4"
+              className={inputClass}
+              style={inputStyle}
+            />
+          </div>
         </div>
       </div>
 
       {/* Ingredients */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Ingredients</label>
         <div className="flex flex-col gap-2">
           {data.ingredients.map((ing, i) => (
@@ -201,7 +234,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
               <button
                 type="button"
                 onClick={() => removeIngredient(i)}
-                className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-xl text-xl"
+                className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-xl text-2xl leading-none"
                 style={{ color: "var(--muted)" }}
                 aria-label="Remove ingredient"
               >
@@ -212,7 +245,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
           <button
             type="button"
             onClick={addIngredient}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed font-medium text-sm transition-colors hover:border-[var(--accent)]"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed font-medium text-sm transition-colors hover:border-[var(--accent)] mt-1"
             style={{ borderColor: "var(--border)", color: "var(--muted)" }}
           >
             + Add Ingredient
@@ -221,7 +254,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
       </div>
 
       {/* Instructions */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Instructions</label>
         <div className="flex flex-col gap-2">
           {data.instructions.map((inst, i) => (
@@ -243,7 +276,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
               <button
                 type="button"
                 onClick={() => removeInstruction(i)}
-                className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-xl text-xl"
+                className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-xl text-2xl leading-none"
                 style={{ color: "var(--muted)" }}
                 aria-label="Remove step"
               >
@@ -254,7 +287,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
           <button
             type="button"
             onClick={addInstruction}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed font-medium text-sm transition-colors hover:border-[var(--accent)]"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed font-medium text-sm transition-colors hover:border-[var(--accent)] mt-1"
             style={{ borderColor: "var(--border)", color: "var(--muted)" }}
           >
             + Add Step
@@ -263,23 +296,37 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
       </div>
 
       {/* Tags */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Tags</label>
         <input
           type="text"
-          value={data.tags.join(", ")}
-          onChange={(e) => updateTags(e.target.value)}
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onBlur={(e) => commitTags(e.target.value)}
           placeholder="italian, pasta, weeknight"
           className={inputClass}
           style={inputStyle}
         />
-        <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-          Separate tags with commas
+        <p className="text-sm" style={{ color: "var(--muted)" }}>
+          Separate tags with commas — saved separately, won&apos;t create a new version
         </p>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-1">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 rounded-full text-sm font-medium"
+                style={{ background: "var(--border)" }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Notes */}
-      <div>
+      <div className={sectionClass}>
         <label className={labelClass}>Notes</label>
         <textarea
           value={data.notes}
@@ -294,15 +341,20 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
       {/* Change note (edit only) */}
       {isEdit && (
         <div
-          className="p-4 rounded-2xl"
+          className="p-5 rounded-2xl flex flex-col gap-3"
           style={{ background: "var(--card)", border: "1px solid var(--border)" }}
         >
-          <label className={labelClass}>
-            What did you change?{" "}
-            <span className="font-normal" style={{ color: "var(--muted)" }}>
-              (optional — helps you remember later)
-            </span>
-          </label>
+          <div>
+            <label className={labelClass}>
+              What did you change?{" "}
+              <span className="font-normal" style={{ color: "var(--muted)" }}>
+                (optional)
+              </span>
+            </label>
+            <p className="text-sm mb-2" style={{ color: "var(--muted)" }}>
+              Helps you remember why you made this change. Saved as Version {versionNumber}.
+            </p>
+          </div>
           <input
             type="text"
             value={changeNote}
@@ -311,18 +363,15 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
             className={inputClass}
             style={inputStyle}
           />
-          <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
-            This will be saved as Version {versionNumber}
-          </p>
         </div>
       )}
 
       {/* Submit */}
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 py-4 font-semibold rounded-xl border"
+          className="flex-1 flex items-center justify-center py-4 font-semibold rounded-xl border"
           style={{ borderColor: "var(--border)" }}
         >
           Cancel
@@ -330,7 +379,7 @@ export default function RecipeForm({ recipeId, initialData, versionNumber = 1 }:
         <button
           type="submit"
           disabled={saving || !data.title.trim()}
-          className="flex-1 py-4 text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity"
+          className="flex-1 flex items-center justify-center py-4 text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity"
           style={{ background: "var(--accent)" }}
         >
           {saving ? "Saving…" : isEdit ? "Save Changes" : "Add Recipe"}

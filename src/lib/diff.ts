@@ -56,18 +56,6 @@ export function diffRecipes(from: RecipeData, to: RecipeData): Change[] {
     }
   }
 
-  // Tags
-  const fromTags = new Set(from.tags);
-  const toTags = new Set(to.tags);
-  const addedTags = [...toTags].filter((t) => !fromTags.has(t));
-  const removedTags = [...fromTags].filter((t) => !toTags.has(t));
-  for (const tag of addedTags) {
-    changes.push({ field: "Tag", kind: "added", to: tag });
-  }
-  for (const tag of removedTags) {
-    changes.push({ field: "Tag", kind: "removed", from: tag });
-  }
-
   // Ingredients — match by name, detect adds/removes/changes
   const fromIngMap = new Map(from.ingredients.map((i) => [i.name.toLowerCase(), i]));
   const toIngMap = new Map(to.ingredients.map((i) => [i.name.toLowerCase(), i]));

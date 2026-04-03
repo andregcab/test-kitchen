@@ -7,7 +7,7 @@ export default function ManualNewRecipePage() {
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/recipes/new"
-          className="flex items-center justify-center w-10 h-10 rounded-full text-xl"
+          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
           style={{ background: "var(--border)" }}
           aria-label="Back"
         >

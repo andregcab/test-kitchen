@@ -32,7 +32,7 @@ export default async function RecipeDetailPage({
       <div className="flex items-center gap-3 mb-6">
         <Link
           href="/recipes"
-          className="flex items-center justify-center w-10 h-10 rounded-full text-xl"
+          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
           style={{ background: "var(--border)" }}
           aria-label="Back"
         >
@@ -41,7 +41,7 @@ export default async function RecipeDetailPage({
         <h1 className="text-2xl font-bold flex-1 leading-tight">{recipe.title}</h1>
         <Link
           href={`/recipes/${recipe.id}/edit`}
-          className="px-4 py-2 text-sm font-semibold rounded-xl border"
+          className="flex items-center justify-center px-4 h-11 text-sm font-semibold rounded-xl border"
           style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
         >
           Edit
@@ -222,9 +222,9 @@ export default async function RecipeDetailPage({
       </section>
 
       {/* Tags */}
-      {data.tags.length > 0 && (
+      {recipe.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-8">
-          {data.tags.map((tag) => (
+          {recipe.tags.map((tag) => (
             <span
               key={tag}
               className="px-3 py-1 rounded-full text-sm font-medium"

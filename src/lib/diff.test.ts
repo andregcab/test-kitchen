@@ -19,7 +19,6 @@ const base: RecipeData = {
     { step: 1, text: "Mix dry ingredients." },
     { step: 2, text: "Add wet ingredients and stir." },
   ],
-  tags: ["dessert", "chocolate"],
   notes: "",
 };
 
@@ -89,15 +88,6 @@ describe("diffRecipes", () => {
     const match = changes.find((c) => c.field === "Instruction" && c.kind === "changed");
     expect(match).toBeDefined();
     expect(match?.to).toContain("Sift");
-  });
-
-  it("detects added and removed tags", () => {
-    const updated = { ...base, tags: ["dessert", "birthday"] };
-    const changes = diffRecipes(base, updated);
-    const added = changes.find((c) => c.field === "Tag" && c.kind === "added");
-    const removed = changes.find((c) => c.field === "Tag" && c.kind === "removed");
-    expect(added?.to).toBe("birthday");
-    expect(removed?.from).toBe("chocolate");
   });
 
   it("detects a title change", () => {

@@ -24,8 +24,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { data, changeNote }: { data: RecipeData; changeNote?: string } =
-    await req.json();
+  const {
+    data,
+    tags,
+    changeNote,
+  }: { data: RecipeData; tags: string[]; changeNote?: string } = await req.json();
 
   const existing = await prisma.recipe.findUnique({
     where: { id },
@@ -51,9 +54,26 @@ export async function PUT(
     where: { id },
     data: {
       title: data.title,
+      tags: tags ?? [],
       currentVersionId: version.id,
     },
     include: { currentVersion: true },
+  });
+
+  return NextResponse.json(updated);
+}
+
+// PATCH — update tags only, no new version
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const { tags }: { tags: string[] } = await req.json();
+
+  const updated = await prisma.recipe.update({
+    where: { id },
+    data: { tags: tags ?? [] },
   });
 
   return NextResponse.json(updated);
@@ -64,7 +84,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  // currentVersionId has a unique constraint — clear it first
   await prisma.recipe.update({
     where: { id },
     data: { currentVersionId: null },

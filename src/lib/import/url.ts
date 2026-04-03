@@ -133,7 +133,7 @@ function extractJsonLd(html: string): Record<string, unknown> | null {
 }
 
 export type ImportResult =
-  | { ok: true; data: RecipeData }
+  | { ok: true; data: RecipeData; tags: string[] }
   | { ok: false; reason: "no_structured_data" | "fetch_error" | "invalid_url" };
 
 export async function importFromUrl(url: string): Promise<ImportResult> {
@@ -170,9 +170,8 @@ export async function importFromUrl(url: string): Promise<ImportResult> {
     cookTime: parseDuration(jsonLd.cookTime as string),
     ingredients,
     instructions: parseInstructions(jsonLd.recipeInstructions),
-    tags: parseTags(jsonLd),
     notes: "",
   };
 
-  return { ok: true, data };
+  return { ok: true, data, tags: parseTags(jsonLd) };
 }

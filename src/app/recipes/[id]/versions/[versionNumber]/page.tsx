@@ -5,6 +5,7 @@ import { RecipeData } from "@/lib/types";
 import { diffRecipes } from "@/lib/diff";
 import VersionDiff from "@/components/VersionDiff";
 import RestoreVersionButton from "@/components/RestoreVersionButton";
+import EditChangeNote from "@/components/EditChangeNote";
 
 export const dynamic = "force-dynamic";
 
@@ -40,13 +41,17 @@ export default async function VersionDetailPage({
   const changes = prevData ? diffRecipes(prevData, data) : [];
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
 
+  const allVersionNums = recipe.versions.map((v) => v.versionNumber);
+  const prevNum = allVersionNums.filter((n) => n < vNum).at(-1) ?? null;
+  const nextNum = allVersionNums.find((n) => n > vNum) ?? null;
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Link
           href={`/recipes/${id}/versions`}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-xl"
+          className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
           style={{ background: "var(--border)" }}
           aria-label="Back"
         >
@@ -75,15 +80,36 @@ export default async function VersionDetailPage({
         </div>
       </div>
 
-      {/* Change note */}
-      {version.changeNote && (
-        <div
-          className="p-4 rounded-2xl mb-6 italic"
-          style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--muted)" }}
-        >
-          &ldquo;{version.changeNote}&rdquo;
+      {/* Prev / Next navigation */}
+      {(prevNum !== null || nextNum !== null) && (
+        <div className="flex gap-2 mb-6">
+          {prevNum !== null ? (
+            <Link
+              href={`/recipes/${id}/versions/${prevNum}`}
+              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border"
+              style={{ borderColor: "var(--border)" }}
+            >
+              ‹ v{prevNum}
+            </Link>
+          ) : <div className="flex-1" />}
+          {nextNum !== null ? (
+            <Link
+              href={`/recipes/${id}/versions/${nextNum}`}
+              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border"
+              style={{ borderColor: "var(--border)" }}
+            >
+              v{nextNum} ›
+            </Link>
+          ) : <div className="flex-1" />}
         </div>
       )}
+
+      {/* Change note — editable */}
+      <EditChangeNote
+        recipeId={id}
+        versionNumber={vNum}
+        initial={version.changeNote}
+      />
 
       {/* Diff vs previous version */}
       {prevVersion && (

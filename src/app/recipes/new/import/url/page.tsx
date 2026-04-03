@@ -8,7 +8,7 @@ import { RecipeData } from "@/lib/types";
 type State =
   | { stage: "input" }
   | { stage: "loading" }
-  | { stage: "review"; data: RecipeData }
+  | { stage: "review"; data: RecipeData; tags: string[] }
   | { stage: "error"; reason: "no_structured_data" | "fetch_error" | "invalid_url" | "unknown" };
 
 const errorMessages = {
@@ -37,7 +37,7 @@ export default function UrlImportPage() {
     const json = await res.json();
 
     if (json.ok) {
-      setState({ stage: "review", data: json.data });
+      setState({ stage: "review", data: json.data, tags: json.tags ?? [] });
     } else {
       setState({
         stage: "error",
@@ -61,7 +61,7 @@ export default function UrlImportPage() {
         {backHref ? (
           <Link
             href={backHref}
-            className="flex items-center justify-center w-10 h-10 rounded-full text-xl"
+            className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
             style={{ background: "var(--border)" }}
             aria-label="Back"
           >
@@ -70,7 +70,7 @@ export default function UrlImportPage() {
         ) : (
           <button
             onClick={() => setState({ stage: "input" })}
-            className="flex items-center justify-center w-10 h-10 rounded-full text-xl"
+            className="flex items-center justify-center w-11 h-11 rounded-full text-lg leading-none flex-shrink-0"
             style={{ background: "var(--border)" }}
             aria-label="Back"
           >
@@ -162,7 +162,7 @@ export default function UrlImportPage() {
             </div>
           </div>
 
-          <RecipeForm initialData={state.data} />
+          <RecipeForm initialData={state.data} initialTags={state.tags} />
         </div>
       )}
     </div>

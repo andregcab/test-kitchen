@@ -28,7 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* iPad-friendly tap targets */
-button, a, input, select, textarea {
+/* iPad-friendly tap targets — inputs/selects only, not decorative elements */
+input, select, textarea {
   min-height: 44px;
 }

@@ -22,7 +22,6 @@ export interface RecipeData {
   cookTime: number | null;
   ingredients: Ingredient[];
   instructions: Instruction[];
-  tags: string[];
   notes: string;
 }
 
@@ -36,6 +35,5 @@ export const emptyRecipeData = (): RecipeData => ({
   cookTime: null,
   ingredients: [],
   instructions: [],
-  tags: [],
   notes: "",
 });

@@ -66,7 +66,7 @@ export default async function RecipesPage() {
                     <div className="flex gap-3 mt-2 text-sm" style={{ color: "var(--muted)" }}>
                       {data?.prepTime && <span>⏱ {data.prepTime} min prep</span>}
                       {data?.servings && <span>🍽 {data.servings} servings</span>}
-                      {data?.tags?.slice(0, 2).map((tag) => (
+                      {recipe.tags.slice(0, 2).map((tag: string) => (
                         <span
                           key={tag}
                           className="px-2 py-0.5 rounded-full text-xs"
