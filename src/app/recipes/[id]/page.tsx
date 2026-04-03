@@ -140,21 +140,21 @@ export default async function RecipeDetailPage({
           {data.ingredients.length > 0 && (
             <section>
               <h2 className="text-lg font-bold mb-3">Ingredients</h2>
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col">
                 {data.ingredients.map((ing, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-3 px-4 py-3 rounded-xl"
-                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                    className="flex gap-6 py-3"
+                    style={{ borderBottom: i < data.ingredients.length - 1 ? "1px solid var(--border)" : "none" }}
                   >
                     <span
-                      className="w-2 h-2 mt-2 rounded-full flex-shrink-0"
-                      style={{ background: "var(--accent)" }}
-                    />
+                      className="w-20 flex-shrink-0 text-right font-semibold tabular-nums"
+                      style={{ color: "var(--accent)" }}
+                    >
+                      {[ing.amount, ing.unit].filter(Boolean).join(" ")}
+                    </span>
                     <span>
-                      <span className="font-medium">
-                        {[ing.amount, ing.unit].filter(Boolean).join(" ")} {ing.name}
-                      </span>
+                      {ing.name}
                       {ing.notes && (
                         <span className="ml-1 text-sm" style={{ color: "var(--muted)" }}>
                           ({ing.notes})

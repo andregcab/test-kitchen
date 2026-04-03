@@ -26,7 +26,7 @@ export default async function EditRecipePage({
   const nextVersionNumber = (recipe.versions[0]?.versionNumber ?? 0) + 1;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
         <BackButton href={`/recipes/${id}`} />
         <h1 className="text-2xl font-bold">Edit Recipe</h1>

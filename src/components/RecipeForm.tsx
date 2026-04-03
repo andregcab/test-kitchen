@@ -22,6 +22,15 @@ export default function RecipeForm({
   const [tagInput, setTagInput] = useState(initialTags.join(", "));
   const [tags, setTags] = useState<string[]>(initialTags);
   const [changeNote, setChangeNote] = useState("");
+
+  const UNITS = ["tsp", "tbsp", "cup", "fl oz", "ml", "L", "oz", "lb", "g", "kg"];
+  const [customUnitRows, setCustomUnitRows] = useState<Set<number>>(
+    () => new Set(
+      (initialData?.ingredients ?? [])
+        .map((ing, i) => (!UNITS.includes(ing.unit) && ing.unit !== "" ? i : -1))
+        .filter((i) => i >= 0)
+    )
+  );
   const [saving, setSaving] = useState(false);
   const isEdit = Boolean(recipeId);
 
@@ -208,7 +217,7 @@ export default function RecipeForm({
         <div className="flex flex-col gap-2">
           {data.ingredients.map((ing, i) => (
             <div key={i} className="flex gap-2 items-start">
-              <div className="grid grid-cols-[80px_80px_1fr] gap-2 flex-1">
+              <div className="grid grid-cols-[80px_130px_1fr] gap-2 flex-1">
                 <input
                   value={ing.amount}
                   onChange={(e) => updateIngredient(i, "amount", e.target.value)}
@@ -216,13 +225,64 @@ export default function RecipeForm({
                   className={inputClass}
                   style={inputStyle}
                 />
-                <input
-                  value={ing.unit}
-                  onChange={(e) => updateIngredient(i, "unit", e.target.value)}
-                  placeholder="cups"
-                  className={inputClass}
-                  style={inputStyle}
-                />
+                {customUnitRows.has(i) ? (
+                  <div className="flex gap-1">
+                    <input
+                      value={ing.unit}
+                      onChange={(e) => updateIngredient(i, "unit", e.target.value)}
+                      placeholder="unit"
+                      className={inputClass}
+                      style={inputStyle}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomUnitRows((prev) => {
+                          const next = new Set(prev);
+                          next.delete(i);
+                          return next;
+                        });
+                        updateIngredient(i, "unit", "");
+                      }}
+                      className="flex-shrink-0 flex items-center justify-center w-8 h-11 rounded-xl text-xs font-medium"
+                      style={{ color: "var(--accent)", border: "1px solid var(--border)" }}
+                      title="Back to list"
+                    >
+                      ↩
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    value={ing.unit}
+                    onChange={(e) => {
+                      if (e.target.value === "__other__") {
+                        setCustomUnitRows((prev) => new Set([...prev, i]));
+                        updateIngredient(i, "unit", "");
+                      } else {
+                        updateIngredient(i, "unit", e.target.value);
+                      }
+                    }}
+                    className={inputClass}
+                    style={inputStyle}
+                  >
+                    <option value="">—</option>
+                    <optgroup label="Volume">
+                      <option value="tsp">tsp</option>
+                      <option value="tbsp">tbsp</option>
+                      <option value="cup">cup</option>
+                      <option value="fl oz">fl oz</option>
+                      <option value="ml">ml</option>
+                      <option value="L">L</option>
+                    </optgroup>
+                    <optgroup label="Weight">
+                      <option value="oz">oz</option>
+                      <option value="lb">lb</option>
+                      <option value="g">g</option>
+                      <option value="kg">kg</option>
+                    </optgroup>
+                    <option value="__other__">Other…</option>
+                  </select>
+                )}
                 <input
                   value={ing.name}
                   onChange={(e) => updateIngredient(i, "name", e.target.value)}
@@ -269,7 +329,7 @@ export default function RecipeForm({
                 value={inst.text}
                 onChange={(e) => updateInstruction(i, e.target.value)}
                 placeholder={`Step ${inst.step}…`}
-                rows={2}
+                rows={3}
                 className={`${inputClass} flex-1`}
                 style={{ ...inputStyle, resize: "vertical" }}
               />
