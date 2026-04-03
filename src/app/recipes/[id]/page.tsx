@@ -33,8 +33,8 @@ export default async function RecipeDetailPage({
       {/* ── HERO ── */}
       <div className="px-[150px] pt-6">
         <div
-          className="rounded-2xl px-5 pt-5 pb-7"
-          style={{ background: color.bg, border: `1px solid ${color.border}` }}
+          className="rounded-2xl px-5 pt-5 pb-7 flex flex-col"
+          style={{ background: color.bg, border: `1px solid ${color.border}`, minHeight: 480 }}
         >
           {/* Top bar */}
           <div className="flex items-center justify-between mb-5">
@@ -83,7 +83,7 @@ export default async function RecipeDetailPage({
           {/* Stats */}
           {(totalTime || data.prepTime || data.cookTime || data.servings) && (
             <div
-              className="flex items-center gap-4 mt-5 pt-5"
+              className="flex items-center gap-4 mt-auto pt-5"
               style={{ borderTop: `1px solid ${color.border}` }}
             >
               {/* Total — largest, most prominent */}
