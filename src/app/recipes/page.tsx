@@ -1,21 +1,23 @@
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import RecipeCard from "@/components/RecipeCard";
+import RecipesClient from "@/components/RecipesClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function RecipesPage() {
-  const recipes = await prisma.recipe.findMany({
-    orderBy: [{ isFavorite: "desc" }, { updatedAt: "desc" }],
-    include: { currentVersion: true },
-  });
-
-  const favorites = recipes.filter((r) => r.isFavorite);
-  const rest = recipes.filter((r) => !r.isFavorite);
+  const [recipes, menus] = await Promise.all([
+    prisma.recipe.findMany({
+      orderBy: [{ isFavorite: "desc" }, { updatedAt: "desc" }],
+      include: { currentVersion: true, menus: { select: { id: true } } },
+    }),
+    prisma.menu.findMany({
+      orderBy: { createdAt: "asc" },
+      include: { _count: { select: { recipes: true } } },
+    }),
+  ]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">My Recipes</h1>
@@ -41,51 +43,7 @@ export default async function RecipesPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-10">
-          {/* Favorites */}
-          {favorites.length > 0 && (
-            <section>
-              <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--muted)" }}>
-                ★ Favorites
-              </h2>
-              <div className="grid grid-cols-2 gap-3">
-                {favorites.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    id={recipe.id}
-                    title={recipe.title}
-                    tags={recipe.tags ?? []}
-                    isFavorite={recipe.isFavorite}
-                    currentVersion={recipe.currentVersion}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* All recipes */}
-          {rest.length > 0 && (
-            <section>
-              {favorites.length > 0 && (
-                <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--muted)" }}>
-                  All Recipes
-                </h2>
-              )}
-              <div className="grid grid-cols-2 gap-3">
-                {rest.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    id={recipe.id}
-                    title={recipe.title}
-                    tags={recipe.tags ?? []}
-                    isFavorite={recipe.isFavorite}
-                    currentVersion={recipe.currentVersion}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
+        <RecipesClient recipes={recipes} menus={menus} />
       )}
     </div>
   );

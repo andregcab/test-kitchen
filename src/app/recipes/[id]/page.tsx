@@ -5,6 +5,7 @@ import { RecipeData } from "@/lib/types";
 import { getTagColor } from "@/lib/tagColors";
 import DeleteRecipeButton from "@/components/DeleteRecipeButton";
 import BackButton from "@/components/BackButton";
+import MenuPicker from "@/components/MenuPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function RecipeDetailPage({
     include: {
       currentVersion: true,
       versions: { orderBy: { versionNumber: "desc" } },
+      menus: { select: { id: true } },
     },
   });
 
@@ -294,6 +296,12 @@ export default async function RecipeDetailPage({
             </a>
           </p>
         )}
+        <div className="flex items-center gap-3">
+          <MenuPicker
+            recipeId={recipe.id}
+            initialMenuIds={recipe.menus.map((m) => m.id)}
+          />
+        </div>
         <div className="pt-2 border-t" style={{ borderColor: "var(--border)" }}>
           <DeleteRecipeButton id={recipe.id} title={recipe.title} />
         </div>

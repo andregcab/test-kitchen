@@ -23,6 +23,14 @@ model Recipe {
   currentVersionId String?         @unique
   versions         RecipeVersion[]
   currentVersion   RecipeVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  menus            Menu[]
+}
+
+model Menu {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  recipes   Recipe[]
 }
 
 model RecipeVersion {
