@@ -30,8 +30,8 @@ export default async function RecipeDetailPage({
 
   return (
     <div>
-      {/* ── HERO — nearly edge-to-edge ── */}
-      <div className="px-3 pt-5 pb-0">
+      {/* ── HERO ── */}
+      <div className="px-[150px] pt-6">
         <div
           className="rounded-2xl px-5 pt-5 pb-7"
           style={{ background: color.bg, border: `1px solid ${color.border}` }}
@@ -75,7 +75,7 @@ export default async function RecipeDetailPage({
 
           {/* Description */}
           {data.description && (
-            <p className="mt-2 text-base leading-relaxed" style={{ color: "var(--muted)" }}>
+            <p className="mt-5 mb-2 text-base leading-relaxed" style={{ color: "var(--muted)" }}>
               {data.description}
             </p>
           )}
@@ -83,31 +83,50 @@ export default async function RecipeDetailPage({
           {/* Stats */}
           {(totalTime || data.prepTime || data.cookTime || data.servings) && (
             <div
-              className="flex gap-6 mt-5 pt-5"
+              className="flex items-center gap-4 mt-5 pt-5"
               style={{ borderTop: `1px solid ${color.border}` }}
             >
+              {/* Total — largest, most prominent */}
               {totalTime && (
-                <div>
-                  <div className="text-2xl font-bold">{totalTime}</div>
-                  <div className="text-xs" style={{ color: "var(--muted)" }}>min total</div>
+                <div className="flex-shrink-0">
+                  <div className="text-4xl font-bold leading-none">{totalTime}</div>
+                  <div className="text-sm mt-1 font-medium" style={{ color: "var(--foreground)", opacity: 0.6 }}>min total</div>
                 </div>
               )}
-              {data.prepTime && (
-                <div>
-                  <div className="text-2xl font-bold">{data.prepTime}</div>
-                  <div className="text-xs" style={{ color: "var(--muted)" }}>prep</div>
+
+              {/* Vertical divider */}
+              {totalTime && (data.prepTime || data.cookTime) && (
+                <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
+              )}
+
+              {/* Prep + Cook — grouped, smaller */}
+              {(data.prepTime || data.cookTime) && (
+                <div className="flex gap-4">
+                  {data.prepTime && (
+                    <div>
+                      <div className="text-xl font-semibold leading-none">{data.prepTime}</div>
+                      <div className="text-sm mt-1" style={{ color: "var(--foreground)", opacity: 0.6 }}>prep</div>
+                    </div>
+                  )}
+                  {data.cookTime && (
+                    <div>
+                      <div className="text-xl font-semibold leading-none">{data.cookTime}</div>
+                      <div className="text-sm mt-1" style={{ color: "var(--foreground)", opacity: 0.6 }}>cook</div>
+                    </div>
+                  )}
                 </div>
               )}
-              {data.cookTime && (
-                <div>
-                  <div className="text-2xl font-bold">{data.cookTime}</div>
-                  <div className="text-xs" style={{ color: "var(--muted)" }}>cook</div>
-                </div>
+
+              {/* Vertical divider before servings */}
+              {data.servings && (data.prepTime || data.cookTime || totalTime) && (
+                <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
               )}
+
+              {/* Servings — its own group */}
               {data.servings && (
                 <div>
-                  <div className="text-2xl font-bold">{data.servings}</div>
-                  <div className="text-xs" style={{ color: "var(--muted)" }}>servings</div>
+                  <div className="text-xl font-semibold leading-none">{data.servings}</div>
+                  <div className="text-sm mt-1" style={{ color: "var(--foreground)", opacity: 0.6 }}>servings</div>
                 </div>
               )}
             </div>
@@ -117,7 +136,7 @@ export default async function RecipeDetailPage({
 
       {/* ── RECIPE BODY — ingredients + instructions ── */}
       {(data.ingredients.length > 0 || data.instructions.length > 0) && (
-        <div className="max-w-2xl mx-auto px-4 mt-8 flex flex-col gap-8">
+        <div className="max-w-2xl mx-auto px-4 mt-28 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
             <section>
               <h2 className="text-lg font-bold mb-3">Ingredients</h2>
@@ -175,7 +194,7 @@ export default async function RecipeDetailPage({
 
       {/* ── NOTES — distinct from recipe body ── */}
       {data.notes && (
-        <div className="max-w-2xl mx-auto px-4 mt-10">
+        <div className="max-w-2xl mx-auto px-4 mt-8">
           <div
             className="rounded-2xl p-5"
             style={{ background: color.bg, border: `1px solid ${color.border}` }}
@@ -189,7 +208,7 @@ export default async function RecipeDetailPage({
       )}
 
       {/* ── VERSION HISTORY — its own zone ── */}
-      <div className="max-w-2xl mx-auto px-4 mt-10 mb-2">
+      <div className="max-w-2xl mx-auto px-4 mt-28 mb-2">
         <div
           className="rounded-2xl overflow-hidden"
           style={{ border: "1px solid var(--border)" }}
