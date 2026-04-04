@@ -101,16 +101,20 @@ export default function RecipeCard({
             {title}
           </h2>
           {/* Stats always at bottom, with placeholders */}
-          <div className="flex items-center gap-3 text-sm mt-3" style={{ color: "var(--muted)" }}>
+          <div className="flex items-center gap-5 text-sm mt-3" style={{ color: "var(--muted)" }}>
             <span className="flex items-center gap-1">
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
                 <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.3" />
                 <path d="M6.5 3.5V6.5L8.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
               </svg>
-              {totalTime ? `${totalTime} min` : "—"}
+              {totalTime ? `${totalTime} min` : "? min"}
             </span>
-            <span>
-              {data?.servings ? `${data.servings} servings` : "—"}
+            <span className="flex items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeWidth="1.3" />
+                <circle cx="10" cy="10" r="5" stroke="currentColor" strokeWidth="1" />
+              </svg>
+              {data?.servings ? `${data.servings} servings` : '? servings'}
             </span>
           </div>
         </div>

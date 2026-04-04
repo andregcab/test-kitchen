@@ -127,15 +127,17 @@ export default async function RecipeDetailPage({
                   /* keep full url */
                 }
                 return (
-                  <a
-                    href={data.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-2 text-sm underline"
-                    style={{ color: 'var(--muted)' }}
-                  >
-                    {label}
-                  </a>
+                  <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
+                    Source:{' '}
+                    <a
+                      href={data.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {label}
+                    </a>
+                  </p>
                 );
               }
               return (
@@ -143,7 +145,7 @@ export default async function RecipeDetailPage({
                   className="mt-2 text-sm"
                   style={{ color: 'var(--muted)' }}
                 >
-                  {data.source}
+                  Source: {data.source}
                 </p>
               );
             })()}
@@ -163,107 +165,81 @@ export default async function RecipeDetailPage({
             <MenuPicker recipeId={recipe.id} initialMenuIds={recipe.menus.map((m) => m.id)} />
           </div>
 
-          {/* Stats */}
-          {(totalTime ||
-            data.prepTime ||
-            data.cookTime ||
-            data.servings) && (
-            <div
-              className="flex items-center gap-4 mt-auto pt-5"
-              style={{ borderTop: `1px solid ${color.border}` }}
-            >
-              {/* Total — largest, most prominent */}
-              {totalTime && (
-                <div className="flex-shrink-0">
-                  <div className="text-4xl font-bold leading-none">
-                    {totalTime}
-                  </div>
-                  <div
-                    className="text-sm mt-1 font-medium"
-                    style={{
-                      color: 'var(--foreground)',
-                      opacity: 0.6,
-                    }}
-                  >
-                    min total
-                  </div>
-                </div>
-              )}
+          {/* Stats — always shown, placeholders when empty */}
+          <div
+            className="flex items-end gap-4 mt-auto pt-5"
+            style={{ borderTop: `1px solid ${color.border}` }}
+          >
+            {/* Total */}
+            {totalTime ? (
+              <div className="flex-shrink-0">
+                <div className="text-4xl font-bold leading-none">{totalTime}</div>
+                <div className="text-sm mt-1 font-medium" style={{ color: 'var(--foreground)', opacity: 0.6 }}>min total</div>
+              </div>
+            ) : (
+              <div
+                className="flex-shrink-0 flex flex-col items-center justify-center w-16 h-14 rounded-xl"
+                style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
+              >
+                <div className="text-xl font-bold leading-none">?</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>min</div>
+              </div>
+            )}
 
-              {/* Vertical divider */}
-              {totalTime && (data.prepTime || data.cookTime) && (
-                <div
-                  className="self-stretch w-px mx-1"
-                  style={{ background: color.border }}
-                />
-              )}
+            <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
 
-              {/* Prep + Cook — grouped, smaller */}
-              {(data.prepTime || data.cookTime) && (
-                <div className="flex gap-4">
-                  {data.prepTime && (
-                    <div>
-                      <div className="text-xl font-semibold leading-none">
-                        {data.prepTime}
-                      </div>
-                      <div
-                        className="text-sm mt-1"
-                        style={{
-                          color: 'var(--foreground)',
-                          opacity: 0.6,
-                        }}
-                      >
-                        prep
-                      </div>
-                    </div>
-                  )}
-                  {data.cookTime && (
-                    <div>
-                      <div className="text-xl font-semibold leading-none">
-                        {data.cookTime}
-                      </div>
-                      <div
-                        className="text-sm mt-1"
-                        style={{
-                          color: 'var(--foreground)',
-                          opacity: 0.6,
-                        }}
-                      >
-                        cook
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Vertical divider before servings */}
-              {data.servings &&
-                (data.prepTime || data.cookTime || totalTime) && (
-                  <div
-                    className="self-stretch w-px mx-1"
-                    style={{ background: color.border }}
-                  />
-                )}
-
-              {/* Servings — its own group */}
-              {data.servings && (
+            {/* Prep + Cook */}
+            <div className="flex gap-4">
+              {data.prepTime ? (
                 <div>
-                  <div className="text-xl font-semibold leading-none">
-                    {data.servings}
-                  </div>
-                  <div
-                    className="text-sm mt-1"
-                    style={{
-                      color: 'var(--foreground)',
-                      opacity: 0.6,
-                    }}
-                  >
-                    servings
-                  </div>
+                  <div className="text-xl font-semibold leading-none">{data.prepTime}</div>
+                  <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>prep</div>
+                </div>
+              ) : (
+                <div
+                  className="flex flex-col items-center justify-center w-12 h-14 rounded-xl"
+                  style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
+                >
+                  <div className="text-base font-bold leading-none">?</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>prep</div>
+                </div>
+              )}
+              {data.cookTime ? (
+                <div>
+                  <div className="text-xl font-semibold leading-none">{data.cookTime}</div>
+                  <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>cook</div>
+                </div>
+              ) : (
+                <div
+                  className="flex flex-col items-center justify-center w-12 h-14 rounded-xl"
+                  style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
+                >
+                  <div className="text-base font-bold leading-none">?</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>cook</div>
                 </div>
               )}
             </div>
-          )}
+
+            <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
+
+            {/* Servings */}
+            {data.servings ? (
+              <div className="flex flex-col items-center">
+                <div className="text-xl font-semibold leading-none">
+                  {data.servings}
+                </div>
+                <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>servings</div>
+              </div>
+            ) : (
+              <div
+                className="flex flex-col items-center justify-center w-14 h-14 rounded-xl"
+                style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
+              >
+                <div className="text-base font-bold leading-none">?</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>servings</div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
