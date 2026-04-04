@@ -15,7 +15,7 @@ export interface Instruction {
 export interface RecipeData {
   title: string;
   description: string;
-  sourceUrl: string | null;
+  source: string | null;
   sourceType: SourceType;
   servings: number | null;
   prepTime: number | null;
@@ -28,7 +28,7 @@ export interface RecipeData {
 export const emptyRecipeData = (): RecipeData => ({
   title: "",
   description: "",
-  sourceUrl: null,
+  source: null,
   sourceType: "manual",
   servings: null,
   prepTime: null,

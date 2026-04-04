@@ -214,6 +214,19 @@ export default function RecipeForm({
         />
       </div>
 
+      {/* Source */}
+      <div className={sectionClass}>
+        <label className={labelClass}>Source</label>
+        <input
+          type='text'
+          value={data.source ?? ''}
+          onChange={(e) => updateField('source', e.target.value || null)}
+          placeholder='e.g. Bon Appétit, https://…, The Joy of Cooking p.42'
+          className={inputClass}
+          style={inputStyle}
+        />
+      </div>
+
       {/* Times & Servings */}
       <div className={sectionClass}>
         <label className={labelClass}>Time &amp; Servings</label>

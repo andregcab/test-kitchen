@@ -91,6 +91,33 @@ export default async function RecipeDetailPage({
           {/* Title */}
           <h1 className="text-3xl font-bold leading-tight">{recipe.title}</h1>
 
+          {/* Source */}
+          {data.source && (
+            (() => {
+              const isUrl = /^https?:\/\//i.test(data.source);
+              if (isUrl) {
+                let label = data.source;
+                try { label = new URL(data.source).hostname.replace(/^www\./, ''); } catch { /* keep full url */ }
+                return (
+                  <a
+                    href={data.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2 text-sm underline"
+                    style={{ color: "var(--muted)" }}
+                  >
+                    {label}
+                  </a>
+                );
+              }
+              return (
+                <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                  {data.source}
+                </p>
+              );
+            })()
+          )}
+
           {/* Description */}
           {data.description && (
             <p className="mt-5 mb-2 text-base leading-relaxed" style={{ color: "var(--muted)" }}>
@@ -300,20 +327,6 @@ export default async function RecipeDetailPage({
 
       {/* ── FOOTER — source + delete ── */}
       <div className="px-[150px] mt-6 pb-10 flex flex-col gap-4">
-        {data.sourceUrl && (
-          <p className="text-sm" style={{ color: "var(--muted)" }}>
-            Source:{" "}
-            <a
-              href={data.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-              style={{ color: "var(--accent)" }}
-            >
-              {data.sourceUrl}
-            </a>
-          </p>
-        )}
         <div className="flex items-center gap-3">
           <MenuPicker
             recipeId={recipe.id}

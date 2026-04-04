@@ -5,7 +5,7 @@ import { RecipeData } from "./types";
 const base: RecipeData = {
   title: "Chocolate Cake",
   description: "Rich and moist",
-  sourceUrl: null,
+  source: null,
   sourceType: "manual",
   servings: 8,
   prepTime: 20,

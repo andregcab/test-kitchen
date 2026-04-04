@@ -39,7 +39,7 @@ export function diffRecipes(from: RecipeData, to: RecipeData): Change[] {
     { key: "servings", label: "Servings" },
     { key: "prepTime", label: "Prep time", format: (v) => fmtMinutes(v as number) },
     { key: "cookTime", label: "Cook time", format: (v) => fmtMinutes(v as number) },
-    { key: "sourceUrl", label: "Source URL" },
+    { key: 'source', label: 'Source' },
     { key: "notes", label: "Notes" },
   ];
 

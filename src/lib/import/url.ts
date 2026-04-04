@@ -228,7 +228,7 @@ export async function importFromUrl(
   const data: RecipeData = {
     title: String(jsonLd.name ?? 'Untitled Recipe'),
     description: String(jsonLd.description ?? ''),
-    sourceUrl: url,
+    source: url,
     sourceType: 'url',
     servings: parseServings(jsonLd.recipeYield),
     prepTime: parseDuration(jsonLd.prepTime as string),
