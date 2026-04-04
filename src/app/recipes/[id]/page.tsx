@@ -66,11 +66,11 @@ export default async function RecipeDetailPage({
       {/* ── HERO ── */}
       <div className="px-[150px] pt-6">
         <div
-          className="rounded-2xl px-5 pt-5 pb-7 flex flex-col"
+          className="rounded-2xl px-5 pt-5 pb-7 flex flex-col relative"
           style={{
             background: color.bg,
             border: `1px solid ${color.border}`,
-            minHeight: 480,
+            minHeight: 360,
           }}
         >
           {/* Top bar */}
@@ -157,6 +157,11 @@ export default async function RecipeDetailPage({
               {data.description}
             </p>
           )}
+
+          {/* Add to Menu — bottom right */}
+          <div className="absolute bottom-5 right-5">
+            <MenuPicker recipeId={recipe.id} initialMenuIds={recipe.menus.map((m) => m.id)} />
+          </div>
 
           {/* Stats */}
           {(totalTime ||
@@ -477,12 +482,6 @@ export default async function RecipeDetailPage({
 
       {/* ── FOOTER — source + delete ── */}
       <div className="px-[150px] mt-6 pb-10 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <MenuPicker
-            recipeId={recipe.id}
-            initialMenuIds={recipe.menus.map((m) => m.id)}
-          />
-        </div>
         <div
           className="pt-2 border-t"
           style={{ borderColor: 'var(--border)' }}
