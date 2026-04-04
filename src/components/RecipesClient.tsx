@@ -167,7 +167,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
               />
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-4 gap-3">
               {filteredMenus.map((menu) => {
                 const active = activeMenuId === menu.id;
                 return (
@@ -263,7 +263,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 <h3 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--muted)" }}>
                   ★ Favorites
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   {favorites.map((r) => (
                     <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
                   ))}
@@ -277,7 +277,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                     All Recipes
                   </h3>
                 )}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   {rest.map((r) => (
                     <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
                   ))}
@@ -286,7 +286,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {filteredRecipes.map((r) => (
               <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
             ))}

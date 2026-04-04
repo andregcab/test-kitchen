@@ -19,7 +19,7 @@ export default async function VersionHistoryPage({
   if (!recipe) notFound();
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="px-[150px] py-8">
       <div className="flex items-center gap-3 mb-8">
         <BackButton href={`/recipes/${id}`} />
         <div>

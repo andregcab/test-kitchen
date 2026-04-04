@@ -154,7 +154,7 @@ export default async function RecipeDetailPage({
 
       {/* ── RECIPE BODY — ingredients + instructions ── */}
       {(data.ingredients.length > 0 || data.instructions.length > 0) && (
-        <div className="max-w-3xl mx-auto px-4 mt-28 flex flex-col gap-8">
+        <div className="px-[150px] mt-28 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
             <section>
               <h2 className="text-lg font-bold mb-3">Ingredients</h2>
@@ -208,7 +208,7 @@ export default async function RecipeDetailPage({
 
       {/* ── NOTES — distinct from recipe body ── */}
       {data.notes && (
-        <div className="max-w-2xl mx-auto px-4 mt-8">
+        <div className="px-[150px] mt-8">
           <div
             className="rounded-2xl p-5"
             style={{ background: color.bg, border: `1px solid ${color.border}` }}
@@ -297,7 +297,7 @@ export default async function RecipeDetailPage({
       </div>
 
       {/* ── FOOTER — source + delete ── */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-10 flex flex-col gap-4">
+      <div className="px-[150px] mt-6 pb-10 flex flex-col gap-4">
         {data.sourceUrl && (
           <p className="text-sm" style={{ color: "var(--muted)" }}>
             Source:{" "}

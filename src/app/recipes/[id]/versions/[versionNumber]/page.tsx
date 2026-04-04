@@ -47,7 +47,7 @@ export default async function VersionDetailPage({
   const nextNum = allVersionNums.find((n) => n > vNum) ?? null;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="px-[150px] py-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <BackButton href={`/recipes/${id}/versions`} />
