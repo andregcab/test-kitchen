@@ -11,6 +11,7 @@ interface Props {
   tags: string[];
   isFavorite: boolean;
   currentVersion: { data: unknown } | null;
+  onFavoriteChange?: (isFavorite: boolean) => void;
 }
 
 function StarIcon({ filled }: { filled: boolean }) {
@@ -33,6 +34,7 @@ export default function RecipeCard({
   tags,
   isFavorite: initialFavorite,
   currentVersion,
+  onFavoriteChange,
 }: Props) {
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const color = getTagColor(tags);
@@ -42,7 +44,9 @@ export default function RecipeCard({
   async function toggleFavorite(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    setIsFavorite((prev) => !prev);
+    const next = !isFavorite;
+    setIsFavorite(next);
+    onFavoriteChange?.(next);
     await fetch(`/api/recipes/${id}/favorite`, { method: "PATCH" });
   }
 

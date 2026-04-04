@@ -40,8 +40,15 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const [showNewInput, setShowNewInput] = useState(false);
 
   // Recipe state
+  const [localRecipes, setLocalRecipes] = useState(recipes);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("updated");
+
+  function handleFavoriteChange(id: string, isFavorite: boolean) {
+    setLocalRecipes((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, isFavorite } : r))
+    );
+  }
 
   const filteredMenus = useMemo(() => {
     if (!cookbookSearch.trim()) return menus;
@@ -50,7 +57,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   }, [menus, cookbookSearch]);
 
   const filteredRecipes = useMemo(() => {
-    let list = recipes;
+    let list = localRecipes;
 
     if (activeMenuId) {
       list = list.filter((r) => r.menus.some((m) => m.id === activeMenuId));
@@ -77,7 +84,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
       if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
-  }, [recipes, activeMenuId, search, sort]);
+  }, [localRecipes, activeMenuId, search, sort]);
 
   async function createCookbook() {
     if (!newCookbookName.trim()) return;
@@ -265,7 +272,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   {favorites.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
+                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
                   ))}
                 </div>
               </div>
@@ -279,7 +286,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 )}
                 <div className="grid grid-cols-3 gap-3">
                   {rest.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
+                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
                   ))}
                 </div>
               </div>
