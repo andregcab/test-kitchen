@@ -33,3 +33,13 @@ body {
 input, select, textarea {
   min-height: 44px;
 }
+
+/* Custom select chevron — larger and with breathing room */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22' fill='none'%3E%3Cpath d='M5 8l6 6 6-6' stroke='%237a6a52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 44px !important;
+}

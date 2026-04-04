@@ -244,7 +244,7 @@ export default function RecipeForm({
                         });
                         updateIngredient(i, "unit", "");
                       }}
-                      className="flex-shrink-0 flex items-center justify-center w-8 h-11 rounded-xl text-xs font-medium"
+                      className="flex-shrink-0 flex items-center justify-center w-8 self-stretch rounded-xl text-xs font-medium"
                       style={{ color: "var(--accent)", border: "1px solid var(--border)" }}
                       title="Back to list"
                     >
