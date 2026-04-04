@@ -266,17 +266,19 @@ export default async function RecipeDetailPage({
                       v{v.versionNumber}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {v.changeNote ?? "No change note"}
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">
+                          {v.changeNote ?? "No change note"}
+                        </p>
                         {isCurrent && (
                           <span
-                            className="ml-2 text-xs px-2 py-0.5 rounded-full align-middle"
+                            className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full"
                             style={{ background: "var(--accent)", color: "white" }}
                           >
                             current
                           </span>
                         )}
-                      </p>
+                      </div>
                       <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
                         {new Date(v.createdAt).toLocaleDateString("en-US", {
                           month: "short",
