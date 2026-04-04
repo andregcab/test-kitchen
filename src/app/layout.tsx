@@ -1,19 +1,19 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Test Kitchen",
-  description: "Your personal recipe collection",
-  manifest: "/manifest.json",
+  title: 'Test Kitchen',
+  description: 'Your personal recipe collection',
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Test Kitchen",
+    statusBarStyle: 'default',
+    title: 'Test Kitchen',
   },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
 };

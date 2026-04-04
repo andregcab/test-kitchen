@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/db";
-import { notFound } from "next/navigation";
-import RecipeForm from "@/components/RecipeForm";
-import { RecipeData } from "@/lib/types";
-import BackButton from "@/components/BackButton";
+import { prisma } from '@/lib/db';
+import { notFound } from 'next/navigation';
+import RecipeForm from '@/components/RecipeForm';
+import { RecipeData } from '@/lib/types';
+import BackButton from '@/components/BackButton';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function EditRecipePage({
   params,
@@ -16,14 +16,15 @@ export default async function EditRecipePage({
     where: { id },
     include: {
       currentVersion: true,
-      versions: { orderBy: { versionNumber: "desc" }, take: 1 },
+      versions: { orderBy: { versionNumber: 'desc' }, take: 1 },
     },
   });
 
   if (!recipe || !recipe.currentVersion) notFound();
 
   const data = recipe.currentVersion.data as unknown as RecipeData;
-  const nextVersionNumber = (recipe.versions[0]?.versionNumber ?? 0) + 1;
+  const nextVersionNumber =
+    (recipe.versions[0]?.versionNumber ?? 0) + 1;
 
   return (
     <div className="px-[150px] py-8">

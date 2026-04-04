@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { RecipeData } from "@/lib/types";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { RecipeData } from '@/lib/types';
 
 export async function GET() {
   const recipes = await prisma.recipe.findMany({
-    orderBy: { updatedAt: "desc" },
+    orderBy: { updatedAt: 'desc' },
     include: { currentVersion: true },
   });
   return NextResponse.json(recipes);
@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
     data,
     tags,
     changeNote,
-  }: { data: RecipeData; tags: string[]; changeNote?: string } = await req.json();
+  }: { data: RecipeData; tags: string[]; changeNote?: string } =
+    await req.json();
 
   const recipe = await prisma.recipe.create({
     data: {
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
       versions: {
         create: {
           versionNumber: 1,
-          changeNote: changeNote ?? "Initial version",
+          changeNote: changeNote ?? 'Initial version',
           data: data as object,
         },
       },
