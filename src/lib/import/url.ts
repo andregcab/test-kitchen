@@ -88,6 +88,26 @@ function parseServings(raw: unknown): number | null {
   return match ? parseInt(match[0], 10) : null;
 }
 
+// Tags that appear in structured data but have no culinary meaning.
+// Add to this list whenever a new noise tag shows up during import.
+const TAG_BLOCKLIST = new Set([
+  "web",
+  "paywall",
+  "subscriber",
+  "subscriber only",
+  "subscriber only content",
+  "paywall subscriber only content",
+  "paywall subscriber only content, web",
+  "sponsored",
+  "advertisement",
+  "promoted",
+  "recipe",
+  "recipes",
+  "food",
+  "cooking",
+  "cook",
+]);
+
 function parseTags(recipe: Record<string, unknown>): string[] {
   const tags: string[] = [];
   const sources = [recipe.keywords, recipe.recipeCategory, recipe.recipeCuisine];
@@ -96,7 +116,7 @@ function parseTags(recipe: Record<string, unknown>): string[] {
     const items = Array.isArray(src) ? src : String(src).split(",");
     for (const item of items) {
       const tag = String(item).trim().toLowerCase();
-      if (tag && !tags.includes(tag)) tags.push(tag);
+      if (tag && !tags.includes(tag) && !TAG_BLOCKLIST.has(tag)) tags.push(tag);
     }
   }
   return tags;
