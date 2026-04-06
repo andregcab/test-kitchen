@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { List, Check } from "lucide-react";
 
 interface Menu {
   id: string;
@@ -10,9 +11,10 @@ interface Menu {
 interface Props {
   recipeId: string;
   initialMenuIds: string[];
+  borderColor?: string;
 }
 
-export default function MenuPicker({ recipeId, initialMenuIds }: Props) {
+export default function MenuPicker({ recipeId, initialMenuIds, borderColor = 'var(--border)' }: Props) {
   const [open, setOpen] = useState(false);
   const [menus, setMenus] = useState<Menu[]>([]);
   const [memberIds, setMemberIds] = useState<Set<string>>(new Set(initialMenuIds));
@@ -56,14 +58,16 @@ export default function MenuPicker({ recipeId, initialMenuIds }: Props) {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border transition-colors"
-        style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+        className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border cursor-pointer transition-all active:scale-[0.97]"
+        style={{
+          borderColor,
+          color: 'var(--foreground)',
+          background: 'rgba(255,255,255,0.65)',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.85)')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.65)')}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <rect x="1" y="3" width="14" height="2" rx="1" fill="currentColor" />
-          <rect x="1" y="7" width="14" height="2" rx="1" fill="currentColor" />
-          <rect x="1" y="11" width="9" height="2" rx="1" fill="currentColor" />
-        </svg>
+        <List size={15} />
         Add to Menu
         {memberIds.size > 0 && (
           <span
@@ -102,11 +106,7 @@ export default function MenuPicker({ recipeId, initialMenuIds }: Props) {
                       border: `2px solid ${active ? "var(--accent)" : "var(--border)"}`,
                     }}
                   >
-                    {active && (
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
+                    {active && <Check size={12} color="white" strokeWidth={2.5} />}
                   </span>
                   {menu.name}
                 </button>

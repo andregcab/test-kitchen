@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { UtensilsCrossed, Soup, Wheat, Salad, Utensils, Clock, Users } from "lucide-react";
+import { UtensilsCrossed, Soup, Wheat, Salad, Utensils, Clock, Users, Star } from "lucide-react";
 import { getTagColor } from "@/lib/tagColors";
 import { RecipeData } from "@/lib/types";
 
@@ -24,19 +24,6 @@ interface Props {
   onFavoriteChange?: (isFavorite: boolean) => void;
 }
 
-function StarIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path
-        d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.3L10 14.3l-4.8 2.5.9-5.3L2.2 7.7l5.4-.8L10 2z"
-        fill={filled ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export default function RecipeCard({
   id,
@@ -107,7 +94,7 @@ export default function RecipeCard({
             }}
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
-            <StarIcon filled={isFavorite} />
+            <Star size={16} strokeWidth={1.5} fill={isFavorite ? "currentColor" : "none"} />
           </button>
 
           {/* Tag pill */}

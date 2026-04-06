@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import RecipeCard from "@/components/RecipeCard";
-import BinderIcon from "@/components/BinderIcon";
+import { BookMarked, Plus } from "lucide-react";
 
 interface Menu {
   id: string;
@@ -134,9 +134,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
               border: `1px solid ${showNewInput ? "var(--accent)" : "var(--border)"}`,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <Plus size={14} strokeWidth={2} />
             New Cookbook
           </button>
         </div>
@@ -189,7 +187,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                       border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
                     }}
                   >
-                    <BinderIcon size={26} className="flex-shrink-0 mt-0.5" />
+                    <BookMarked size={22} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
                     <div className="min-w-0">
                       <p className="font-semibold text-base leading-snug truncate">{menu.name}</p>
                       <p

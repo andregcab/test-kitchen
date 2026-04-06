@@ -79,9 +79,8 @@ export default async function RecipeDetailPage({
             <BackButton href="/recipes" />
             <Link
               href={`/recipes/${recipe.id}/edit`}
-              className="flex items-center justify-center px-5 h-11 text-sm font-semibold rounded-xl"
+              className="flex items-center justify-center px-5 h-11 text-sm font-semibold rounded-xl transition-all active:scale-[0.97] bg-white/65 hover:bg-white/85"
               style={{
-                background: 'rgba(255,255,255,0.65)',
                 color: 'var(--foreground)',
                 border: `1px solid ${color.border}`,
               }}
@@ -163,7 +162,7 @@ export default async function RecipeDetailPage({
 
           {/* Add to Menu — bottom right */}
           <div className="absolute bottom-5 right-5">
-            <MenuPicker recipeId={recipe.id} initialMenuIds={recipe.menus.map((m) => m.id)} />
+            <MenuPicker recipeId={recipe.id} initialMenuIds={recipe.menus.map((m) => m.id)} borderColor={color.border} />
           </div>
 
           {/* Stats — always shown, placeholders when empty */}
