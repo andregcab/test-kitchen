@@ -106,12 +106,16 @@ export default function UrlImportPage() {
           <button
             onClick={handleFetch}
             disabled={!url.trim() || state.stage === 'loading'}
-            className="w-full py-4 text-lg text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity"
+            className="w-full py-4 text-lg text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity flex items-center justify-center gap-3"
             style={{ background: 'var(--accent)' }}
           >
-            {state.stage === 'loading'
-              ? 'Fetching recipe…'
-              : 'Get Recipe'}
+            {state.stage === 'loading' && (
+              <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="white" strokeOpacity="0.3" strokeWidth="3" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            )}
+            {state.stage === 'loading' ? 'Fetching recipe…' : 'Get Recipe'}
           </button>
 
           <p

@@ -2,8 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { UtensilsCrossed, Soup, Wheat, Salad, Utensils, Clock, Users } from "lucide-react";
 import { getTagColor } from "@/lib/tagColors";
 import { RecipeData } from "@/lib/types";
+
+const PLACEHOLDER_ICONS = [UtensilsCrossed, Soup, Wheat, Salad];
+
+function placeholderIcon(id: string) {
+  const index = id.charCodeAt(0) % PLACEHOLDER_ICONS.length;
+  const Icon = PLACEHOLDER_ICONS[index];
+  return <Icon size={36} strokeWidth={1.25} />;
+}
 
 interface Props {
   id: string;
@@ -63,6 +72,13 @@ export default function RecipeCard({
           className="relative h-48 flex items-end p-3"
           style={{ background: color.bg }}
         >
+          {/* Placeholder icon when no photo */}
+          {(!images || !images[0]) && (
+            <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.25 }}>
+              {placeholderIcon(id)}
+            </div>
+          )}
+
           {/* Photo if available */}
           {images && images[0] && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -124,20 +140,14 @@ export default function RecipeCard({
             {title}
           </h2>
           {/* Stats always at bottom, with placeholders */}
-          <div className="flex items-center gap-5 text-sm mt-3" style={{ color: "var(--muted)" }}>
-            <span className="flex items-center gap-1">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.3" />
-                <path d="M6.5 3.5V6.5L8.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-              </svg>
-              {totalTime ? `${totalTime} min` : "? min"}
+          <div className="flex items-center gap-5 text-sm mt-3">
+            <span className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--foreground)', opacity: 0.75 }}><Clock size={13} strokeWidth={1.5} /></span>
+              <span style={{ color: 'var(--foreground)', }}>{totalTime ? `${totalTime} min` : "? min"}</span>
             </span>
-            <span className="flex items-center gap-1">
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeWidth="1.3" />
-                <circle cx="10" cy="10" r="5" stroke="currentColor" strokeWidth="1" />
-              </svg>
-              {data?.servings ? `${data.servings} servings` : '? servings'}
+            <span className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--foreground)', opacity: 0.75 }}><Users size={13} strokeWidth={1.5} /></span>
+              <span style={{ color: 'var(--foreground)', }}>{data?.servings ? `${data.servings} servings` : '? servings'}</span>
             </span>
           </div>
         </div>
