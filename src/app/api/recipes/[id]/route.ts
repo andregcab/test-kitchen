@@ -27,8 +27,9 @@ export async function PUT(
   const {
     data,
     tags,
+    images,
     changeNote,
-  }: { data: RecipeData; tags: string[]; changeNote?: string } = await req.json();
+  }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string } = await req.json();
 
   const existing = await prisma.recipe.findUnique({
     where: { id },
@@ -55,6 +56,7 @@ export async function PUT(
     data: {
       title: data.title,
       tags: tags ?? [],
+      images: images ?? [],
       currentVersionId: version.id,
     },
     include: { currentVersion: true },
@@ -63,17 +65,20 @@ export async function PUT(
   return NextResponse.json(updated);
 }
 
-// PATCH — update tags only, no new version
+// PATCH — update tags and/or images, no new version
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { tags }: { tags: string[] } = await req.json();
+  const body: { tags?: string[]; images?: string[] } = await req.json();
 
   const updated = await prisma.recipe.update({
     where: { id },
-    data: { tags: tags ?? [] },
+    data: {
+      ...(body.tags !== undefined && { tags: body.tags }),
+      ...(body.images !== undefined && { images: body.images }),
+    },
   });
 
   return NextResponse.json(updated);

@@ -192,8 +192,61 @@ function extractJsonLd(html: string): Record<string, unknown> | null {
   return null;
 }
 
+const MAX_IMAGES = 3;
+
+async function downloadImage(url: string, baseUrl: string): Promise<string | null> {
+  try {
+    const absolute = url.startsWith('http') ? url : new URL(url, baseUrl).href;
+    const res = await fetch(absolute, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return null;
+    const contentType = res.headers.get('content-type') ?? '';
+    if (!contentType.startsWith('image/')) return null;
+    const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+    const { randomUUID } = await import('crypto');
+    const { writeFile } = await import('fs/promises');
+    const path = await import('path');
+    const filename = `${randomUUID()}.${ext}`;
+    const dest = path.join(process.cwd(), 'public', 'uploads', filename);
+    const buffer = Buffer.from(await res.arrayBuffer());
+    await writeFile(dest, buffer);
+    return `/uploads/${filename}`;
+  } catch {
+    return null;
+  }
+}
+
+async function extractImages(html: string, jsonLd: Record<string, unknown>, pageUrl: string): Promise<string[]> {
+  const candidates: string[] = [];
+
+  // 1. JSON-LD image field
+  const ldImage = jsonLd.image;
+  if (typeof ldImage === 'string') {
+    candidates.push(ldImage);
+  } else if (Array.isArray(ldImage)) {
+    for (const img of ldImage) {
+      if (typeof img === 'string') candidates.push(img);
+      else if (img && typeof img === 'object' && typeof (img as Record<string, unknown>).url === 'string')
+        candidates.push((img as Record<string, unknown>).url as string);
+    }
+  } else if (ldImage && typeof ldImage === 'object' && typeof (ldImage as Record<string, unknown>).url === 'string') {
+    candidates.push((ldImage as Record<string, unknown>).url as string);
+  }
+
+  // 2. og:image meta tags
+  const $ = cheerio.load(html);
+  $('meta[property="og:image"], meta[name="twitter:image"]').each((_, el) => {
+    const content = $(el).attr('content');
+    if (content) candidates.push(content);
+  });
+
+  // Deduplicate and cap
+  const unique = [...new Set(candidates)].slice(0, MAX_IMAGES);
+  const downloaded = await Promise.all(unique.map((u) => downloadImage(u, pageUrl)));
+  return downloaded.filter((u): u is string => u !== null);
+}
+
 export type ImportResult =
-  | { ok: true; data: RecipeData; tags: string[] }
+  | { ok: true; data: RecipeData; tags: string[]; images: string[] }
   | {
       ok: false;
       reason: 'no_structured_data' | 'fetch_error' | 'invalid_url';
@@ -238,5 +291,6 @@ export async function importFromUrl(
     notes: '',
   };
 
-  return { ok: true, data, tags: parseTags(jsonLd) };
+  const images = await extractImages(html, jsonLd, url);
+  return { ok: true, data, tags: parseTags(jsonLd), images };
 }

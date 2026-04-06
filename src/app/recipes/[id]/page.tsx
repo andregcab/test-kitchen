@@ -6,6 +6,7 @@ import { getTagColor } from '@/lib/tagColors';
 import DeleteRecipeButton from '@/components/DeleteRecipeButton';
 import BackButton from '@/components/BackButton';
 import MenuPicker from '@/components/MenuPicker';
+import ImageCarousel from '@/components/ImageCarousel';
 
 export const dynamic = 'force-dynamic';
 
@@ -242,6 +243,13 @@ export default async function RecipeDetailPage({
           </div>
         </div>
       </div>
+
+      {/* ── IMAGE CAROUSEL ── */}
+      {recipe.images.length > 0 && (
+        <div className="px-[150px] mt-6">
+          <ImageCarousel height={560} images={recipe.images} />
+        </div>
+      )}
 
       {/* ── RECIPE BODY — ingredients + instructions ── */}
       {(data.ingredients.length > 0 ||

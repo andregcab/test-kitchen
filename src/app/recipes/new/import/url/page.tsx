@@ -9,7 +9,7 @@ import { RecipeData } from '@/lib/types';
 type State =
   | { stage: 'input' }
   | { stage: 'loading' }
-  | { stage: 'review'; data: RecipeData; tags: string[] }
+  | { stage: 'review'; data: RecipeData; tags: string[]; images: string[] }
   | {
       stage: 'error';
       reason:
@@ -51,6 +51,7 @@ export default function UrlImportPage() {
         stage: 'review',
         data: json.data,
         tags: json.tags ?? [],
+        images: json.images ?? [],
       });
     } else {
       setState({
@@ -197,6 +198,7 @@ export default function UrlImportPage() {
           <RecipeForm
             initialData={state.data}
             initialTags={state.tags}
+            initialImages={state.images}
           />
         </div>
       )}

@@ -2,17 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  RecipeData,
-  Ingredient,
-  Instruction,
-  emptyRecipeData,
-} from '@/lib/types';
+import { RecipeData, Ingredient, emptyRecipeData } from '@/lib/types';
+
+const MAX_IMAGES = 3;
 
 interface Props {
   recipeId?: string;
   initialData?: RecipeData;
   initialTags?: string[];
+  initialImages?: string[];
   versionNumber?: number;
 }
 
@@ -20,6 +18,7 @@ export default function RecipeForm({
   recipeId,
   initialData,
   initialTags = [],
+  initialImages = [],
   versionNumber = 1,
 }: Props) {
   const router = useRouter();
@@ -52,6 +51,8 @@ export default function RecipeForm({
           .filter((i) => i >= 0),
       ),
   );
+  const [images, setImages] = useState<string[]>(initialImages);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const isEdit = Boolean(recipeId);
 
@@ -127,6 +128,36 @@ export default function RecipeForm({
     setTagInput(parsed.join(', '));
   }
 
+  async function handleImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    const slots = MAX_IMAGES - images.length;
+    const toUpload = files.slice(0, slots);
+    setUploadingImage(true);
+    const uploaded: string[] = [];
+    for (const file of toUpload) {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: fd,
+      });
+      if (res.ok) {
+        const { url } = await res.json();
+        uploaded.push(url);
+      }
+    }
+    setImages((prev) => [...prev, ...uploaded]);
+    setUploadingImage(false);
+    e.target.value = '';
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!data.title.trim()) return;
@@ -146,7 +177,7 @@ export default function RecipeForm({
       const res = await fetch(`/api/recipes/${recipeId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tags: finalTags }),
+        body: JSON.stringify({ tags: finalTags, images }),
       });
       if (res.ok) {
         router.push(`/recipes/${recipeId}`);
@@ -166,6 +197,7 @@ export default function RecipeForm({
       body: JSON.stringify({
         data,
         tags: finalTags,
+        images,
         changeNote: changeNote || undefined,
       }),
     });
@@ -218,13 +250,96 @@ export default function RecipeForm({
       <div className={sectionClass}>
         <label className={labelClass}>Source</label>
         <input
-          type='text'
+          type="text"
           value={data.source ?? ''}
-          onChange={(e) => updateField('source', e.target.value || null)}
-          placeholder='e.g. Bon Appétit, https://…, The Joy of Cooking p.42'
+          onChange={(e) =>
+            updateField('source', e.target.value || null)
+          }
+          placeholder="e.g. Bon Appétit, https://…, The Joy of Cooking p.42"
           className={inputClass}
           style={inputStyle}
         />
+      </div>
+
+      {/* Photos */}
+      <div className={sectionClass}>
+        <label className={labelClass}>Photos</label>
+        <div className="flex flex-wrap gap-3">
+          {images.map((src, i) => (
+            <div
+              key={src}
+              className="relative rounded-xl overflow-hidden flex-shrink-0"
+              style={{ width: 120, height: 120 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt=""
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(i)}
+                className="absolute top-1.5 right-1.5 flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold"
+                style={{ background: 'rgba(0,0,0,0.55)' }}
+                aria-label="Remove photo"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          {images.length < MAX_IMAGES && (
+            <label
+              className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed cursor-pointer transition-colors hover:border-[var(--accent)] flex-shrink-0"
+              style={{
+                width: 120,
+                height: 120,
+                borderColor: 'var(--border)',
+                color: 'var(--muted)',
+              }}
+            >
+              {uploadingImage ? (
+                <span className="text-xs">Uploading…</span>
+              ) : (
+                <>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 5v14M5 12h14"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="text-xs font-medium">
+                    Add Photo
+                  </span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                onChange={handleImageUpload}
+                disabled={uploadingImage}
+              />
+            </label>
+          )}
+        </div>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
+          Up to {MAX_IMAGES} photos. Tap to remove.
+        </p>
       </div>
 
       {/* Times & Servings */}

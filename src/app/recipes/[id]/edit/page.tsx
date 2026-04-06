@@ -17,6 +17,7 @@ export default async function EditRecipePage({
     include: {
       currentVersion: true,
       versions: { orderBy: { versionNumber: 'desc' }, take: 1 },
+      menus: { select: { id: true } },
     },
   });
 
@@ -37,6 +38,7 @@ export default async function EditRecipePage({
         recipeId={id}
         initialData={data}
         initialTags={recipe.tags}
+        initialImages={recipe.images}
         versionNumber={nextVersionNumber}
       />
     </div>

@@ -18,6 +18,7 @@ model Recipe {
   title            String
   tags             String[]
   isFavorite       Boolean         @default(false)
+  images           String[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   currentVersionId String?         @unique

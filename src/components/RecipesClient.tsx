@@ -16,6 +16,7 @@ interface Recipe {
   title: string;
   tags: string[];
   isFavorite: boolean;
+  images: string[];
   updatedAt: Date | string;
   currentVersion: { data: unknown } | null;
   menus: { id: string }[];
@@ -272,7 +273,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   {favorites.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
+                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images}currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
                   ))}
                 </div>
               </div>
@@ -286,7 +287,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 )}
                 <div className="grid grid-cols-3 gap-3">
                   {rest.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
+                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images}currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} />
                   ))}
                 </div>
               </div>
@@ -295,7 +296,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
         ) : (
           <div className="grid grid-cols-3 gap-3">
             {filteredRecipes.map((r) => (
-              <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} currentVersion={r.currentVersion} />
+              <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images} currentVersion={r.currentVersion} />
             ))}
           </div>
         )}

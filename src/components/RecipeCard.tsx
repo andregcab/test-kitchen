@@ -10,6 +10,7 @@ interface Props {
   title: string;
   tags: string[];
   isFavorite: boolean;
+  images?: string[];
   currentVersion: { data: unknown } | null;
   onFavoriteChange?: (isFavorite: boolean) => void;
 }
@@ -33,6 +34,7 @@ export default function RecipeCard({
   title,
   tags,
   isFavorite: initialFavorite,
+  images,
   currentVersion,
   onFavoriteChange,
 }: Props) {
@@ -58,13 +60,31 @@ export default function RecipeCard({
       >
         {/* Color / photo area */}
         <div
-          className="relative h-32 flex items-end p-3"
+          className="relative h-48 flex items-end p-3"
           style={{ background: color.bg }}
         >
+          {/* Photo if available */}
+          {images && images[0] && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={images[0]}
+              alt=""
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )}
+
+          {/* Overlay so tag + star stay readable over photos */}
+          {images && images[0] && (
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }}
+            />
+          )}
+
           {/* Favorite button */}
           <button
             onClick={toggleFavorite}
-            className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+            className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10"
             style={{
               background: isFavorite ? "var(--accent)" : "rgba(255,255,255,0.75)",
               color: isFavorite ? "white" : "var(--muted)",
@@ -77,8 +97,11 @@ export default function RecipeCard({
           {/* Tag pill */}
           {tags[0] && (
             <span
-              className="text-xs font-semibold px-2.5 py-1 rounded-full"
-              style={{ background: "rgba(255,255,255,0.75)", color: "var(--foreground)" }}
+              className="relative z-10 text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={{
+                background: "rgba(255,255,255,0.75)",
+                color: "var(--foreground)",
+              }}
             >
               {tags[0]}
             </span>

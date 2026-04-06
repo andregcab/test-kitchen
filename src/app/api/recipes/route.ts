@@ -14,14 +14,16 @@ export async function POST(req: NextRequest) {
   const {
     data,
     tags,
+    images,
     changeNote,
-  }: { data: RecipeData; tags: string[]; changeNote?: string } =
+  }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string } =
     await req.json();
 
   const recipe = await prisma.recipe.create({
     data: {
       title: data.title,
       tags: tags ?? [],
+      images: images ?? [],
       versions: {
         create: {
           versionNumber: 1,
