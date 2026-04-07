@@ -227,7 +227,7 @@ export default async function RecipeDetailPage({
         data.instructions.length > 0) && (
         <div className="px-[150px] mt-28 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
-            <IngredientsSection ingredients={data.ingredients} />
+            <IngredientsSection ingredients={data.ingredients} servings={data.servings} />
           )}
 
           {data.instructions.length > 0 && (
