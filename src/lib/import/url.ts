@@ -59,22 +59,55 @@ const fractionMap: Record<string, string> = {
   '⅞': '7/8',
 };
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
+}
+
+function cleanString(s: string): string {
+  return decodeHtmlEntities(
+    Object.entries(fractionMap)
+      .reduce((acc, [frac, rep]) => acc.replace(frac, rep), s)
+  ).replace(/\s+/g, ' ').trim();
+}
+
 function normalizeText(s: string): string {
-  return Object.entries(fractionMap)
-    .reduce((acc, [frac, rep]) => acc.replace(frac, rep), s)
-    .trim();
+  return cleanString(s);
+}
+
+const UNIT_NORMALIZE: Record<string, string> = {
+  tablespoon: 'tbsp', tablespoons: 'tbsp', tbs: 'tbsp',
+  teaspoon: 'tsp', teaspoons: 'tsp',
+  cup: 'cup', cups: 'cup',
+  'fluid ounce': 'fl oz', 'fluid ounces': 'fl oz',
+  ounce: 'oz', ounces: 'oz',
+  pound: 'lb', pounds: 'lb',
+  gram: 'g', grams: 'g',
+  kilogram: 'kg', kilograms: 'kg',
+  milliliter: 'ml', milliliters: 'ml', millilitre: 'ml', millilitres: 'ml',
+  liter: 'L', liters: 'L', litre: 'L', litres: 'L',
+};
+
+function normalizeUnit(unit: string): string {
+  return UNIT_NORMALIZE[unit.toLowerCase()] ?? unit;
 }
 
 function parseIngredientString(raw: string): Ingredient {
   const s = normalizeText(raw);
-  // Match leading number/fraction
-  const numMatch = s.match(/^((?:\d+\s+)?(?:\d+\/\d+|\d*\.?\d+))\s*/);
+  // Match leading number/fraction/range (e.g. 2, 1/2, 1.5, 2-3, 1 1/2)
+  const numMatch = s.match(/^((?:\d+\s+)?(?:\d+\/\d+|\d+\.\d+|\d+-\d+|\d+))\s*/);
   const amount = numMatch ? numMatch[1].trim() : '';
   const rest = numMatch ? s.slice(numMatch[0].length) : s;
 
   // Match unit
   const unitMatch = rest.match(unitPattern);
-  const unit = unitMatch ? unitMatch[0].trim() : '';
+  const unit = unitMatch ? normalizeUnit(unitMatch[0].trim()) : '';
   const afterUnit = unitMatch
     ? rest.slice(unitMatch[0].length).trim()
     : rest;
@@ -111,7 +144,7 @@ function parseInstructions(raw: unknown): Instruction[] {
   }
 
   return steps
-    .map((text, i) => ({ step: i + 1, text: text.trim() }))
+    .map((text, i) => ({ step: i + 1, text: cleanString(text) }))
     .filter((s) => s.text.length > 0);
 }
 
@@ -279,8 +312,8 @@ export async function importFromUrl(
     : [];
 
   const data: RecipeData = {
-    title: String(jsonLd.name ?? 'Untitled Recipe'),
-    description: String(jsonLd.description ?? ''),
+    title: cleanString(String(jsonLd.name ?? 'Untitled Recipe')),
+    description: cleanString(String(jsonLd.description ?? '')),
     source: url,
     sourceType: 'url',
     servings: parseServings(jsonLd.recipeYield),
