@@ -1,11 +1,11 @@
-// Muted warm washes — subtle enough to coexist, distinct enough to differentiate
+// Deep spice market — rich reds, burnt oranges, embers
 const PALETTE = [
-  { bg: "#fdefd4", border: "#e8d0a0" }, // honey
-  { bg: "#fde0d0", border: "#e0bba8" }, // peach
-  { bg: "#dde8d6", border: "#b8ceaf" }, // sage
-  { bg: "#e8ddd0", border: "#ccc0b0" }, // linen
-  { bg: "#e0d8e8", border: "#c4b8d4" }, // lavender
-  { bg: "#d8e4e8", border: "#b0c8d0" }, // slate
+  { bg: "#fdedd0", border: "#dca050" }, // turmeric
+  { bg: "#fddfc0", border: "#d07838" }, // burnt orange
+  { bg: "#fcd4cc", border: "#cc5840" }, // chili
+  { bg: "#fad0c8", border: "#c04838" }, // deep red
+  { bg: "#fde8c8", border: "#c88830" }, // amber
+  { bg: "#eeddd0", border: "#b08858" }, // cinnamon
 ];
 
 function hashString(s: string): number {
