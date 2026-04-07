@@ -98,12 +98,54 @@ function normalizeUnit(unit: string): string {
   return UNIT_NORMALIZE[unit.toLowerCase()] ?? unit;
 }
 
+// Imperial → metric conversion factors (volume stays volume, weight stays weight)
+const METRIC_CONVERSIONS: Record<string, { factor: number; unit: string }> = {
+  tsp:   { factor: 4.93,  unit: 'ml' },
+  tbsp:  { factor: 14.79, unit: 'ml' },
+  cup:   { factor: 240,   unit: 'ml' },
+  'fl oz': { factor: 29.57, unit: 'ml' },
+  oz:    { factor: 28.35, unit: 'g' },
+  lb:    { factor: 453.59, unit: 'g' },
+};
+
+function toMetric(amount: string, unit: string): { metricAmount: string; metricUnit: string } | null {
+  const conv = METRIC_CONVERSIONS[unit.toLowerCase()];
+  if (!conv) return null;
+  // Handle ranges like "2-3"
+  if (amount.includes('-')) {
+    const [lo, hi] = amount.split('-').map((n) => parseFloat(n));
+    if (isNaN(lo) || isNaN(hi)) return null;
+    const loM = Math.round(lo * conv.factor);
+    const hiM = Math.round(hi * conv.factor);
+    return { metricAmount: `${loM}-${hiM}`, metricUnit: conv.unit };
+  }
+  // Handle fractions like "1/2"
+  let val: number;
+  if (amount.includes('/')) {
+    const [n, d] = amount.split('/').map(Number);
+    val = n / d;
+  } else {
+    val = parseFloat(amount);
+  }
+  if (isNaN(val)) return null;
+  const converted = Math.round(val * conv.factor);
+  return { metricAmount: String(converted), metricUnit: conv.unit };
+}
+
+// Match parenthetical metric values: "(240ml)", "(225 g)", "(about 450g)"
+const PARENTHETICAL_METRIC = /\(\s*(?:about\s+)?(\d+(?:\.\d+)?)\s*(ml|g|kg|L)\s*\)/i;
+
 function parseIngredientString(raw: string): Ingredient {
   const s = normalizeText(raw);
+
+  // Extract and strip parenthetical metric value before other parsing
+  const parenMatch = s.match(PARENTHETICAL_METRIC);
+  const strippedS = s.replace(PARENTHETICAL_METRIC, '').replace(/\s+/g, ' ').trim();
+
   // Match leading number/fraction/range (e.g. 2, 1/2, 1.5, 2-3, 1 1/2)
-  const numMatch = s.match(/^((?:\d+\s+)?(?:\d+\/\d+|\d+\.\d+|\d+-\d+|\d+))\s*/);
+  const numMatch = strippedS.match(/^((?:\d+\s+)?(?:\d+\/\d+|\d+\.\d+|\d+-\d+|\d+))\s*/);
   const amount = numMatch ? numMatch[1].trim() : '';
-  const rest = numMatch ? s.slice(numMatch[0].length) : s;
+  const rest = numMatch ? strippedS.slice(numMatch[0].length) : strippedS;
 
   // Match unit
   const unitMatch = rest.match(unitPattern);
@@ -117,7 +159,18 @@ function parseIngredientString(raw: string): Ingredient {
   const name = commaParts[0].replace(/^of\s+/i, '').trim();
   const notes = commaParts.slice(1).join(',').trim();
 
-  return { amount, unit, name, notes };
+  // Metric: prefer parsed parenthetical, fall back to programmatic conversion
+  let metricAmount: string | undefined;
+  let metricUnit: string | undefined;
+  if (parenMatch) {
+    metricAmount = parenMatch[1];
+    metricUnit = parenMatch[2].toLowerCase();
+  } else if (amount && unit) {
+    const conv = toMetric(amount, unit);
+    if (conv) { metricAmount = conv.metricAmount; metricUnit = conv.metricUnit; }
+  }
+
+  return { amount, unit, name, notes, metricAmount, metricUnit };
 }
 
 function parseInstructions(raw: unknown): Instruction[] {

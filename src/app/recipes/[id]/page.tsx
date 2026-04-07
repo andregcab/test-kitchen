@@ -7,6 +7,7 @@ import DeleteRecipeButton from '@/components/DeleteRecipeButton';
 import BackButton from '@/components/BackButton';
 import MenuPicker from '@/components/MenuPicker';
 import ImageCarousel from '@/components/ImageCarousel';
+import IngredientsSection from '@/components/IngredientsSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,35 +30,6 @@ export default async function RecipeDetailPage({
 
   const data = recipe.currentVersion.data as unknown as RecipeData;
 
-  function abbrevUnit(unit: string): string {
-    const map: Record<string, string> = {
-      tablespoon: 'tbsp',
-      tablespoons: 'tbsp',
-      teaspoon: 'tsp',
-      teaspoons: 'tsp',
-      cup: 'cup',
-      cups: 'cup',
-      ounce: 'oz',
-      ounces: 'oz',
-      pound: 'lb',
-      pounds: 'lb',
-      gram: 'g',
-      grams: 'g',
-      kilogram: 'kg',
-      kilograms: 'kg',
-      milliliter: 'ml',
-      milliliters: 'ml',
-      millilitre: 'ml',
-      millilitres: 'ml',
-      liter: 'L',
-      liters: 'L',
-      litre: 'L',
-      litres: 'L',
-      'fluid ounce': 'fl oz',
-      'fluid ounces': 'fl oz',
-    };
-    return map[unit.toLowerCase()] ?? unit;
-  }
   const totalTime =
     (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
   const color = getTagColor(recipe.tags ?? []);
@@ -255,39 +227,7 @@ export default async function RecipeDetailPage({
         data.instructions.length > 0) && (
         <div className="px-[150px] mt-28 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
-            <section>
-              <h2 className="text-lg font-bold mb-3">Ingredients</h2>
-              <ul className="flex flex-col">
-                {data.ingredients.map((ing, i) => (
-                  <li
-                    key={i}
-                    className="flex gap-6 py-3"
-                    style={{
-                      borderBottom:
-                        i < data.ingredients.length - 1
-                          ? '1px solid var(--border)'
-                          : 'none',
-                    }}
-                  >
-                    <span
-                      className="w-32 flex-shrink-0 text-left font-semibold tabular-nums"
-                      style={{ color: 'var(--accent)' }}
-                    >
-                      {[
-                        ing.amount,
-                        ing.unit ? abbrevUnit(ing.unit) : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    </span>
-                    <span className="pl-3">
-                      {ing.name}
-                      {ing.notes && ` ${ing.notes}`}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <IngredientsSection ingredients={data.ingredients} />
           )}
 
           {data.instructions.length > 0 && (

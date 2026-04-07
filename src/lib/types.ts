@@ -5,6 +5,8 @@ export interface Ingredient {
   unit: string;
   name: string;
   notes: string;
+  metricAmount?: string;
+  metricUnit?: string;
 }
 
 export interface Instruction {
