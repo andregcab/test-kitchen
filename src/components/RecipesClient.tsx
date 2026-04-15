@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import RecipeCard from "@/components/RecipeCard";
-import { BookMarked, Plus } from "lucide-react";
+import { BookOpen, Plus } from "lucide-react";
 
 interface Menu {
   id: string;
@@ -187,7 +187,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                       border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
                     }}
                   >
-                    <BookMarked size={22} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+                    <BookOpen size={22} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
                     <div className="min-w-0">
                       <p className="font-semibold text-base leading-snug truncate">{menu.name}</p>
                       <p

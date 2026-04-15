@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, LogOut, Plus } from "lucide-react";
+import { ChefHat, LogOut, Plus } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -28,20 +28,36 @@ export default function BottomNav() {
         zIndex: 50,
       }}
     >
-      {/* Recipes tab */}
+      {/* Recipes tab — pill expands on active */}
       <Link
         href="/recipes"
-        className="flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-all"
+        className="flex items-center rounded-2xl overflow-hidden"
         style={{
           color: isRecipes ? "var(--accent)" : "var(--muted)",
           background: isRecipes ? "var(--accent-light)" : "transparent",
+          padding: "10px 14px",
+          gap: "8px",
+          transition: "background 250ms ease, color 250ms ease",
         }}
       >
-        <BookOpen
+        <ChefHat
           size={24}
           strokeWidth={isRecipes ? 2.2 : 1.8}
+          style={{ flexShrink: 0, transition: "stroke-width 250ms ease" }}
         />
-        <span className="text-xs font-semibold">Recipes</span>
+        <span
+          style={{
+            maxWidth: isRecipes ? "72px" : "0px",
+            opacity: isRecipes ? 1 : 0,
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            fontSize: "14px",
+            fontWeight: 700,
+            transition: "max-width 280ms ease, opacity 200ms ease",
+          }}
+        >
+          Recipes
+        </span>
       </Link>
 
       {/* Add recipe FAB */}
@@ -57,15 +73,14 @@ export default function BottomNav() {
         <Plus size={26} strokeWidth={2.5} />
       </Link>
 
-      {/* Sign out — icon only, muted */}
+      {/* Sign out — icon only */}
       <button
         onClick={handleLogout}
-        className="flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-all"
+        className="flex items-center justify-center p-3 rounded-2xl transition-all"
         style={{ color: "var(--muted)" }}
         aria-label="Sign out"
       >
         <LogOut size={24} strokeWidth={1.8} />
-        <span className="text-xs font-semibold">Sign Out</span>
       </button>
     </nav>
   );
