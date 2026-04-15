@@ -8,6 +8,7 @@ import BackButton from '@/components/BackButton';
 import MenuPicker from '@/components/MenuPicker';
 import ImageCarousel from '@/components/ImageCarousel';
 import IngredientsSection from '@/components/IngredientsSection';
+import CookModeInstructions from '@/components/CookModeInstructions';
 
 export const dynamic = 'force-dynamic';
 
@@ -231,31 +232,7 @@ export default async function RecipeDetailPage({
           )}
 
           {data.instructions.length > 0 && (
-            <section>
-              <h2 className="text-lg font-bold mb-3">Instructions</h2>
-              <ol className="flex flex-col gap-3">
-                {data.instructions.map((inst) => (
-                  <li
-                    key={inst.step}
-                    className="flex gap-4 p-4 rounded-xl"
-                    style={{
-                      background: 'var(--card)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <span
-                      className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                      style={{ background: 'var(--accent)' }}
-                    >
-                      {inst.step}
-                    </span>
-                    <p className="pt-1 leading-relaxed">
-                      {inst.text}
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            </section>
+            <CookModeInstructions instructions={data.instructions} />
           )}
         </div>
       )}
