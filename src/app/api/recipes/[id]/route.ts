@@ -29,7 +29,8 @@ export async function PUT(
     tags,
     images,
     changeNote,
-  }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string } = await req.json();
+    branchId,
+  }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string; branchId?: string } = await req.json();
 
   const existing = await prisma.recipe.findUnique({
     where: { id },
@@ -38,27 +39,70 @@ export async function PUT(
 
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  // Resolve which branch to save to
+  let targetBranchId = branchId;
+  if (!targetBranchId) {
+    const defaultBranch = await prisma.recipeBranch.findFirst({
+      where: { recipeId: id, isDefault: true },
+    });
+    targetBranchId = defaultBranch?.id;
+  }
+
   const nextVersionNumber = (existing.versions[0]?.versionNumber ?? 0) + 1;
 
-  const [version] = await prisma.$transaction([
-    prisma.recipeVersion.create({
-      data: {
-        recipeId: id,
-        versionNumber: nextVersionNumber,
-        changeNote: changeNote ?? null,
-        data: data as object,
-      },
-    }),
-  ]);
-
-  const updated = await prisma.recipe.update({
-    where: { id },
+  const version = await prisma.recipeVersion.create({
     data: {
-      title: data.title,
-      tags: tags ?? [],
-      images: images ?? [],
-      currentVersionId: version.id,
+      recipeId: id,
+      versionNumber: nextVersionNumber,
+      changeNote: changeNote ?? null,
+      data: data as object,
+      branchId: targetBranchId ?? null,
     },
+  });
+
+  // Update the branch's currentVersionId
+  if (targetBranchId) {
+    const branch = await prisma.recipeBranch.update({
+      where: { id: targetBranchId },
+      data: { currentVersionId: version.id },
+    });
+
+    // If saving to the default branch, also update Recipe.currentVersionId
+    if (branch.isDefault) {
+      await prisma.recipe.update({
+        where: { id },
+        data: {
+          title: data.title,
+          tags: tags ?? [],
+          images: images ?? [],
+          currentVersionId: version.id,
+        },
+      });
+    } else {
+      // Non-default branch: still update title/tags/images on the recipe
+      await prisma.recipe.update({
+        where: { id },
+        data: {
+          tags: tags ?? [],
+          images: images ?? [],
+        },
+      });
+    }
+  } else {
+    // Fallback: no branch context, update recipe directly
+    await prisma.recipe.update({
+      where: { id },
+      data: {
+        title: data.title,
+        tags: tags ?? [],
+        images: images ?? [],
+        currentVersionId: version.id,
+      },
+    });
+  }
+
+  const updated = await prisma.recipe.findUnique({
+    where: { id },
     include: { currentVersion: true },
   });
 

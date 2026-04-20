@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string } =
     await req.json();
 
+  // Create recipe + first version
   const recipe = await prisma.recipe.create({
     data: {
       title: data.title,
@@ -36,6 +37,24 @@ export async function POST(req: NextRequest) {
   });
 
   const version = recipe.versions[0];
+
+  // Create the default "Main" branch pointing to this first version
+  const branch = await prisma.recipeBranch.create({
+    data: {
+      recipeId: recipe.id,
+      name: 'Original',
+      isDefault: true,
+      order: 0,
+      currentVersionId: version.id,
+    },
+  });
+
+  // Link the version to its branch and set Recipe.currentVersionId
+  await prisma.recipeVersion.update({
+    where: { id: version.id },
+    data: { branchId: branch.id },
+  });
+
   const updated = await prisma.recipe.update({
     where: { id: recipe.id },
     data: { currentVersionId: version.id },

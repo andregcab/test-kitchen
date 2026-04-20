@@ -25,6 +25,7 @@ model Recipe {
   versions         RecipeVersion[]
   currentVersion   RecipeVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
   menus            Menu[]
+  branches         RecipeBranch[]
 }
 
 model Menu {
@@ -34,15 +35,36 @@ model Menu {
   recipes   Recipe[]
 }
 
+model RecipeBranch {
+  id                   String          @id @default(cuid())
+  recipeId             String
+  recipe               Recipe          @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name                 String
+  isDefault            Boolean         @default(false)
+  order                Int             @default(0)
+  createdFromVersionId String?
+  createdFromVersion   RecipeVersion?  @relation("BranchSource", fields: [createdFromVersionId], references: [id], onDelete: SetNull)
+  currentVersionId     String?         @unique
+  currentVersion       RecipeVersion?  @relation("BranchCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions             RecipeVersion[] @relation("BranchVersions")
+  createdAt            DateTime        @default(now())
+
+  @@unique([recipeId, name])
+}
+
 model RecipeVersion {
-  id            String   @id @default(cuid())
-  recipeId      String
-  versionNumber Int
-  changeNote    String?
-  createdAt     DateTime @default(now())
-  data          Json
-  recipe        Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  currentFor    Recipe?  @relation("CurrentVersion")
+  id               String        @id @default(cuid())
+  recipeId         String
+  versionNumber    Int
+  changeNote       String?
+  createdAt        DateTime      @default(now())
+  data             Json
+  branchId         String?
+  recipe           Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  branch           RecipeBranch? @relation("BranchVersions", fields: [branchId], references: [id], onDelete: SetNull)
+  currentFor       Recipe?       @relation("CurrentVersion")
+  currentForBranch RecipeBranch? @relation("BranchCurrentVersion")
+  sourcedBranches  RecipeBranch[] @relation("BranchSource")
 
   @@unique([recipeId, versionNumber])
 }

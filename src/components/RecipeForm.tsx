@@ -8,6 +8,7 @@ const MAX_IMAGES = 3;
 
 interface Props {
   recipeId?: string;
+  branchId?: string;
   initialData?: RecipeData;
   initialTags?: string[];
   initialImages?: string[];
@@ -16,6 +17,7 @@ interface Props {
 
 export default function RecipeForm({
   recipeId,
+  branchId,
   initialData,
   initialTags = [],
   initialImages = [],
@@ -199,12 +201,16 @@ export default function RecipeForm({
         tags: finalTags,
         images,
         changeNote: changeNote || undefined,
+        ...(branchId && { branchId }),
       }),
     });
 
     if (res.ok) {
       const recipe = await res.json();
-      router.push(`/recipes/${recipe.id}`);
+      const dest = branchId
+        ? `/recipes/${recipe.id}?branch=${branchId}`
+        : `/recipes/${recipe.id}`;
+      router.push(dest);
       router.refresh();
     } else {
       setSaving(false);
