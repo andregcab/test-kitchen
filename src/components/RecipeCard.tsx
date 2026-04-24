@@ -22,6 +22,7 @@ interface Props {
   images?: string[];
   currentVersion: { data: unknown } | null;
   onFavoriteChange?: (isFavorite: boolean) => void;
+  onTagClick?: (tag: string) => void;
 }
 
 
@@ -33,6 +34,7 @@ export default function RecipeCard({
   images,
   currentVersion,
   onFavoriteChange,
+  onTagClick,
 }: Props) {
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const color = getTagColor(tags);
@@ -99,15 +101,17 @@ export default function RecipeCard({
 
           {/* Tag pill */}
           {tags[0] && (
-            <span
-              className="relative z-10 text-xs font-semibold px-2.5 py-1 rounded-full"
+            <button
+              onClick={(e) => { e.preventDefault(); onTagClick?.(tags[0]); }}
+              className="relative z-10 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity active:opacity-70"
               style={{
                 background: "rgba(255,255,255,0.75)",
                 color: "var(--foreground)",
+                cursor: onTagClick ? "pointer" : "default",
               }}
             >
               {tags[0]}
-            </span>
+            </button>
           )}
         </div>
 
