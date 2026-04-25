@@ -259,9 +259,20 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
         </div>
 
         {filteredRecipes.length === 0 ? (
-          <p className="text-center py-16" style={{ color: "var(--muted)" }}>
-            No recipes match
-          </p>
+          <div className="text-center py-16 flex flex-col items-center gap-4">
+            <p className="text-lg" style={{ color: "var(--muted)" }}>
+              No recipes match
+            </p>
+            {(search.trim() || activeMenuId) && (
+              <button
+                onClick={() => { setSearch(""); setActiveMenuId(null); }}
+                className="px-5 py-2.5 rounded-xl font-semibold text-sm"
+                style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
         ) : groupByFavorites ? (
           <div className="flex flex-col gap-10">
             {favorites.length > 0 && (

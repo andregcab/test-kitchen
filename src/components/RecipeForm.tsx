@@ -30,6 +30,7 @@ export default function RecipeForm({
   const [tagInput, setTagInput] = useState(initialTags.join(', '));
   const [tags, setTags] = useState<string[]>(initialTags);
   const [changeNote, setChangeNote] = useState('');
+  const [saveError, setSaveError] = useState(false);
 
   const UNITS = [
     'tsp',
@@ -164,6 +165,7 @@ export default function RecipeForm({
     e.preventDefault();
     if (!data.title.trim()) return;
     setSaving(true);
+    setSaveError(false);
 
     // Commit any uncommitted tag input
     const finalTags = tagInput
@@ -186,6 +188,7 @@ export default function RecipeForm({
         router.refresh();
       } else {
         setSaving(false);
+        setSaveError(true);
       }
       return;
     }
@@ -214,6 +217,7 @@ export default function RecipeForm({
       router.refresh();
     } else {
       setSaving(false);
+      setSaveError(true);
     }
   }
 
@@ -687,6 +691,11 @@ export default function RecipeForm({
               : 'Add Recipe'}
         </button>
       </div>
+      {saveError && (
+        <p className="text-center text-sm pt-2" style={{ color: '#dc2626' }}>
+          Something went wrong. Please try again.
+        </p>
+      )}
     </form>
   );
 }
