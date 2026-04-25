@@ -9,6 +9,10 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Test Kitchen',
+    startupImage: '/api/icon?size=512',
+  },
+  icons: {
+    apple: '/api/icon?size=180',
   },
 };
 
@@ -16,6 +20,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  themeColor: '#c04a12',
 };
 
 export default function RootLayout({
