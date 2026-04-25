@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/icon'];
+const PUBLIC_PATHS = ['/login', '/register', '/api/auth/login', '/api/auth/register', '/api/icon'];
 const SESSION_COOKIE = 'tk_session';
 
 export async function proxy(req: NextRequest) {

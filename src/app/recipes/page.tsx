@@ -1,12 +1,19 @@
 import { prisma } from '@/lib/db';
+import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import RecipesClient from '@/components/RecipesClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function RecipesPage() {
+  const session = await getSession();
+  if (!session) redirect('/login');
+  const { userId } = session;
+
   const [recipes, menus] = await Promise.all([
     prisma.recipe.findMany({
+      where: { userId },
       orderBy: [{ isFavorite: 'desc' }, { updatedAt: 'desc' }],
       include: {
         currentVersion: true,
@@ -14,6 +21,7 @@ export default async function RecipesPage() {
       },
     }),
     prisma.menu.findMany({
+      where: { userId },
       orderBy: { createdAt: 'asc' },
       include: { _count: { select: { recipes: true } } },
     }),
@@ -24,12 +32,8 @@ export default async function RecipesPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">My Recipes</h1>
-          <p
-            className="text-sm mt-0.5"
-            style={{ color: 'var(--muted)' }}
-          >
-            {recipes.length}{' '}
-            {recipes.length === 1 ? 'recipe' : 'recipes'}
+          <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>
+            {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
           </p>
         </div>
       </div>

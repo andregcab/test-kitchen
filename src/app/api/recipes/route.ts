@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { requireUser } from '@/lib/auth';
 import { RecipeData } from '@/lib/types';
 
 export async function GET() {
+  const auth = await requireUser();
+  if (auth instanceof NextResponse) return auth;
+  const { userId } = auth;
+
   const recipes = await prisma.recipe.findMany({
+    where: { userId },
     orderBy: { updatedAt: 'desc' },
     include: { currentVersion: true },
   });
@@ -11,6 +17,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUser();
+  if (auth instanceof NextResponse) return auth;
+  const { userId } = auth;
+
   const {
     data,
     tags,
@@ -19,9 +29,9 @@ export async function POST(req: NextRequest) {
   }: { data: RecipeData; tags: string[]; images?: string[]; changeNote?: string } =
     await req.json();
 
-  // Create recipe + first version
   const recipe = await prisma.recipe.create({
     data: {
+      userId,
       title: data.title,
       tags: tags ?? [],
       images: images ?? [],
@@ -38,7 +48,6 @@ export async function POST(req: NextRequest) {
 
   const version = recipe.versions[0];
 
-  // Create the default "Main" branch pointing to this first version
   const branch = await prisma.recipeBranch.create({
     data: {
       recipeId: recipe.id,
@@ -49,7 +58,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Link the version to its branch and set Recipe.currentVersionId
   await prisma.recipeVersion.update({
     where: { id: version.id },
     data: { branchId: branch.id },

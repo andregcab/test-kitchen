@@ -4,19 +4,26 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
-    const res = await fetch('/api/auth/login', {
+    if (password !== confirm) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setLoading(true);
+
+    const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -39,9 +46,9 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">👩‍🍳</div>
-          <h1 className="text-3xl font-bold">Test Kitchen</h1>
+          <h1 className="text-3xl font-bold">Create Account</h1>
           <p className="mt-1" style={{ color: 'var(--muted)' }}>
-            Your recipe collection
+            Join Test Kitchen
           </p>
         </div>
 
@@ -67,6 +74,15 @@ export default function LoginPage() {
             style={{ borderColor: 'var(--border)', background: 'var(--background)' }}
             required
           />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className="w-full px-4 py-4 text-lg rounded-xl border-2 outline-none focus:border-[var(--accent)] transition-colors"
+            style={{ borderColor: 'var(--border)', background: 'var(--background)' }}
+            required
+          />
 
           {error && (
             <p className="text-sm text-center" style={{ color: '#dc2626' }}>
@@ -80,14 +96,14 @@ export default function LoginPage() {
             className="w-full py-4 text-lg font-semibold text-white rounded-xl transition-opacity disabled:opacity-60"
             style={{ background: 'var(--accent)' }}
           >
-            {loading ? 'Signing in…' : 'Sign In'}
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
 
         <p className="text-center text-sm mt-6" style={{ color: 'var(--muted)' }}>
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="font-semibold" style={{ color: 'var(--accent)' }}>
-            Create one
+          Already have an account?{' '}
+          <Link href="/login" className="font-semibold" style={{ color: 'var(--accent)' }}>
+            Sign in
           </Link>
         </p>
       </div>
