@@ -2,7 +2,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { RecipeData, Ingredient, Instruction } from '@/lib/types';
 import { normalizeUnit } from '@/lib/units';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({
+  apiKey: process.env.TEST_KITCHEN_ANTHROPIC_API_KEY,
+});
 
 const SYSTEM_PROMPT = `You are a recipe parser. The user will show you one or more photos of a recipe — from a cookbook page, handwritten card, printed sheet, or magazine. Extract the complete recipe across all images and return it as a single JSON object with exactly this structure:
 
@@ -31,7 +33,6 @@ Rules:
 - Tags should be 1-4 short culinary descriptors (e.g. "italian", "pasta", "vegetarian", "quick"). Do not include the word "recipe".
 - Times should be in minutes as plain numbers.`;
 
-
 export type ImageInput = {
   base64: string;
   mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif';
@@ -39,7 +40,10 @@ export type ImageInput = {
 
 export type PhotoParseResult =
   | { ok: true; data: RecipeData; tags: string[] }
-  | { ok: false; reason: 'parse_error' | 'no_recipe_found' | 'api_error' };
+  | {
+      ok: false;
+      reason: 'parse_error' | 'no_recipe_found' | 'api_error';
+    };
 
 export async function parseRecipeFromImages(
   images: ImageInput[],
@@ -49,7 +53,11 @@ export async function parseRecipeFromImages(
   try {
     const imageBlocks = images.map((img) => ({
       type: 'image' as const,
-      source: { type: 'base64' as const, media_type: img.mediaType, data: img.base64 },
+      source: {
+        type: 'base64' as const,
+        media_type: img.mediaType,
+        data: img.base64,
+      },
     }));
 
     const message = await client.messages.create({
@@ -63,9 +71,10 @@ export async function parseRecipeFromImages(
             ...imageBlocks,
             {
               type: 'text',
-              text: images.length > 1
-                ? `Please extract the complete recipe from these ${images.length} images and return it as JSON.`
-                : 'Please extract the recipe from this image and return it as JSON.',
+              text:
+                images.length > 1
+                  ? `Please extract the complete recipe from these ${images.length} images and return it as JSON.`
+                  : 'Please extract the recipe from this image and return it as JSON.',
             },
           ],
         },
@@ -73,15 +82,22 @@ export async function parseRecipeFromImages(
     });
 
     const block = message.content[0];
-    if (block.type !== 'text') return { ok: false, reason: 'parse_error' };
+    if (block.type !== 'text')
+      return { ok: false, reason: 'parse_error' };
     raw = block.text.trim();
   } catch (err) {
-    console.error('[parseRecipeFromImages] Anthropic API error:', err);
+    console.error(
+      '[parseRecipeFromImages] Anthropic API error:',
+      err,
+    );
     return { ok: false, reason: 'api_error' };
   }
 
   // Strip any accidental markdown code fences
-  raw = raw.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
+  raw = raw
+    .replace(/^```(?:json)?\n?/i, '')
+    .replace(/\n?```$/i, '')
+    .trim();
 
   let parsed: Record<string, unknown>;
   try {
@@ -93,37 +109,47 @@ export async function parseRecipeFromImages(
   if (!parsed.title) return { ok: false, reason: 'no_recipe_found' };
 
   const ingredients: Ingredient[] = Array.isArray(parsed.ingredients)
-    ? (parsed.ingredients as Record<string, unknown>[]).map((ing) => ({
-        amount: String(ing.amount ?? ''),
-        unit: normalizeUnit(String(ing.unit ?? '')),
-        name: String(ing.name ?? ''),
-        notes: String(ing.notes ?? ''),
-      }))
+    ? (parsed.ingredients as Record<string, unknown>[]).map(
+        (ing) => ({
+          amount: String(ing.amount ?? ''),
+          unit: normalizeUnit(String(ing.unit ?? '')),
+          name: String(ing.name ?? ''),
+          notes: String(ing.notes ?? ''),
+        }),
+      )
     : [];
 
-  const instructions: Instruction[] = Array.isArray(parsed.instructions)
-    ? (parsed.instructions as Record<string, unknown>[]).map((inst, i) => ({
-        step: typeof inst.step === 'number' ? inst.step : i + 1,
-        text: String(inst.text ?? ''),
-      }))
+  const instructions: Instruction[] = Array.isArray(
+    parsed.instructions,
+  )
+    ? (parsed.instructions as Record<string, unknown>[]).map(
+        (inst, i) => ({
+          step: typeof inst.step === 'number' ? inst.step : i + 1,
+          text: String(inst.text ?? ''),
+        }),
+      )
     : [];
 
   const tags: string[] = Array.isArray(parsed.tags)
     ? (parsed.tags as unknown[]).map(String).filter(Boolean)
     : [];
 
-  const source = typeof parsed.source === 'string' && parsed.source.trim()
-    ? parsed.source.trim()
-    : null;
+  const source =
+    typeof parsed.source === 'string' && parsed.source.trim()
+      ? parsed.source.trim()
+      : null;
 
   const data: RecipeData = {
     title: String(parsed.title ?? 'Untitled Recipe'),
     description: String(parsed.description ?? ''),
     source,
     sourceType: 'photo',
-    servings: typeof parsed.servings === 'number' ? parsed.servings : null,
-    prepTime: typeof parsed.prepTime === 'number' ? parsed.prepTime : null,
-    cookTime: typeof parsed.cookTime === 'number' ? parsed.cookTime : null,
+    servings:
+      typeof parsed.servings === 'number' ? parsed.servings : null,
+    prepTime:
+      typeof parsed.prepTime === 'number' ? parsed.prepTime : null,
+    cookTime:
+      typeof parsed.cookTime === 'number' ? parsed.cookTime : null,
     ingredients,
     instructions,
     notes: String(parsed.notes ?? ''),

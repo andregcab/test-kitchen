@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
-const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/icon"];
-const SESSION_COOKIE = "tk_session";
+const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/icon'];
+const SESSION_COOKIE = 'tk_session';
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -13,20 +13,21 @@ export async function proxy(req: NextRequest) {
 
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
   try {
     const secret = new TextEncoder().encode(
-      process.env.SESSION_SECRET ?? "fallback-dev-secret-change-in-prod"
+      process.env.TEST_KITCHEN_SESSION_SECRET ??
+        'fallback-dev-secret-change-in-prod',
     );
     await jwtVerify(token, secret);
     return NextResponse.next();
   } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

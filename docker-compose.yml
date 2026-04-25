@@ -9,7 +9,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U testkitchen"]
+      test: ['CMD-SHELL', 'pg_isready -U testkitchen']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -18,11 +18,11 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     environment:
-      DATABASE_URL: "postgresql://testkitchen:testkitchen@db:5432/testkitchen?schema=public"
-      SESSION_SECRET: "${SESSION_SECRET}"
-      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}"
+      TEST_KITCHEN_DATABASE_URL: '${TEST_KITCHEN_DATABASE_URL}'
+      TEST_KITCHEN_SESSION_SECRET: '${TEST_KITCHEN_SESSION_SECRET}'
+      TEST_KITCHEN_ANTHROPIC_API_KEY: '${TEST_KITCHEN_ANTHROPIC_API_KEY}'
       NODE_ENV: production
     depends_on:
       db:

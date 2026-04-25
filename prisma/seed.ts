@@ -1,23 +1,23 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = process.env.SEED_PASSWORD;
+  const password = process.env.TEST_KITCHEN_SEED_PASSWORD;
   if (!password) {
-    throw new Error("SEED_PASSWORD env var is required");
+    throw new Error('TEST_KITCHEN_SEED_PASSWORD env var is required');
   }
 
   const existing = await prisma.user.findFirst();
   if (existing) {
-    console.log("User already exists, skipping seed.");
+    console.log('User already exists, skipping seed.');
     return;
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({ data: { passwordHash } });
-  console.log("User created successfully.");
+  console.log('User created successfully.');
 }
 
 main()
