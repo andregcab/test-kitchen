@@ -30,49 +30,21 @@ export default function NewRecipePage() {
           <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
         </Link>
 
-        {/* Photo import — coming soon */}
-        <div
-          className="flex items-center gap-5 p-6 rounded-2xl border-2 opacity-50"
+        {/* Photo import */}
+        <Link
+          href="/recipes/new/import/photo"
+          className="flex items-center gap-5 p-6 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
           style={{ background: "var(--card)", borderColor: "var(--border)" }}
         >
           <span className="text-4xl">📷</span>
           <div>
-            <p className="text-xl font-semibold">
-              From a photo
-              <span
-                className="ml-2 text-xs font-normal px-2 py-0.5 rounded-full align-middle"
-                style={{ background: "var(--border)", color: "var(--muted)" }}
-              >
-                coming soon
-              </span>
-            </p>
+            <p className="text-xl font-semibold">From a photo</p>
             <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
               Take a picture of a cookbook page or recipe card
             </p>
           </div>
-        </div>
-
-        {/* PDF import — coming soon */}
-        <div
-          className="flex items-center gap-5 p-6 rounded-2xl border-2 opacity-50"
-          style={{ background: "var(--card)", borderColor: "var(--border)" }}
-        >
-          <span className="text-4xl">📄</span>
-          <div>
-            <p className="text-xl font-semibold">
-              From a PDF
-              <span
-                className="ml-2 text-xs font-normal px-2 py-0.5 rounded-full align-middle"
-                style={{ background: "var(--border)", color: "var(--muted)" }}
-              >
-                coming soon
-              </span>
-            </p>
-            <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
-              Upload a PDF recipe file
-            </p>
-          </div>
-        </div>
+          <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
+        </Link>
 
         {/* Manual entry */}
         <div className="relative flex items-center gap-3 my-2">
