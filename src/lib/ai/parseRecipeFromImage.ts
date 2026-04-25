@@ -3,7 +3,7 @@ import { RecipeData, Ingredient, Instruction } from '@/lib/types';
 import { normalizeUnit } from '@/lib/units';
 
 const client = new Anthropic({
-  apiKey: process.env.TEST_KITCHEN_ANTHROPIC_API_KEY,
+  apiKey: process.env.TK_ANTHROPIC_API_KEY,
 });
 
 const SYSTEM_PROMPT = `You are a recipe parser. The user will show you one or more photos of a recipe — from a cookbook page, handwritten card, printed sheet, or magazine. Extract the complete recipe across all images and return it as a single JSON object with exactly this structure:

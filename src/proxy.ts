@@ -18,7 +18,7 @@ export async function proxy(req: NextRequest) {
 
   try {
     const secret = new TextEncoder().encode(
-      process.env.TEST_KITCHEN_SESSION_SECRET ??
+      process.env.TK_SESSION_SECRET ??
         'fallback-dev-secret-change-in-prod',
     );
     await jwtVerify(token, secret);

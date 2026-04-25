@@ -4,9 +4,9 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = process.env.TEST_KITCHEN_SEED_PASSWORD;
+  const password = process.env.TK_SEED_PASSWORD;
   if (!password) {
-    throw new Error('TEST_KITCHEN_SEED_PASSWORD env var is required');
+    throw new Error('TK_SEED_PASSWORD env var is required');
   }
 
   const existing = await prisma.user.findFirst();

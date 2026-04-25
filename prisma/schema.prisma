@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("TEST_KITCHEN_DATABASE_URL")
+  url      = env("TK_DATABASE_URL")
 }
 
 model User {

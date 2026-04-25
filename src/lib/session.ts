@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 
 const SESSION_COOKIE = 'tk_session';
 const secret = new TextEncoder().encode(
-  process.env.TEST_KITCHEN_SESSION_SECRET ??
+  process.env.TK_SESSION_SECRET ??
     'fallback-dev-secret-change-in-prod',
 );
 
