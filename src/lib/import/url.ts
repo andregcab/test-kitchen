@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { RecipeData, Ingredient, Instruction } from '@/lib/types';
+import { normalizeUnit } from '@/lib/units';
 
 // Parse ISO 8601 duration to minutes (e.g. "PT1H30M" → 90)
 function parseDuration(iso: string | undefined): number | null {
@@ -81,22 +82,6 @@ function normalizeText(s: string): string {
   return cleanString(s);
 }
 
-const UNIT_NORMALIZE: Record<string, string> = {
-  tablespoon: 'tbsp', tablespoons: 'tbsp', tbs: 'tbsp',
-  teaspoon: 'tsp', teaspoons: 'tsp',
-  cup: 'cup', cups: 'cup',
-  'fluid ounce': 'fl oz', 'fluid ounces': 'fl oz',
-  ounce: 'oz', ounces: 'oz',
-  pound: 'lb', pounds: 'lb',
-  gram: 'g', grams: 'g',
-  kilogram: 'kg', kilograms: 'kg',
-  milliliter: 'ml', milliliters: 'ml', millilitre: 'ml', millilitres: 'ml',
-  liter: 'L', liters: 'L', litre: 'L', litres: 'L',
-};
-
-function normalizeUnit(unit: string): string {
-  return UNIT_NORMALIZE[unit.toLowerCase()] ?? unit;
-}
 
 // Imperial → metric conversion factors (volume stays volume, weight stays weight)
 const METRIC_CONVERSIONS: Record<string, { factor: number; unit: string }> = {

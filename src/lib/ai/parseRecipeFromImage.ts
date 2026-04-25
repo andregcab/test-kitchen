@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { RecipeData, Ingredient, Instruction } from '@/lib/types';
+import { normalizeUnit } from '@/lib/units';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -30,27 +31,6 @@ Rules:
 - Tags should be 1-4 short culinary descriptors (e.g. "italian", "pasta", "vegetarian", "quick"). Do not include the word "recipe".
 - Times should be in minutes as plain numbers.`;
 
-// Normalize any unit variants the AI might return to our dropdown values
-const UNIT_NORMALIZE: Record<string, string> = {
-  tablespoon: 'tbsp', tablespoons: 'tbsp', tbs: 'tbsp', 'table spoon': 'tbsp',
-  teaspoon: 'tsp', teaspoons: 'tsp',
-  cups: 'cup',
-  'fluid ounce': 'fl oz', 'fluid ounces': 'fl oz',
-  ounce: 'oz', ounces: 'oz',
-  pound: 'lb', pounds: 'lb',
-  gram: 'g', grams: 'g',
-  kilogram: 'kg', kilograms: 'kg',
-  milliliter: 'ml', milliliters: 'ml', millilitre: 'ml', millilitres: 'ml',
-  liter: 'L', liters: 'L', litre: 'L', litres: 'L',
-};
-
-const VALID_UNITS = new Set(['tsp', 'tbsp', 'cup', 'fl oz', 'ml', 'L', 'oz', 'lb', 'g', 'kg']);
-
-function normalizeUnit(raw: string): string {
-  const trimmed = raw.trim();
-  if (VALID_UNITS.has(trimmed)) return trimmed;
-  return UNIT_NORMALIZE[trimmed.toLowerCase()] ?? trimmed;
-}
 
 export type ImageInput = {
   base64: string;
