@@ -16,6 +16,7 @@ ENV NODE_ENV=production
 
 COPY package*.json ./
 COPY prisma ./prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/public ./public
