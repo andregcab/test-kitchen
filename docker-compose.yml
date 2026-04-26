@@ -10,8 +10,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U testkitchen']
-      interval: 5s
-      timeout: 5s
+      interval: "5s"
+      timeout: "5s"
       retries: 10
 
   app:
@@ -20,9 +20,9 @@ services:
     ports:
       - '${PORT:-3000}:3000'
     environment:
-      TEST_KITCHEN_DATABASE_URL: '${TEST_KITCHEN_DATABASE_URL}'
-      TEST_KITCHEN_SESSION_SECRET: '${TEST_KITCHEN_SESSION_SECRET}'
-      TEST_KITCHEN_ANTHROPIC_API_KEY: '${TEST_KITCHEN_ANTHROPIC_API_KEY}'
+      TK_DATABASE_URL: '${TK_DATABASE_URL}'
+      TK_SESSION_SECRET: '${TK_SESSION_SECRET}'
+      TK_ANTHROPIC_API_KEY: '${TK_ANTHROPIC_API_KEY}'
       NODE_ENV: production
     depends_on:
       db:
