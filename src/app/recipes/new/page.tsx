@@ -24,7 +24,7 @@ export default function NewRecipePage() {
           <div>
             <p className="text-xl font-semibold">From a website</p>
             <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
-              Paste a link and we&apos;ll pull the recipe automatically
+              Paste a link from a recipe site or YouTube video
             </p>
           </div>
           <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
