@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { importFromUrl } from '@/lib/import/url';
-import { isYouTubeUrl, fetchYouTubeDescription } from '@/lib/import/youtube';
+import { isYouTubeUrl, fetchYouTubeData } from '@/lib/import/youtube';
 import { parseRecipeFromText } from '@/lib/ai/parseRecipeFromText';
 
 export async function POST(req: NextRequest) {
@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (isYouTubeUrl(url)) {
-    const description = await fetchYouTubeDescription(url);
-    if (!description) {
+    const ytData = await fetchYouTubeData(url);
+    if (!ytData) {
       return NextResponse.json({ ok: false, reason: 'fetch_error' });
     }
-    const result = await parseRecipeFromText(description, url);
+    const result = await parseRecipeFromText(ytData.description, url, ytData.channelName);
     return NextResponse.json({ ...result, images: [] });
   }
 

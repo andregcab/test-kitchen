@@ -7,7 +7,12 @@ export function isYouTubeUrl(url: string): boolean {
   }
 }
 
-export async function fetchYouTubeDescription(url: string): Promise<string | null> {
+export type YouTubeData = {
+  description: string;
+  channelName: string | null;
+};
+
+export async function fetchYouTubeData(url: string): Promise<YouTubeData | null> {
   let html: string;
   try {
     const res = await fetch(url, {
@@ -23,24 +28,34 @@ export async function fetchYouTubeDescription(url: string): Promise<string | nul
     return null;
   }
 
+  // Extract channel name
+  const channelMatch = html.match(/"ownerChannelName":"(.*?)"/);
+  const channelName = channelMatch ? channelMatch[1] : null;
+
   // YouTube embeds the full description in ytInitialData as attributedDescription
   const match = html.match(/"attributedDescription":\{"content":"([\s\S]*?)","commandRuns"/);
   if (match) {
-    return match[1]
-      .replace(/\\n/g, '\n')
-      .replace(/\\"/g, '"')
-      .replace(/\\\\/g, '\\')
-      .trim();
+    return {
+      description: match[1]
+        .replace(/\\n/g, '\n')
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, '\\')
+        .trim(),
+      channelName,
+    };
   }
 
   // Fallback: look for shortDescription in ytInitialData
   const shortMatch = html.match(/"shortDescription":"([\s\S]*?)","isCrawlable"/);
   if (shortMatch) {
-    return shortMatch[1]
-      .replace(/\\n/g, '\n')
-      .replace(/\\"/g, '"')
-      .replace(/\\\\/g, '\\')
-      .trim();
+    return {
+      description: shortMatch[1]
+        .replace(/\\n/g, '\n')
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, '\\')
+        .trim(),
+      channelName,
+    };
   }
 
   return null;

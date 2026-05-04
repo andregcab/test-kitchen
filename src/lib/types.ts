@@ -18,6 +18,7 @@ export interface RecipeData {
   title: string;
   description: string;
   source: string | null;
+  sourceName?: string | null;
   sourceType: SourceType;
   servings: number | null;
   prepTime: number | null;

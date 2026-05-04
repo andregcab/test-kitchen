@@ -38,6 +38,7 @@ export type TextParseResult =
 export async function parseRecipeFromText(
   text: string,
   sourceUrl?: string,
+  sourceName?: string | null,
 ): Promise<TextParseResult> {
   let raw: string;
 
@@ -93,14 +94,11 @@ export async function parseRecipeFromText(
     ? (parsed.tags as unknown[]).map(String).filter(Boolean)
     : [];
 
-  const source = typeof parsed.source === 'string' && parsed.source.trim()
-    ? parsed.source.trim()
-    : sourceUrl ?? null;
-
   const data: RecipeData = {
     title: String(parsed.title ?? 'Untitled Recipe'),
     description: String(parsed.description ?? ''),
-    source,
+    source: sourceUrl ?? null,
+    sourceName: sourceName ?? null,
     sourceType: 'url',
     servings: typeof parsed.servings === 'number' ? parsed.servings : null,
     prepTime: typeof parsed.prepTime === 'number' ? parsed.prepTime : null,

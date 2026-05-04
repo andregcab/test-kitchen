@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import RecipeForm from '@/components/RecipeForm';
 import BackButton from '@/components/BackButton';
@@ -19,6 +19,22 @@ type State =
         | 'unknown';
     };
 
+const LOADING_MESSAGES = [
+  'Fetching recipe…',
+  'Chopping the vegetables…',
+  'Preheating the oven…',
+  'Consulting the chef…',
+  'Reducing the sauce…',
+  'Tasting for seasoning…',
+  'Deglazing the pan…',
+  'Tempering the chocolate…',
+  'Proofing the dough…',
+  'Clarifying the butter…',
+  'Julienning the carrots…',
+  'Searing over high heat…',
+  'Resting before plating…',
+];
+
 const errorMessages = {
   no_structured_data:
     "This site doesn't include structured recipe data, so we couldn't parse it automatically. Try copying the URL from a major recipe site (AllRecipes, NYT Cooking, Food Network, etc.), or type the recipe in manually.",
@@ -30,9 +46,39 @@ const errorMessages = {
     'Something went wrong. Try again or enter the recipe manually.',
 };
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default function UrlImportPage() {
   const [url, setUrl] = useState('');
   const [state, setState] = useState<State>({ stage: 'input' });
+  const [loadingMsg, setLoadingMsg] = useState('');
+  const queueRef = useRef<string[]>([]);
+  const queueIndexRef = useRef(0);
+
+  function nextMsg(): string {
+    if (queueIndexRef.current >= queueRef.current.length) {
+      queueRef.current = shuffle(LOADING_MESSAGES);
+      queueIndexRef.current = 0;
+    }
+    return queueRef.current[queueIndexRef.current++];
+  }
+
+  useEffect(() => {
+    if (state.stage !== 'loading') return;
+    queueRef.current = shuffle(LOADING_MESSAGES);
+    queueIndexRef.current = 0;
+    setLoadingMsg(nextMsg());
+    const id = setInterval(() => setLoadingMsg(nextMsg()), 3000);
+    return () => clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.stage]);
 
   async function handleFetch() {
     if (!url.trim()) return;
@@ -106,6 +152,7 @@ export default function UrlImportPage() {
           <button
             onClick={handleFetch}
             disabled={!url.trim() || state.stage === 'loading'}
+            suppressHydrationWarning
             className="w-full py-4 text-lg text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity flex items-center justify-center gap-3"
             style={{ background: 'var(--accent)' }}
           >
@@ -115,7 +162,7 @@ export default function UrlImportPage() {
                 <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
               </svg>
             )}
-            {state.stage === 'loading' ? 'Fetching recipe…' : 'Get Recipe'}
+            {state.stage === 'loading' ? loadingMsg : 'Get Recipe'}
           </button>
 
           <p
