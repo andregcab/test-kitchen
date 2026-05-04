@@ -102,9 +102,10 @@ const SCALE_LABELS: { factor: ScaleFactor; label: string }[] = [
 interface Props {
   ingredients: Ingredient[];
   servings: number | null;
+  editAction?: React.ReactNode;
 }
 
-export default function IngredientsSection({ ingredients, servings }: Props) {
+export default function IngredientsSection({ ingredients, servings, editAction }: Props) {
   const { metric, toggle: toggleMetric } = useMetric();
   const [scale, setScale] = useState<ScaleFactor>(1);
 
@@ -131,6 +132,7 @@ export default function IngredientsSection({ ingredients, servings }: Props) {
           )}
         </div>
         <div className="flex items-center gap-2">
+          {editAction}
           {/* Scale toggle */}
           <div
             className="flex rounded-xl overflow-hidden"

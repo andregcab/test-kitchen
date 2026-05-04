@@ -10,6 +10,11 @@ import ImageCarousel from '@/components/ImageCarousel';
 import IngredientsSection from '@/components/IngredientsSection';
 import CookModeInstructions from '@/components/CookModeInstructions';
 import BranchTabs from '@/components/BranchTabs';
+import SectionEditDetails from '@/components/SectionEditDetails';
+import SectionEditIngredients from '@/components/SectionEditIngredients';
+import SectionEditInstructions from '@/components/SectionEditInstructions';
+import SectionEditNotes from '@/components/SectionEditNotes';
+import SectionEditPhotos from '@/components/SectionEditPhotos';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,11 +56,6 @@ export default async function RecipeDetailPage({
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
   const color = getTagColor(recipe.tags ?? []);
 
-  // Edit link includes the active branch so the edit page loads the right version
-  const editHref = activeBranch && !activeBranch.isDefault
-    ? `/recipes/${recipe.id}/edit?branch=${activeBranch.id}`
-    : `/recipes/${recipe.id}/edit`;
-
   // Version history link with branch context
   const versionsHref = activeBranch && !activeBranch.isDefault
     ? `/recipes/${recipe.id}/versions?branch=${activeBranch.id}`
@@ -81,16 +81,13 @@ export default async function RecipeDetailPage({
           {/* Top bar */}
           <div className="flex items-center justify-between mb-5">
             <BackButton href="/recipes" />
-            <Link
-              href={editHref}
-              className="flex items-center justify-center px-5 h-11 text-sm font-semibold rounded-xl transition-all active:scale-[0.97] bg-white/65 hover:bg-white/85"
-              style={{
-                color: 'var(--foreground)',
-                border: `1px solid ${color.border}`,
-              }}
-            >
-              Edit
-            </Link>
+            <SectionEditDetails
+              recipeId={recipe.id}
+              branchId={activeBranch?.id}
+              data={data}
+              tags={recipe.tags ?? []}
+              images={recipe.images}
+            />
           </div>
 
           {/* Tags */}
@@ -236,12 +233,19 @@ export default async function RecipeDetailPage({
         </div>
       </div>
 
-      {/* ── IMAGE CAROUSEL ── */}
-      {recipe.images.length > 0 && (
-        <div className="px-[150px] mt-6">
+      {/* ── PHOTOS ── */}
+      <div className="px-[150px] mt-6">
+        {recipe.images.length > 0 && (
           <ImageCarousel height={560} images={recipe.images} />
+        )}
+        <div className={recipe.images.length > 0 ? 'mt-3 flex justify-end' : ''}>
+          <SectionEditPhotos
+            recipeId={recipe.id}
+            images={recipe.images}
+            tags={recipe.tags ?? []}
+          />
         </div>
-      )}
+      </div>
 
       {/* ── BRANCH TABS ── */}
       {recipe.branches.length > 0 && (
@@ -259,10 +263,33 @@ export default async function RecipeDetailPage({
       {(data.ingredients.length > 0 || data.instructions.length > 0) && (
         <div className="px-[150px] mt-8 flex flex-col gap-8">
           {data.ingredients.length > 0 && (
-            <IngredientsSection ingredients={data.ingredients} servings={data.servings} />
+            <IngredientsSection
+              ingredients={data.ingredients}
+              servings={data.servings}
+              editAction={
+                <SectionEditIngredients
+                  recipeId={recipe.id}
+                  branchId={activeBranch?.id}
+                  data={data}
+                  tags={recipe.tags ?? []}
+                  images={recipe.images}
+                />
+              }
+            />
           )}
           {data.instructions.length > 0 && (
-            <CookModeInstructions instructions={data.instructions} />
+            <CookModeInstructions
+              instructions={data.instructions}
+              editAction={
+                <SectionEditInstructions
+                  recipeId={recipe.id}
+                  branchId={activeBranch?.id}
+                  data={data}
+                  tags={recipe.tags ?? []}
+                  images={recipe.images}
+                />
+              }
+            />
           )}
         </div>
       )}
@@ -274,12 +301,21 @@ export default async function RecipeDetailPage({
             className="rounded-2xl p-5"
             style={{ background: color.bg, border: `1px solid ${color.border}` }}
           >
-            <h2
-              className="text-sm font-bold uppercase tracking-widest mb-3"
-              style={{ color: 'var(--muted)' }}
-            >
-              Notes
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="text-sm font-bold uppercase tracking-widest"
+                style={{ color: 'var(--muted)' }}
+              >
+                Notes
+              </h2>
+              <SectionEditNotes
+                recipeId={recipe.id}
+                branchId={activeBranch?.id}
+                data={data}
+                tags={recipe.tags ?? []}
+                images={recipe.images}
+              />
+            </div>
             <p className="leading-relaxed whitespace-pre-wrap">{data.notes}</p>
           </div>
         </div>

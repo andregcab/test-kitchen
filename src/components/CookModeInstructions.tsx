@@ -6,9 +6,10 @@ import { Instruction } from '@/lib/types';
 
 interface Props {
   instructions: Instruction[];
+  editAction?: React.ReactNode;
 }
 
-export default function CookModeInstructions({ instructions }: Props) {
+export default function CookModeInstructions({ instructions, editAction }: Props) {
   const [cookMode, setCookMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -44,14 +45,17 @@ export default function CookModeInstructions({ instructions }: Props) {
       <div className='flex items-center justify-between mb-3'>
         <h2 className='text-lg font-bold'>Instructions</h2>
         {!cookMode && (
-          <button
-            onClick={enterCookMode}
-            className='flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]'
-            style={{ background: 'var(--accent)' }}
-          >
-            <Flame size={15} strokeWidth={2} />
-            Cook
-          </button>
+          <div className='flex items-center gap-2'>
+            {editAction}
+            <button
+              onClick={enterCookMode}
+              className='flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]'
+              style={{ background: 'var(--accent)' }}
+            >
+              <Flame size={15} strokeWidth={2} />
+              Cook
+            </button>
+          </div>
         )}
       </div>
 
