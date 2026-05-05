@@ -278,7 +278,7 @@ export default async function RecipeDetailPage({
 
       {/* ── NOTES ── */}
       {data.notes && (
-        <div className="page-container mt-8">
+        <div className="page-container" style={{ paddingTop: 56 }}>
           <div
             className="rounded-2xl p-6"
             style={{
