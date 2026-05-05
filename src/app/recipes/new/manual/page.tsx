@@ -3,12 +3,18 @@ import BackButton from "@/components/BackButton";
 
 export default function ManualNewRecipePage() {
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-8">
         <BackButton href="/recipes/new" />
-        <h1 className="text-2xl font-bold">Type it in</h1>
+        <div>
+          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+            Type it in
+          </h1>
+          <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>
+            Enter your recipe from scratch
+          </p>
+        </div>
       </div>
-
       <RecipeForm />
     </div>
   );

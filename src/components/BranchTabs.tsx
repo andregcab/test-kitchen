@@ -96,7 +96,7 @@ export default function BranchTabs({
   if (!showBar) return null;
 
   return (
-    <div className='px-[150px]'>
+    <div className='page-container'>
       {/* Tab row */}
       <div
         className='flex items-end gap-0'

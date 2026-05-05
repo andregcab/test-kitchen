@@ -58,14 +58,11 @@ export default function MenuPicker({ recipeId, initialMenuIds, borderColor = 'va
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border cursor-pointer transition-all active:scale-[0.97]"
+        className="menu-picker-btn flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border cursor-pointer transition-all active:scale-[0.97]"
         style={{
           borderColor,
           color: 'var(--foreground)',
-          background: 'rgba(255,255,255,0.65)',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.85)')}
-        onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.65)')}
       >
         <List size={15} />
         Add to Menu

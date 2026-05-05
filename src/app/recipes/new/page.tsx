@@ -1,71 +1,83 @@
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import { ChevronRight } from "lucide-react";
 
 export default function NewRecipePage() {
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-10">
         <BackButton href="/recipes" />
-        <h1 className="text-2xl font-bold">Add Recipe</h1>
+        <div>
+          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+            Add a Recipe
+          </h1>
+          <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>
+            How would you like to add it?
+          </p>
+        </div>
       </div>
 
-      <p className="text-lg mb-6" style={{ color: "var(--muted)" }}>
-        How would you like to add this recipe?
-      </p>
-
-      <div className="flex flex-col gap-4">
-        {/* URL import — live */}
+      <div className="flex flex-col gap-3 max-w-lg">
         <Link
           href="/recipes/new/import/url"
-          className="flex items-center gap-5 p-6 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
+          className="flex items-center gap-5 p-5 rounded-2xl border transition-all active:scale-[0.99]"
           style={{ background: "var(--card)", borderColor: "var(--border)" }}
         >
-          <span className="text-4xl">🔗</span>
-          <div>
-            <p className="text-xl font-semibold">From a website</p>
-            <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--accent-light)', fontSize: 22 }}
+          >
+            🔗
+          </div>
+          <div className="flex-1">
+            <p className="font-display font-semibold" style={{ fontSize: '17px' }}>From a website</p>
+            <p style={{ color: "var(--foreground-muted)", fontSize: '14px', marginTop: 2 }}>
               Paste a link from a recipe site or YouTube video
             </p>
           </div>
-          <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
+          <ChevronRight size={18} strokeWidth={1.5} style={{ color: 'var(--foreground-faint)', flexShrink: 0 }} />
         </Link>
 
-        {/* Photo import */}
         <Link
           href="/recipes/new/import/photo"
-          className="flex items-center gap-5 p-6 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
+          className="flex items-center gap-5 p-5 rounded-2xl border transition-all active:scale-[0.99]"
           style={{ background: "var(--card)", borderColor: "var(--border)" }}
         >
-          <span className="text-4xl">📷</span>
-          <div>
-            <p className="text-xl font-semibold">From a photo</p>
-            <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--accent-light)', fontSize: 22 }}
+          >
+            📷
+          </div>
+          <div className="flex-1">
+            <p className="font-display font-semibold" style={{ fontSize: '17px' }}>From a photo</p>
+            <p style={{ color: "var(--foreground-muted)", fontSize: '14px', marginTop: 2 }}>
               Take a picture of a cookbook page or recipe card
             </p>
           </div>
-          <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
+          <ChevronRight size={18} strokeWidth={1.5} style={{ color: 'var(--foreground-faint)', flexShrink: 0 }} />
         </Link>
 
-        {/* Manual entry */}
-        <div className="relative flex items-center gap-3 my-2">
-          <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-          <span className="text-sm" style={{ color: "var(--muted)" }}>or</span>
-          <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-        </div>
+        <div className="ornament-divider my-1" aria-hidden="true">or</div>
 
         <Link
           href="/recipes/new/manual"
-          className="flex items-center gap-5 p-6 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
+          className="flex items-center gap-5 p-5 rounded-2xl border transition-all active:scale-[0.99]"
           style={{ background: "var(--card)", borderColor: "var(--border)" }}
         >
-          <span className="text-4xl">✏️</span>
-          <div>
-            <p className="text-xl font-semibold">Type it in</p>
-            <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--surface)', fontSize: 22 }}
+          >
+            ✏️
+          </div>
+          <div className="flex-1">
+            <p className="font-display font-semibold" style={{ fontSize: '17px' }}>Type it in</p>
+            <p style={{ color: "var(--foreground-muted)", fontSize: '14px', marginTop: 2 }}>
               Enter the recipe yourself from scratch
             </p>
           </div>
-          <span className="ml-auto text-2xl" style={{ color: "var(--muted)" }}>›</span>
+          <ChevronRight size={18} strokeWidth={1.5} style={{ color: 'var(--foreground-faint)', flexShrink: 0 }} />
         </Link>
       </div>
     </div>

@@ -20,9 +20,7 @@ export default async function VersionDetailPage({
 
   const recipe = await prisma.recipe.findUnique({
     where: { id },
-    include: {
-      versions: { orderBy: { versionNumber: "asc" } },
-    },
+    include: { versions: { orderBy: { versionNumber: "asc" } } },
   });
 
   if (!recipe) notFound();
@@ -33,12 +31,8 @@ export default async function VersionDetailPage({
   const data = version.data as unknown as RecipeData;
   const isCurrent = version.id === recipe.currentVersionId;
 
-  // Find the previous version for diffing
   const prevVersion = recipe.versions.find((v) => v.versionNumber === vNum - 1);
-  const prevData = prevVersion
-    ? (prevVersion.data as unknown as RecipeData)
-    : null;
-
+  const prevData = prevVersion ? (prevVersion.data as unknown as RecipeData) : null;
   const changes = prevData ? diffRecipes(prevData, data) : [];
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
 
@@ -47,41 +41,40 @@ export default async function VersionDetailPage({
   const nextNum = allVersionNums.find((n) => n > vNum) ?? null;
 
   return (
-    <div className="px-[150px] py-8">
+    <div className="page-container py-10">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-4 mb-8">
         <BackButton href={`/recipes/${id}/versions`} />
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">Version {vNum}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+              Version {vNum}
+            </h1>
             {isCurrent && (
               <span
-                className="text-xs px-2 py-1 rounded-full font-semibold"
+                className="text-xs px-2.5 py-1 rounded-full font-semibold"
                 style={{ background: "var(--accent)", color: "white" }}
               >
                 current
               </span>
             )}
           </div>
-          <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+          <p className="mt-0.5" style={{ color: "var(--foreground-muted)", fontSize: '15px' }}>
             {new Date(version.createdAt).toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
+              weekday: "long", month: "long", day: "numeric", year: "numeric",
             })}
           </p>
         </div>
       </div>
 
-      {/* Prev / Next navigation */}
+      {/* Version navigation */}
       {(prevNum !== null || nextNum !== null) && (
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-8">
           {prevNum !== null ? (
             <Link
               href={`/recipes/${id}/versions/${prevNum}`}
-              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border"
-              style={{ borderColor: "var(--border)" }}
+              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border transition-all"
+              style={{ borderColor: "var(--border)", background: "var(--card)", color: "var(--foreground)" }}
             >
               ‹ v{prevNum}
             </Link>
@@ -89,8 +82,8 @@ export default async function VersionDetailPage({
           {nextNum !== null ? (
             <Link
               href={`/recipes/${id}/versions/${nextNum}`}
-              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border"
-              style={{ borderColor: "var(--border)" }}
+              className="flex items-center justify-center gap-1.5 flex-1 py-3 text-sm font-semibold rounded-xl border transition-all"
+              style={{ borderColor: "var(--border)", background: "var(--card)", color: "var(--foreground)" }}
             >
               v{nextNum} ›
             </Link>
@@ -98,17 +91,13 @@ export default async function VersionDetailPage({
         </div>
       )}
 
-      {/* Change note — editable */}
-      <EditChangeNote
-        recipeId={id}
-        versionNumber={vNum}
-        initial={version.changeNote}
-      />
+      {/* Change note */}
+      <EditChangeNote recipeId={id} versionNumber={vNum} initial={version.changeNote} />
 
-      {/* Diff vs previous version */}
+      {/* Diff */}
       {prevVersion && (
         <section className="mb-8">
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="font-display font-semibold mb-4" style={{ fontSize: '1.25rem' }}>
             What changed from v{prevVersion.versionNumber}
           </h2>
           <VersionDiff changes={changes} />
@@ -118,64 +107,67 @@ export default async function VersionDetailPage({
       {!prevVersion && (
         <div
           className="p-4 rounded-2xl mb-6 text-sm"
-          style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--muted)" }}
+          style={{ background: "var(--gold-light)", border: "1px solid var(--border)", borderLeft: "3px solid var(--gold)", color: "var(--foreground-muted)" }}
         >
           This is the original version of the recipe.
         </div>
       )}
 
-      {/* Restore button */}
+      {/* Restore */}
       {!isCurrent && (
-        <div className="mb-8">
+        <div className="mb-10">
           <RestoreVersionButton recipeId={id} versionNumber={vNum} />
         </div>
       )}
 
-      {/* Full recipe snapshot */}
-      <h2 className="text-xl font-bold mb-4">Full Recipe at This Version</h2>
+      <div className="ornament-divider mb-8" aria-hidden="true">✦</div>
 
-      {/* Meta */}
+      {/* Full recipe snapshot */}
+      <h2 className="font-display font-semibold mb-6" style={{ fontSize: '1.25rem' }}>
+        Full Recipe at This Version
+      </h2>
+
       {(data.prepTime || data.cookTime || data.servings) && (
         <div
-          className="flex gap-6 p-4 rounded-2xl mb-6 text-sm font-medium"
-          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+          className="flex flex-wrap gap-8 p-5 rounded-2xl mb-6"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           {totalTime && (
-            <div className="text-center">
-              <div className="text-2xl font-bold">{totalTime}</div>
-              <div style={{ color: "var(--muted)" }}>min total</div>
+            <div>
+              <div className="font-display font-semibold" style={{ fontSize: '28px', lineHeight: 1 }}>{totalTime}</div>
+              <div className="section-label mt-1">min total</div>
             </div>
           )}
           {data.prepTime && (
-            <div className="text-center">
-              <div className="text-2xl font-bold">{data.prepTime}</div>
-              <div style={{ color: "var(--muted)" }}>min prep</div>
+            <div>
+              <div className="font-display font-semibold" style={{ fontSize: '28px', lineHeight: 1 }}>{data.prepTime}</div>
+              <div className="section-label mt-1">min prep</div>
             </div>
           )}
           {data.cookTime && (
-            <div className="text-center">
-              <div className="text-2xl font-bold">{data.cookTime}</div>
-              <div style={{ color: "var(--muted)" }}>min cook</div>
+            <div>
+              <div className="font-display font-semibold" style={{ fontSize: '28px', lineHeight: 1 }}>{data.cookTime}</div>
+              <div className="section-label mt-1">min cook</div>
             </div>
           )}
           {data.servings && (
-            <div className="text-center">
-              <div className="text-2xl font-bold">{data.servings}</div>
-              <div style={{ color: "var(--muted)" }}>servings</div>
+            <div>
+              <div className="font-display font-semibold" style={{ fontSize: '28px', lineHeight: 1 }}>{data.servings}</div>
+              <div className="section-label mt-1">servings</div>
             </div>
           )}
         </div>
       )}
 
       {data.description && (
-        <p className="mb-6 leading-relaxed" style={{ color: "var(--muted)" }}>
+        <p className="mb-6 leading-relaxed" style={{ color: "var(--foreground-muted)" }}>
           {data.description}
         </p>
       )}
 
       {data.ingredients.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-lg font-bold mb-3">Ingredients</h3>
+          <h3 className="section-label mb-4">Ingredients</h3>
           <ul className="flex flex-col gap-2">
             {data.ingredients.map((ing, i) => (
               <li
@@ -183,13 +175,13 @@ export default async function VersionDetailPage({
                 className="flex items-start gap-3 p-3 rounded-xl"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
-                <span className="w-2 h-2 mt-2.5 rounded-full flex-shrink-0" style={{ background: "var(--accent)" }} />
+                <span className="w-1.5 h-1.5 mt-2.5 rounded-full flex-shrink-0" style={{ background: "var(--accent)" }} />
                 <span>
                   <span className="font-medium">
                     {[ing.amount, ing.unit].filter(Boolean).join(" ")} {ing.name}
                   </span>
                   {ing.notes && (
-                    <span className="ml-1 text-sm" style={{ color: "var(--muted)" }}>
+                    <span className="ml-1.5 text-sm" style={{ color: "var(--foreground-muted)" }}>
                       ({ing.notes})
                     </span>
                   )}
@@ -202,7 +194,7 @@ export default async function VersionDetailPage({
 
       {data.instructions.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-lg font-bold mb-3">Instructions</h3>
+          <h3 className="section-label mb-4">Instructions</h3>
           <ol className="flex flex-col gap-3">
             {data.instructions.map((inst) => (
               <li
@@ -211,7 +203,7 @@ export default async function VersionDetailPage({
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
                 <span
-                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm"
                   style={{ background: "var(--accent)" }}
                 >
                   {inst.step}
@@ -225,10 +217,10 @@ export default async function VersionDetailPage({
 
       {data.notes && (
         <section className="mb-8">
-          <h3 className="text-lg font-bold mb-3">Notes</h3>
+          <h3 className="section-label mb-3">Notes</h3>
           <div
-            className="p-4 rounded-xl whitespace-pre-wrap leading-relaxed"
-            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+            className="p-5 rounded-2xl whitespace-pre-wrap leading-relaxed font-display italic"
+            style={{ background: "var(--gold-light)", border: "1px solid var(--border)", borderLeft: "3px solid var(--gold)", fontSize: '16px' }}
           >
             {data.notes}
           </div>

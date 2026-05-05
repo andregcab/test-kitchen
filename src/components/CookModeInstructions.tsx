@@ -43,7 +43,7 @@ export default function CookModeInstructions({ instructions, editAction }: Props
   return (
     <section>
       <div className='flex items-center justify-between mb-3'>
-        <h2 className='text-lg font-bold'>Instructions</h2>
+        <h2 className='font-display font-semibold' style={{ fontSize: '1.2rem' }}>Instructions</h2>
         {!cookMode && (
           <div className='flex items-center gap-2'>
             {editAction}

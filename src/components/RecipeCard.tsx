@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { UtensilsCrossed, Soup, Wheat, Salad, Utensils, Clock, Users, Star } from "lucide-react";
+import { UtensilsCrossed, Soup, Wheat, Salad, Clock, Users, Star } from "lucide-react";
 import { getTagColor } from "@/lib/tagColors";
 import { RecipeData } from "@/lib/types";
 
@@ -11,7 +11,7 @@ const PLACEHOLDER_ICONS = [UtensilsCrossed, Soup, Wheat, Salad];
 function placeholderIcon(id: string) {
   const index = id.charCodeAt(0) % PLACEHOLDER_ICONS.length;
   const Icon = PLACEHOLDER_ICONS[index];
-  return <Icon size={36} strokeWidth={1.25} />;
+  return <Icon size={32} strokeWidth={1.1} />;
 }
 
 interface Props {
@@ -24,7 +24,6 @@ interface Props {
   onFavoriteChange?: (isFavorite: boolean) => void;
   onTagClick?: (tag: string) => void;
 }
-
 
 export default function RecipeCard({
   id,
@@ -40,6 +39,7 @@ export default function RecipeCard({
   const color = getTagColor(tags);
   const data = currentVersion?.data as RecipeData | null;
   const totalTime = data ? (data.prepTime ?? 0) + (data.cookTime ?? 0) || null : null;
+  const hasPhoto = !!(images && images[0]);
 
   async function toggleFavorite(e: React.MouseEvent) {
     e.preventDefault();
@@ -52,93 +52,110 @@ export default function RecipeCard({
 
   return (
     <Link href={`/recipes/${id}`} className="block group">
+      {/* height:100% lets this fill the grid row (grid stretches items by default) */}
       <div
-        className="rounded-2xl overflow-hidden transition-transform active:scale-[0.98]"
-        style={{ border: `1px solid ${color.border}`, background: "var(--card)" }}
+        data-tag-index={color.index}
+        className="recipe-card rounded-2xl overflow-hidden active:scale-[0.98] flex flex-col"
+        style={{
+          height: '100%',
+          border: '1px solid var(--border)',
+          background: 'var(--card)',
+        }}
       >
-        {/* Color / photo area */}
+        {/* ── IMAGE / SWATCH — always 200px, favorite button only ── */}
         <div
-          className="relative h-48 flex items-end p-3"
-          style={{ background: color.bg }}
+          className="relative"
+          style={{ height: 200, flexShrink: 0, background: 'var(--tag-bg)' }}
         >
-          {/* Placeholder icon when no photo */}
-          {(!images || !images[0]) && (
-            <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.25 }}>
+          {!hasPhoto && (
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ color: 'var(--tag-color)', opacity: 0.3 }}
+            >
               {placeholderIcon(id)}
             </div>
           )}
 
-          {/* Photo if available */}
-          {images && images[0] && (
+          {hasPhoto && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={images[0]}
+              src={images![0]}
               alt=""
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
           )}
 
-          {/* Overlay so tag + star stay readable over photos */}
-          {images && images[0] && (
+          {hasPhoto && (
             <div
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }}
+              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, transparent 45%)' }}
             />
           )}
 
-          {/* Favorite button */}
           <button
             onClick={toggleFavorite}
-            className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10"
+            className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-full z-10"
             style={{
-              background: isFavorite ? "var(--accent)" : "rgba(255,255,255,0.75)",
-              color: isFavorite ? "white" : "var(--muted)",
+              background: isFavorite ? "var(--gold)" : "rgba(0,0,0,0.32)",
+              color: "white",
+              backdropFilter: 'blur(4px)',
+              transition: 'background 200ms ease',
             }}
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
-            <Star size={16} strokeWidth={1.5} fill={isFavorite ? "currentColor" : "none"} />
+            <Star size={14} strokeWidth={1.5} fill={isFavorite ? "currentColor" : "none"} />
           </button>
-
-          {/* Tag pill */}
-          {tags[0] && (
-            <button
-              onClick={(e) => { e.preventDefault(); onTagClick?.(tags[0]); }}
-              className="relative z-10 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity active:opacity-70"
-              style={{
-                background: "rgba(255,255,255,0.75)",
-                color: "var(--foreground)",
-                cursor: onTagClick ? "pointer" : "default",
-              }}
-            >
-              {tags[0]}
-            </button>
-          )}
         </div>
 
-        {/* Card content — fixed layout so all cards align */}
-        <div className="p-4 flex flex-col" style={{ minHeight: 96 }}>
-          {/* Title always reserves 2 lines */}
+        {/* ── CARD BODY — flex-col so meta pins to the bottom ── */}
+        <div className="px-4 pt-3 pb-4 flex flex-col flex-1">
+          {/* Title */}
           <h2
-            className="font-bold text-base leading-snug mb-auto"
+            className="font-display font-semibold leading-snug"
             style={{
+              fontSize: '17px',
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              minHeight: "2.6em",
+              minHeight: "2.5em",
+              color: 'var(--foreground)',
             }}
           >
             {title}
           </h2>
-          {/* Stats always at bottom, with placeholders */}
-          <div className="flex items-center gap-5 text-sm mt-3">
+
+          {/* Tag — below title; slot always 28px so cards with/without tags stay equal */}
+          <div style={{ minHeight: 28, marginTop: 8 }}>
+            {tags[0] && (
+              <button
+                onClick={(e) => { e.preventDefault(); onTagClick?.(tags[0]); }}
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'var(--tag-bg)',
+                  color: 'var(--tag-color)',
+                  border: '1px solid var(--tag-border)',
+                  cursor: onTagClick ? "pointer" : "default",
+                  letterSpacing: '0.03em',
+                }}
+              >
+                {tags[0]}
+              </button>
+            )}
+          </div>
+
+          {/* Meta — pushed to bottom */}
+          <div
+            className="flex items-center gap-4 mt-auto card-meta"
+            style={{ paddingTop: 12, fontSize: '13px' }}
+          >
             <span className="flex items-center gap-1.5">
-              <span style={{ color: 'var(--foreground)', opacity: 0.75 }}><Clock size={13} strokeWidth={1.5} /></span>
-              <span style={{ color: 'var(--foreground)', }}>{totalTime ? `${totalTime} min` : "? min"}</span>
+              <Clock size={12} strokeWidth={1.5} />
+              <span>{totalTime ? `${totalTime} min` : "—"}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span style={{ color: 'var(--foreground)', opacity: 0.75 }}><Users size={13} strokeWidth={1.5} /></span>
-              <span style={{ color: 'var(--foreground)', }}>{data?.servings ? `${data.servings} servings` : '? servings'}</span>
+              <Users size={12} strokeWidth={1.5} />
+              <span>{data?.servings ? `${data.servings} servings` : '—'}</span>
             </span>
           </div>
         </div>

@@ -40,9 +40,10 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Props)
       <div
         className="fixed bottom-0 left-0 right-0 z-50 flex flex-col rounded-t-3xl transition-transform duration-300"
         style={{
-          background: 'var(--background)',
+          background: 'var(--card)',
           maxHeight: '85vh',
           transform: animIn ? 'translateY(0)' : 'translateY(100%)',
+          boxShadow: '0 -4px 32px rgba(44,36,22,0.12)',
         }}
       >
         {/* Drag handle */}
@@ -54,7 +55,7 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Props)
           className="flex items-center justify-between px-6 py-3 flex-shrink-0"
           style={{ borderBottom: '1px solid var(--border)' }}
         >
-          <h2 className="text-lg font-bold">{title}</h2>
+          <h2 className="font-display font-semibold" style={{ fontSize: '1.1rem' }}>{title}</h2>
           <button
             onClick={onClose}
             className="w-9 h-9 flex items-center justify-center rounded-xl font-bold"

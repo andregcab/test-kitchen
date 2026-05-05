@@ -124,7 +124,7 @@ export default function IngredientsSection({ ingredients, servings, editAction }
     <section>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold">Ingredients</h2>
+          <h2 className="font-display font-semibold" style={{ fontSize: '1.2rem' }}>Ingredients</h2>
           {scaledServings && scale !== 1 && (
             <span className="text-sm" style={{ color: 'var(--muted)' }}>
               {scaledServings} servings

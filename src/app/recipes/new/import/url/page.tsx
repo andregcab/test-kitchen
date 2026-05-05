@@ -10,14 +10,7 @@ type State =
   | { stage: 'input' }
   | { stage: 'loading' }
   | { stage: 'review'; data: RecipeData; tags: string[]; images: string[] }
-  | {
-      stage: 'error';
-      reason:
-        | 'no_structured_data'
-        | 'fetch_error'
-        | 'invalid_url'
-        | 'unknown';
-    };
+  | { stage: 'error'; reason: 'no_structured_data' | 'fetch_error' | 'invalid_url' | 'unknown' };
 
 const LOADING_MESSAGES = [
   'Fetching recipe…',
@@ -83,69 +76,50 @@ export default function UrlImportPage() {
   async function handleFetch() {
     if (!url.trim()) return;
     setState({ stage: 'loading' });
-
     const res = await fetch('/api/import/url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: url.trim() }),
     });
-
     const json = await res.json();
-
     if (json.ok) {
-      setState({
-        stage: 'review',
-        data: json.data,
-        tags: json.tags ?? [],
-        images: json.images ?? [],
-      });
+      setState({ stage: 'review', data: json.data, tags: json.tags ?? [], images: json.images ?? [] });
     } else {
-      setState({
-        stage: 'error',
-        reason: json.reason ?? 'unknown',
-      });
+      setState({ stage: 'error', reason: json.reason ?? 'unknown' });
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') handleFetch();
-  }
-
-  const backHref =
-    state.stage === 'review' || state.stage === 'error'
-      ? undefined
-      : '/recipes/new';
+  const backHref = state.stage === 'review' || state.stage === 'error' ? undefined : '/recipes/new';
 
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-10">
         <BackButton
           href={backHref}
-          onClick={
-            backHref ? undefined : () => setState({ stage: 'input' })
-          }
+          onClick={backHref ? undefined : () => setState({ stage: 'input' })}
         />
-        <h1 className="text-2xl font-bold">Import from website</h1>
+        <div>
+          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+            Import from website
+          </h1>
+          <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>
+            Paste a link and we&apos;ll do the rest
+          </p>
+        </div>
       </div>
 
-      {/* Input stage */}
       {(state.stage === 'input' || state.stage === 'loading') && (
-        <div className="flex flex-col gap-4">
-          <p style={{ color: 'var(--muted)' }}>
-            Paste the link to any recipe page and we&apos;ll fill in
-            the details for you.
-          </p>
+        <div className="flex flex-col gap-4 max-w-lg">
           <input
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
             placeholder="https://www.allrecipes.com/recipe/..."
-            className="w-full px-4 py-4 text-lg rounded-xl border-2 outline-none focus:border-[var(--accent)] transition-colors"
-            style={{
-              borderColor: 'var(--border)',
-              background: 'var(--background)',
-            }}
+            className="w-full px-4 rounded-xl border-2 text-base outline-none transition-colors"
+            style={{ borderColor: 'var(--border)', background: 'var(--card)', color: 'var(--foreground)' }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
+            onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
             autoFocus
             disabled={state.stage === 'loading'}
           />
@@ -153,67 +127,48 @@ export default function UrlImportPage() {
             onClick={handleFetch}
             disabled={!url.trim() || state.stage === 'loading'}
             suppressHydrationWarning
-            className="w-full py-4 text-lg text-white font-semibold rounded-xl disabled:opacity-60 transition-opacity flex items-center justify-center gap-3"
+            className="w-full py-4 text-base text-white font-semibold rounded-xl disabled:opacity-60 flex items-center justify-center gap-3"
             style={{ background: 'var(--accent)' }}
           >
             {state.stage === 'loading' && (
-              <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" stroke="white" strokeOpacity="0.3" strokeWidth="3" />
                 <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
               </svg>
             )}
             {state.stage === 'loading' ? loadingMsg : 'Get Recipe'}
           </button>
-
-          <p
-            className="text-sm text-center"
-            style={{ color: 'var(--muted)' }}
-          >
-            Works best with AllRecipes, NYT Cooking, Food Network,
-            Serious Eats, and most major recipe sites.
+          <p className="text-sm text-center" style={{ color: 'var(--foreground-muted)' }}>
+            Works best with AllRecipes, NYT Cooking, Food Network, Serious Eats, and most major recipe sites.
           </p>
         </div>
       )}
 
-      {/* Error stage */}
       {state.stage === 'error' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 max-w-lg">
           <div
             className="p-5 rounded-2xl"
-            style={{
-              background: '#fef2f2',
-              border: '1px solid #fca5a5',
-            }}
+            style={{ background: 'var(--card)', border: '1px solid var(--error)', borderLeft: '3px solid var(--error)' }}
           >
-            <p
-              className="font-semibold mb-1"
-              style={{ color: '#dc2626' }}
-            >
+            <p className="font-semibold mb-1" style={{ color: 'var(--error)' }}>
               Couldn&apos;t import this recipe
             </p>
-            <p
-              className="text-sm leading-relaxed"
-              style={{ color: '#7f1d1d' }}
-            >
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>
               {errorMessages[state.reason]}
             </p>
           </div>
-
           <div className="flex flex-col gap-3">
             <button
               onClick={() => setState({ stage: 'input' })}
               className="w-full py-4 font-semibold rounded-xl border-2"
-              style={{
-                borderColor: 'var(--accent)',
-                color: 'var(--accent)',
-              }}
+              style={{ borderColor: 'var(--accent)', color: 'var(--accent)', background: 'var(--accent-light)' }}
             >
               Try a different URL
             </button>
             <Link
               href="/recipes/new/manual"
               className="block w-full py-4 font-semibold rounded-xl border text-center"
-              style={{ borderColor: 'var(--border)' }}
+              style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)', background: 'var(--card)' }}
             >
               Enter manually instead
             </Link>
@@ -221,36 +176,21 @@ export default function UrlImportPage() {
         </div>
       )}
 
-      {/* Review stage */}
       {state.stage === 'review' && (
         <div className="flex flex-col gap-6">
           <div
-            className="flex items-start gap-3 p-4 rounded-2xl"
-            style={{
-              background: '#f0fdf4',
-              border: '1px solid #86efac',
-            }}
+            className="flex items-start gap-3 p-4 rounded-2xl max-w-lg"
+            style={{ background: 'var(--accent-light)', border: '1px solid var(--accent)' }}
           >
-            <span className="text-xl">✓</span>
+            <span style={{ color: 'var(--accent)', fontSize: 18 }}>✓</span>
             <div>
-              <p
-                className="font-semibold"
-                style={{ color: '#15803d' }}
-              >
-                Recipe imported!
-              </p>
-              <p className="text-sm" style={{ color: '#166534' }}>
-                Review the details below and make any changes before
-                saving.
+              <p className="font-semibold" style={{ color: 'var(--accent)' }}>Recipe imported!</p>
+              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                Review the details below and make any changes before saving.
               </p>
             </div>
           </div>
-
-          <RecipeForm
-            initialData={state.data}
-            initialTags={state.tags}
-            initialImages={state.images}
-          />
+          <RecipeForm initialData={state.data} initialTags={state.tags} initialImages={state.images} />
         </div>
       )}
     </div>

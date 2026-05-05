@@ -30,7 +30,7 @@ export default async function VersionHistoryPage({
     ? recipe.branches.find((b) => b.id === branchParam)
     : recipe.branches.find((b) => b.isDefault);
 
-  const activeVersion = activeBranch?.currentVersionId;
+  const activeVersionId = activeBranch?.currentVersionId;
 
   const versions = activeBranch
     ? recipe.versions.filter((v) => v.branchId === activeBranch.id)
@@ -40,20 +40,21 @@ export default async function VersionHistoryPage({
     ? `/recipes/${id}?branch=${activeBranch.id}`
     : `/recipes/${id}`;
 
-  const branchCount = recipe.branches.length;
-  const canBranch = branchCount < 5;
+  const canBranch = recipe.branches.length < 5;
 
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-8">
         <BackButton href={backHref} />
         <div>
-          <h1 className="text-2xl font-bold">Version History</h1>
-          <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+            Version History
+          </h1>
+          <p style={{ fontSize: '15px', color: 'var(--foreground-muted)' }}>
             {recipe.title}
             {activeBranch && !activeBranch.isDefault && (
               <span
-                className="ml-2 text-xs px-2 py-0.5 rounded-full"
+                className="ml-2 text-xs px-2 py-0.5 rounded-full font-semibold"
                 style={{ background: "var(--accent)", color: "white" }}
               >
                 {activeBranch.name}
@@ -65,7 +66,7 @@ export default async function VersionHistoryPage({
 
       <ul className="flex flex-col gap-3">
         {versions.map((v) => {
-          const isCurrent = v.id === activeVersion;
+          const isCurrent = v.id === activeVersionId;
           const versionHref = activeBranch && !activeBranch.isDefault
             ? `/recipes/${id}/versions/${v.versionNumber}?branch=${activeBranch.id}`
             : `/recipes/${id}/versions/${v.versionNumber}`;
@@ -74,46 +75,49 @@ export default async function VersionHistoryPage({
             <li key={v.id} className="flex items-stretch gap-3">
               <Link
                 href={versionHref}
-                className="flex-1 flex items-center gap-4 p-5 rounded-2xl border transition-colors hover:border-[var(--accent)]"
+                className="flex-1 flex items-center gap-4 p-5 rounded-2xl border transition-all active:scale-[0.99]"
                 style={{
                   background: "var(--card)",
                   borderColor: isCurrent ? "var(--accent)" : "var(--border)",
+                  boxShadow: isCurrent ? "0 0 0 1px var(--accent)" : "none",
                 }}
               >
                 <div
-                  className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm"
+                  className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-display font-semibold"
                   style={{
-                    background: isCurrent ? "var(--accent)" : "var(--border)",
-                    color: isCurrent ? "white" : "var(--muted)",
+                    background: isCurrent ? "var(--accent)" : "var(--surface)",
+                    color: isCurrent ? "white" : "var(--foreground-muted)",
+                    fontSize: '14px',
+                    border: `1px solid ${isCurrent ? 'var(--accent)' : 'var(--border)'}`,
                   }}
                 >
                   v{v.versionNumber}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">
-                    {v.changeNote ?? "No change note"}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-medium truncate" style={{ fontSize: '15px' }}>
+                      {v.changeNote ?? "No change note"}
+                    </p>
                     {isCurrent && (
                       <span
-                        className="ml-2 text-xs px-2 py-0.5 rounded-full align-middle"
+                        className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
                         style={{ background: "var(--accent)", color: "white" }}
                       >
                         current
                       </span>
                     )}
-                  </p>
-                  <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+                  </div>
+                  <p className="text-sm mt-1" style={{ color: "var(--foreground-muted)" }}>
                     {new Date(v.createdAt).toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
+                      weekday: "short", month: "short", day: "numeric", year: "numeric",
                     })}
                   </p>
                 </div>
-                <span className="text-2xl" style={{ color: "var(--muted)" }}>›</span>
+                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style={{ color: 'var(--foreground-faint)', flexShrink: 0 }}>
+                  <path d="M1 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </Link>
 
-              {/* Branch from this version */}
               {canBranch && (
                 <BranchFromHereButton
                   recipeId={id}

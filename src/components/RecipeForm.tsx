@@ -222,9 +222,9 @@ export default function RecipeForm({
   }
 
   const inputClass =
-    'w-full px-4 py-3 text-base rounded-xl border-2 outline-none focus:border-[var(--accent)] transition-colors bg-[var(--background)]';
-  const inputStyle = { borderColor: 'var(--border)' };
-  const labelClass = 'block text-sm font-semibold mb-2';
+    'w-full px-4 py-3 text-base rounded-xl border-2 outline-none focus:border-[var(--accent)] transition-colors';
+  const inputStyle = { borderColor: 'var(--border)', background: 'var(--card)', color: 'var(--foreground)' };
+  const labelClass = 'section-label block mb-2';
   const sectionClass = 'flex flex-col gap-2';
 
   return (
@@ -692,7 +692,7 @@ export default function RecipeForm({
         </button>
       </div>
       {saveError && (
-        <p className="text-center text-sm pt-2" style={{ color: '#dc2626' }}>
+        <p className="text-center text-sm pt-2" style={{ color: 'var(--error)' }}>
           Something went wrong. Please try again.
         </p>
       )}

@@ -39,8 +39,7 @@ function compressImage(file: File): Promise<ImageEntry> {
         else { width = Math.round(width * MAX / height); height = MAX; }
       }
       const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = width; canvas.height = height;
       canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
       const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
       resolve({ base64: dataUrl.split(',')[1], mediaType: 'image/jpeg', objectUrl });
@@ -79,13 +78,11 @@ export default function PhotoImportPage() {
     const payload = state.images.map(({ base64, mediaType }) => ({ base64, mediaType }));
     state.images.forEach((img) => URL.revokeObjectURL(img.objectUrl));
     setState({ stage: 'loading' });
-
     const res = await fetch('/api/import/photo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ images: payload }),
     });
-
     const json = await res.json();
     if (json.ok) {
       setState({ stage: 'review', data: json.data, tags: json.tags ?? [] });
@@ -102,51 +99,58 @@ export default function PhotoImportPage() {
   const backHref = state.stage === 'pick' ? '/recipes/new' : undefined;
 
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-10">
         <BackButton href={backHref} onClick={backHref ? undefined : reset} />
-        <h1 className="text-2xl font-bold">Import from photo</h1>
+        <div>
+          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+            Import from photo
+          </h1>
+          <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>
+            Photograph a cookbook page or recipe card
+          </p>
+        </div>
       </div>
 
       {/* Pick stage */}
       {state.stage === 'pick' && (
-        <div className="flex flex-col gap-4">
-          <p style={{ color: 'var(--muted)' }}>
+        <div className="flex flex-col gap-5 max-w-md">
+          <p style={{ color: 'var(--foreground-muted)', lineHeight: 1.6 }}>
             Take a photo of a cookbook page, recipe card, or printed recipe. You can add up to {MAX_IMAGES} photos for multi-page recipes.
           </p>
-          <div className="grid grid-cols-2 gap-4 mt-2">
+          <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => cameraInputRef.current?.click()}
-              className="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
+              className="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 transition-all active:scale-[0.98]"
               style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
             >
-              <Camera size={40} strokeWidth={1.5} style={{ color: 'var(--accent)' }} />
+              <Camera size={36} strokeWidth={1.4} style={{ color: 'var(--accent)' }} />
               <div className="text-center">
-                <p className="font-semibold text-lg">Take a photo</p>
-                <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>Use your camera</p>
+                <p className="font-display font-semibold" style={{ fontSize: '16px' }}>Take a photo</p>
+                <p className="text-sm mt-0.5" style={{ color: 'var(--foreground-muted)' }}>Use your camera</p>
               </div>
             </button>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 transition-colors hover:border-[var(--accent)]"
+              className="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 transition-all active:scale-[0.98]"
               style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
             >
-              <ImagePlus size={40} strokeWidth={1.5} style={{ color: 'var(--accent)' }} />
+              <ImagePlus size={36} strokeWidth={1.4} style={{ color: 'var(--accent)' }} />
               <div className="text-center">
-                <p className="font-semibold text-lg">Choose a photo</p>
-                <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>From your library</p>
+                <p className="font-display font-semibold" style={{ fontSize: '16px' }}>Choose a photo</p>
+                <p className="text-sm mt-0.5" style={{ color: 'var(--foreground-muted)' }}>From your library</p>
               </div>
             </button>
           </div>
-          <p className="text-sm text-center mt-2" style={{ color: 'var(--muted)' }}>
+          <p className="text-sm text-center" style={{ color: 'var(--foreground-muted)' }}>
             Works best with clear, well-lit photos where all the text is readable.
           </p>
         </div>
       )}
 
-      {/* Selected stage — thumbnail grid */}
+      {/* Selected stage */}
       {state.stage === 'selected' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 max-w-md">
           <div className="grid grid-cols-3 gap-3">
             {state.images.map((img, i) => (
               <div key={i} className="relative rounded-2xl overflow-hidden aspect-[3/4]" style={{ border: '1px solid var(--border)' }}>
@@ -168,24 +172,21 @@ export default function PhotoImportPage() {
                 </span>
               </div>
             ))}
-
-            {/* Add more slot */}
             {canAddMore && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed aspect-[3/4] transition-colors hover:border-[var(--accent)]"
-                style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
+                className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed aspect-[3/4] transition-all"
+                style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)' }}
               >
-                <ImagePlus size={24} strokeWidth={1.5} />
+                <ImagePlus size={22} strokeWidth={1.5} />
                 <span className="text-sm font-medium">Add page</span>
               </button>
             )}
           </div>
-
           <div className="flex flex-col gap-3">
             <button
               onClick={handleAnalyze}
-              className="w-full py-4 text-lg text-white font-semibold rounded-xl transition-opacity active:opacity-80"
+              className="w-full py-4 text-base text-white font-semibold rounded-xl active:opacity-80"
               style={{ background: 'var(--accent)' }}
             >
               Extract Recipe{state.images.length > 1 ? ` from ${state.images.length} photos` : ''}
@@ -193,7 +194,7 @@ export default function PhotoImportPage() {
             <button
               onClick={reset}
               className="w-full py-4 font-semibold rounded-xl border"
-              style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
+              style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)', background: 'var(--card)' }}
             >
               Start over
             </button>
@@ -201,26 +202,29 @@ export default function PhotoImportPage() {
         </div>
       )}
 
-      {/* Loading stage */}
+      {/* Loading */}
       {state.stage === 'loading' && (
         <div className="flex flex-col items-center justify-center gap-6 py-24">
-          <svg className="animate-spin" width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg className="animate-spin" width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="12" cy="12" r="10" stroke="var(--border)" strokeWidth="3" />
             <path d="M12 2a10 10 0 0 1 10 10" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
           </svg>
           <div className="text-center">
-            <p className="text-lg font-semibold">Reading your recipe…</p>
-            <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>This usually takes 10–20 seconds</p>
+            <p className="font-display font-semibold" style={{ fontSize: '18px' }}>Reading your recipe…</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>This usually takes 10–20 seconds</p>
           </div>
         </div>
       )}
 
-      {/* Error stage */}
+      {/* Error */}
       {state.stage === 'error' && (
-        <div className="flex flex-col gap-6">
-          <div className="p-5 rounded-2xl" style={{ background: '#fef2f2', border: '1px solid #fca5a5' }}>
-            <p className="font-semibold mb-1" style={{ color: '#dc2626' }}>Couldn&apos;t read this recipe</p>
-            <p className="text-sm leading-relaxed" style={{ color: '#7f1d1d' }}>
+        <div className="flex flex-col gap-5 max-w-md">
+          <div
+            className="p-5 rounded-2xl"
+            style={{ background: 'var(--card)', border: '1px solid var(--error)', borderLeft: '3px solid var(--error)' }}
+          >
+            <p className="font-semibold mb-1" style={{ color: 'var(--error)' }}>Couldn&apos;t read this recipe</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>
               {errorMessages[state.reason] ?? errorMessages.unknown}
             </p>
           </div>
@@ -228,14 +232,14 @@ export default function PhotoImportPage() {
             <button
               onClick={reset}
               className="w-full py-4 font-semibold rounded-xl border-2"
-              style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+              style={{ borderColor: 'var(--accent)', color: 'var(--accent)', background: 'var(--accent-light)' }}
             >
               Try different photos
             </button>
             <a
               href="/recipes/new/manual"
               className="block w-full py-4 font-semibold rounded-xl border text-center"
-              style={{ borderColor: 'var(--border)' }}
+              style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)', background: 'var(--card)' }}
             >
               Enter manually instead
             </a>
@@ -243,21 +247,25 @@ export default function PhotoImportPage() {
         </div>
       )}
 
-      {/* Review stage */}
+      {/* Review */}
       {state.stage === 'review' && (
         <div className="flex flex-col gap-6">
-          <div className="flex items-start gap-3 p-4 rounded-2xl" style={{ background: '#f0fdf4', border: '1px solid #86efac' }}>
-            <span className="text-xl">✓</span>
+          <div
+            className="flex items-start gap-3 p-4 rounded-2xl max-w-lg"
+            style={{ background: 'var(--accent-light)', border: '1px solid var(--accent)' }}
+          >
+            <span style={{ color: 'var(--accent)', fontSize: 18 }}>✓</span>
             <div>
-              <p className="font-semibold" style={{ color: '#15803d' }}>Recipe extracted!</p>
-              <p className="text-sm" style={{ color: '#166534' }}>Review the details below and make any changes before saving.</p>
+              <p className="font-semibold" style={{ color: 'var(--accent)' }}>Recipe extracted!</p>
+              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                Review the details below and make any changes before saving.
+              </p>
             </div>
           </div>
           <RecipeForm initialData={state.data} initialTags={state.tags} />
         </div>
       )}
 
-      {/* Hidden inputs */}
       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="sr-only"
         onChange={(e) => { handleFiles(e.target.files); e.target.value = ''; }} />
       <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only"

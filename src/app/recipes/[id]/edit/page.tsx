@@ -51,10 +51,12 @@ export default async function EditRecipePage({
     : '';
 
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="page-container py-10">
+      <div className="flex items-center gap-4 mb-8">
         <BackButton href={backHref} />
-        <h1 className="text-2xl font-bold">Edit Recipe{branchLabel}</h1>
+        <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+          Edit Recipe{branchLabel}
+        </h1>
       </div>
 
       <RecipeForm

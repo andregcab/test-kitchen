@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import RecipeCard from "@/components/RecipeCard";
-import { BookOpen, Plus } from "lucide-react";
+import { BookOpen, Plus, Search, X } from "lucide-react";
 
 interface Menu {
   id: string;
@@ -32,7 +32,6 @@ interface Props {
 export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const router = useRouter();
 
-  // Cookbooks state
   const [menus, setMenus] = useState(initialMenus);
   const [cookbookSearch, setCookbookSearch] = useState("");
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -40,7 +39,6 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const [creatingCookbook, setCreatingCookbook] = useState(false);
   const [showNewInput, setShowNewInput] = useState(false);
 
-  // Recipe state
   const [localRecipes, setLocalRecipes] = useState(recipes);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("updated");
@@ -109,148 +107,162 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const activeMenu = menus.find((m) => m.id === activeMenuId);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-12">
 
       {/* ── COOKBOOKS ── */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: "var(--muted)" }}>
-            Cookbooks
-            {menus.length > 0 && (
-              <span
-                className="ml-2 font-normal normal-case tracking-normal px-2 py-0.5 rounded-full text-xs"
-                style={{ background: "var(--border)" }}
-              >
-                {menus.length}
-              </span>
-            )}
-          </h2>
-          <button
-            onClick={() => setShowNewInput((v) => !v)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-colors"
-            style={{
-              background: showNewInput ? "var(--accent)" : "var(--card)",
-              color: showNewInput ? "white" : "var(--accent)",
-              border: `1px solid ${showNewInput ? "var(--accent)" : "var(--border)"}`,
-            }}
-          >
-            <Plus size={14} strokeWidth={2} />
-            New Cookbook
-          </button>
-        </div>
-
-        {showNewInput && (
-          <div className="flex gap-2 mb-4">
-            <input
-              autoFocus
-              value={newCookbookName}
-              onChange={(e) => setNewCookbookName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && createCookbook()}
-              placeholder="Cookbook name…"
-              className="flex-1 px-4 py-3 rounded-xl border-2 text-base outline-none focus:border-[var(--accent)] transition-colors bg-[var(--background)]"
-              style={{ borderColor: "var(--border)" }}
-            />
+      {(menus.length > 0 || showNewInput) && (
+        <section>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="section-label">
+              Cookbooks
+              {menus.length > 0 && (
+                <span
+                  className="ml-2 px-2 py-0.5 rounded-full"
+                  style={{
+                    background: 'var(--gold-light)',
+                    color: 'var(--gold)',
+                    fontWeight: 700,
+                    fontSize: '11px',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {menus.length}
+                </span>
+              )}
+            </h2>
             <button
-              onClick={createCookbook}
-              disabled={creatingCookbook || !newCookbookName.trim()}
-              className="px-5 py-3 rounded-xl text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: "var(--accent)" }}
+              onClick={() => setShowNewInput((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all"
+              style={{
+                background: showNewInput ? "var(--accent)" : "var(--surface)",
+                color: showNewInput ? "white" : "var(--accent)",
+                border: `1px solid ${showNewInput ? "var(--accent)" : "var(--border)"}`,
+                fontSize: '13px',
+              }}
             >
-              Create
+              <Plus size={13} strokeWidth={2.5} />
+              New Cookbook
             </button>
           </div>
-        )}
 
-        {menus.length > 0 && (
-          <>
-            {menus.length > 4 && (
+          {showNewInput && (
+            <div className="flex gap-2 mb-5">
               <input
-                value={cookbookSearch}
-                onChange={(e) => setCookbookSearch(e.target.value)}
-                placeholder="Find a cookbook…"
-                className="w-full px-4 py-3 mb-3 rounded-xl border-2 text-base outline-none focus:border-[var(--accent)] transition-colors bg-[var(--background)]"
-                style={{ borderColor: "var(--border)" }}
+                autoFocus
+                value={newCookbookName}
+                onChange={(e) => setNewCookbookName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && createCookbook()}
+                placeholder="Cookbook name…"
+                className="flex-1 px-4 rounded-xl border-2 text-base outline-none transition-colors"
+                style={{
+                  borderColor: "var(--border)",
+                  background: "var(--card)",
+                  color: "var(--foreground)",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
               />
-            )}
-
-            <div className="grid grid-cols-4 gap-3">
-              {filteredMenus.map((menu) => {
-                const active = activeMenuId === menu.id;
-                return (
-                  <button
-                    key={menu.id}
-                    onClick={() => setActiveMenuId(active ? null : menu.id)}
-                    className="flex items-start gap-3 p-4 rounded-2xl text-left transition-all active:scale-[0.98]"
-                    style={{
-                      background: active ? "var(--accent)" : "var(--card)",
-                      color: active ? "white" : "var(--foreground)",
-                      border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                    }}
-                  >
-                    <BookOpen size={22} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
-                    <div className="min-w-0">
-                      <p className="font-semibold text-base leading-snug truncate">{menu.name}</p>
-                      <p
-                        className="text-sm mt-0.5"
-                        style={{ color: active ? "rgba(255,255,255,0.75)" : "var(--muted)" }}
-                      >
-                        {menu._count.recipes} {menu._count.recipes === 1 ? "recipe" : "recipes"}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+              <button
+                onClick={createCookbook}
+                disabled={creatingCookbook || !newCookbookName.trim()}
+                className="px-5 rounded-xl text-sm font-semibold text-white disabled:opacity-50"
+                style={{ background: "var(--accent)" }}
+              >
+                Create
+              </button>
             </div>
-          </>
-        )}
+          )}
 
-        {menus.length === 0 && !showNewInput && (
-          <p className="text-sm py-2" style={{ color: "var(--muted)" }}>
-            Group recipes into cookbooks — holiday meals, weeknight dinners, whatever you like.
-          </p>
-        )}
-      </section>
+          {menus.length > 4 && (
+            <input
+              value={cookbookSearch}
+              onChange={(e) => setCookbookSearch(e.target.value)}
+              placeholder="Find a cookbook…"
+              className="w-full px-4 mb-4 rounded-xl border-2 text-base outline-none transition-colors"
+              style={{ borderColor: "var(--border)", background: "var(--card)", color: "var(--foreground)" }}
+              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+            />
+          )}
+
+          <div
+            className="grid gap-3"
+            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+          >
+            {filteredMenus.map((menu) => {
+              const active = activeMenuId === menu.id;
+              return (
+                <button
+                  key={menu.id}
+                  onClick={() => setActiveMenuId(active ? null : menu.id)}
+                  className="flex items-start gap-3 p-4 rounded-2xl text-left transition-all active:scale-[0.98]"
+                  style={{
+                    background: active ? "var(--accent)" : "var(--card)",
+                    color: active ? "white" : "var(--foreground)",
+                    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
+                    boxShadow: active ? "0 2px 12px rgba(74,103,65,0.2)" : "none",
+                  }}
+                >
+                  <BookOpen
+                    size={20}
+                    strokeWidth={1.5}
+                    className="flex-shrink-0 mt-0.5"
+                    style={{ color: active ? 'rgba(255,255,255,0.8)' : 'var(--gold)' }}
+                  />
+                  <div className="min-w-0">
+                    <p className="font-semibold leading-snug truncate" style={{ fontSize: '15px' }}>{menu.name}</p>
+                    <p
+                      className="text-sm mt-0.5"
+                      style={{ color: active ? "rgba(255,255,255,0.7)" : "var(--foreground-muted)" }}
+                    >
+                      {menu._count.recipes} {menu._count.recipes === 1 ? "recipe" : "recipes"}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Divider */}
+          <div className="ornament-divider mt-10" aria-hidden="true">✦</div>
+        </section>
+      )}
 
       {/* ── RECIPES ── */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: "var(--muted)" }}>
-            {activeMenu ? activeMenu.name : "All Recipes"}
-            {activeMenu && (
-              <button
-                onClick={() => setActiveMenuId(null)}
-                className="ml-2 font-normal normal-case tracking-normal text-xs px-2 py-0.5 rounded-full"
-                style={{ background: "var(--border)", color: "var(--foreground)" }}
-              >
-                ✕ clear
-              </button>
-            )}
-          </h2>
-        </div>
-
-        <div className="flex gap-3 mb-6">
+        {/* Search + sort bar */}
+        <div className="flex gap-3 mb-7">
           <div className="relative flex-1">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-              width="16" height="16" viewBox="0 0 16 16" fill="none"
-              style={{ color: "var(--muted)" }}
-            >
-              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <Search
+              size={16}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: "var(--foreground-muted)" }}
+            />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search recipes…"
-              className="w-full pl-9 pr-4 py-3 rounded-xl border-2 text-base outline-none focus:border-[var(--accent)] transition-colors bg-[var(--background)]"
-              style={{ borderColor: "var(--border)" }}
+              placeholder="Search recipes, ingredients, tags…"
+              className="w-full pl-10 pr-4 rounded-xl border-2 text-base outline-none transition-colors"
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--card)",
+                color: "var(--foreground)",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
             />
           </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="px-3 py-3 rounded-xl border-2 text-sm font-medium outline-none focus:border-[var(--accent)] bg-[var(--background)]"
-            style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+            className="px-3 rounded-xl border-2 text-sm font-medium outline-none"
+            style={{
+              borderColor: "var(--border)",
+              background: "var(--card)",
+              color: "var(--foreground)",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+            onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
           >
             <option value="updated">Recent</option>
             <option value="alpha">A – Z</option>
@@ -258,10 +270,27 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
           </select>
         </div>
 
+        {/* Active cookbook filter badge */}
+        {activeMenu && (
+          <div className="flex items-center gap-2 mb-5">
+            <span className="section-label" style={{ color: 'var(--foreground-muted)' }}>
+              Showing:
+            </span>
+            <button
+              onClick={() => setActiveMenuId(null)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold"
+              style={{ background: 'var(--accent-light)', color: 'var(--accent)', border: '1px solid var(--accent)' }}
+            >
+              {activeMenu.name}
+              <X size={12} strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
+
         {filteredRecipes.length === 0 ? (
           <div className="text-center py-16 flex flex-col items-center gap-4">
-            <p className="text-lg" style={{ color: "var(--muted)" }}>
-              No recipes match
+            <p className="text-xl font-display" style={{ color: "var(--foreground-muted)" }}>
+              No recipes found
             </p>
             {(search.trim() || activeMenuId) && (
               <button
@@ -277,12 +306,22 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
           <div className="flex flex-col gap-10">
             {favorites.length > 0 && (
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--muted)" }}>
+                <h3 className="section-label mb-4" style={{ color: 'var(--gold)', letterSpacing: '0.12em' }}>
                   ★ Favorites
                 </h3>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
                   {favorites.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} onTagClick={setSearch} />
+                    <RecipeCard
+                      key={r.id}
+                      id={r.id}
+                      title={r.title}
+                      tags={r.tags}
+                      isFavorite={r.isFavorite}
+                      images={r.images}
+                      currentVersion={r.currentVersion}
+                      onFavoriteChange={(val) => handleFavoriteChange(r.id, val)}
+                      onTagClick={setSearch}
+                    />
                   ))}
                 </div>
               </div>
@@ -290,22 +329,39 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
             {rest.length > 0 && (
               <div>
                 {favorites.length > 0 && (
-                  <h3 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--muted)" }}>
-                    All Recipes
-                  </h3>
+                  <h3 className="section-label mb-4">All Recipes</h3>
                 )}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
                   {rest.map((r) => (
-                    <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images} currentVersion={r.currentVersion} onFavoriteChange={(val) => handleFavoriteChange(r.id, val)} onTagClick={setSearch} />
+                    <RecipeCard
+                      key={r.id}
+                      id={r.id}
+                      title={r.title}
+                      tags={r.tags}
+                      isFavorite={r.isFavorite}
+                      images={r.images}
+                      currentVersion={r.currentVersion}
+                      onFavoriteChange={(val) => handleFavoriteChange(r.id, val)}
+                      onTagClick={setSearch}
+                    />
                   ))}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
             {filteredRecipes.map((r) => (
-              <RecipeCard key={r.id} id={r.id} title={r.title} tags={r.tags} isFavorite={r.isFavorite} images={r.images} currentVersion={r.currentVersion} onTagClick={setSearch} />
+              <RecipeCard
+                key={r.id}
+                id={r.id}
+                title={r.title}
+                tags={r.tags}
+                isFavorite={r.isFavorite}
+                images={r.images}
+                currentVersion={r.currentVersion}
+                onTagClick={setSearch}
+              />
             ))}
           </div>
         )}

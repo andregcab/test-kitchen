@@ -15,6 +15,7 @@ import SectionEditIngredients from '@/components/SectionEditIngredients';
 import SectionEditInstructions from '@/components/SectionEditInstructions';
 import SectionEditNotes from '@/components/SectionEditNotes';
 import SectionEditPhotos from '@/components/SectionEditPhotos';
+import { Clock, ChefHat, Users, ExternalLink } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,12 +44,10 @@ export default async function RecipeDetailPage({
 
   if (!recipe) notFound();
 
-  // Resolve active branch
   const activeBranch = branchParam
     ? recipe.branches.find((b) => b.id === branchParam)
     : recipe.branches.find((b) => b.isDefault);
 
-  // Fall back to recipe's currentVersion if no branch resolved
   const activeVersion = activeBranch?.currentVersion ?? recipe.currentVersion;
   if (!activeVersion) notFound();
 
@@ -56,50 +55,56 @@ export default async function RecipeDetailPage({
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;
   const color = getTagColor(recipe.tags ?? []);
 
-  // Version history link with branch context
   const versionsHref = activeBranch && !activeBranch.isDefault
     ? `/recipes/${recipe.id}/versions?branch=${activeBranch.id}`
     : `/recipes/${recipe.id}/versions`;
 
-  // Versions for the active branch only (for history panel)
   const branchVersions = activeBranch
     ? recipe.versions.filter((v) => v.branchId === activeBranch.id)
     : recipe.versions;
 
+  const hasPhotos = recipe.images.length > 0;
+
   return (
     <div>
-      {/* ── HERO ── */}
-      <div className="px-[150px] pt-6">
-        <div
-          className="rounded-2xl px-5 pt-5 pb-7 flex flex-col relative"
-          style={{
-            background: color.bg,
-            border: `1px solid ${color.border}`,
-            minHeight: 360,
-          }}
-        >
+      {/* ── HERO — data-tag-index wires CSS vars for both light + dark ── */}
+      <div
+        data-tag-index={color.index}
+        className="relative"
+        style={{ background: 'var(--tag-bg)', borderBottom: '1px solid var(--tag-border)' }}
+      >
+        <div className="page-container pt-10 pb-12">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-8">
             <BackButton href="/recipes" />
-            <SectionEditDetails
-              recipeId={recipe.id}
-              branchId={activeBranch?.id}
-              data={data}
-              tags={recipe.tags ?? []}
-              images={recipe.images}
-            />
+            <div className="flex items-center gap-2">
+              <MenuPicker
+                recipeId={recipe.id}
+                initialMenuIds={recipe.menus.map((m) => m.id)}
+                borderColor="var(--tag-border)"
+              />
+              <SectionEditDetails
+                recipeId={recipe.id}
+                branchId={activeBranch?.id}
+                data={data}
+                tags={recipe.tags ?? []}
+                images={recipe.images}
+              />
+            </div>
           </div>
 
           {/* Tags */}
           {(recipe.tags ?? []).length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-5">
               {(recipe.tags ?? []).map((tag) => (
                 <span
                   key={tag}
                   className="px-3 py-1 rounded-full text-xs font-semibold"
                   style={{
-                    background: 'rgba(255,255,255,0.65)',
-                    color: 'var(--foreground)',
+                    background: 'var(--card)',
+                    color: 'var(--tag-color)',
+                    border: '1px solid var(--tag-border)',
+                    letterSpacing: '0.04em',
                   }}
                 >
                   {tag}
@@ -109,124 +114,91 @@ export default async function RecipeDetailPage({
           )}
 
           {/* Title */}
-          <h1 className="text-3xl font-bold leading-tight">
+          <h1
+            className="font-display"
+            style={{
+              fontSize: 'clamp(1.9rem, 5vw, 3rem)',
+              fontWeight: 600,
+              lineHeight: 1.2,
+              color: 'var(--foreground)',
+            }}
+          >
             {recipe.title}
           </h1>
 
           {/* Source */}
-          {data.source &&
-            (() => {
-              const isUrl = /^https?:\/\//i.test(data.source);
-              if (isUrl) {
-                let label = data.source;
-                try {
-                  label = new URL(data.source).hostname.replace(/^www\./, '');
-                } catch {
-                  /* keep full url */
-                }
-                return (
-                  <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-                    Source:{' '}
-                    <a
-                      href={data.source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      {label}
-                    </a>
-                  </p>
-                );
-              }
+          {data.source && (() => {
+            const isUrl = /^https?:\/\//i.test(data.source);
+            if (isUrl) {
+              let label = data.source;
+              try { label = new URL(data.source).hostname.replace(/^www\./, ''); } catch { /* keep */ }
               return (
-                <p className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-                  Source: {data.source}
+                <p className="mt-3 flex items-center gap-1.5" style={{ fontSize: '14px', color: 'var(--foreground-muted)' }}>
+                  <ExternalLink size={13} strokeWidth={1.5} />
+                  <a href={data.source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                    {label}
+                  </a>
                 </p>
               );
-            })()}
+            }
+            return (
+              <p className="mt-2" style={{ fontSize: '14px', color: 'var(--foreground-muted)' }}>
+                {data.source}
+              </p>
+            );
+          })()}
 
           {/* Description */}
           {data.description && (
             <p
-              className="mt-5 mb-2 text-base leading-relaxed"
-              style={{ color: 'var(--muted)' }}
+              className="mt-5 leading-relaxed"
+              style={{ color: 'var(--foreground-muted)', fontSize: '16px', maxWidth: '65ch' }}
             >
               {data.description}
             </p>
           )}
 
-          {/* Add to Menu — bottom right */}
-          <div className="absolute bottom-5 right-5">
-            <MenuPicker recipeId={recipe.id} initialMenuIds={recipe.menus.map((m) => m.id)} borderColor={color.border} />
-          </div>
-
-          {/* Stats */}
+          {/* Stats row */}
           <div
-            className="flex items-end gap-4 mt-auto pt-5"
-            style={{ borderTop: `1px solid ${color.border}` }}
+            className="flex flex-wrap items-center gap-6 mt-8 pt-6"
+            style={{ borderTop: '1px solid var(--tag-border)' }}
           >
-            {totalTime ? (
-              <div className="flex-shrink-0">
-                <div className="text-4xl font-bold leading-none">{totalTime}</div>
-                <div className="text-sm mt-1 font-medium" style={{ color: 'var(--foreground)', opacity: 0.6 }}>min total</div>
-              </div>
-            ) : (
-              <div
-                className="flex-shrink-0 flex flex-col items-center justify-center w-16 h-14 rounded-xl"
-                style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
-              >
-                <div className="text-xl font-bold leading-none">?</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>min</div>
+            {totalTime && (
+              <div className="flex items-center gap-2.5">
+                <Clock size={18} strokeWidth={1.5} style={{ color: 'var(--tag-color)', opacity: 0.8 }} />
+                <div>
+                  <div className="font-display font-semibold" style={{ fontSize: '22px', lineHeight: 1 }}>
+                    {totalTime}
+                    <span style={{ fontSize: '13px', fontWeight: 400, marginLeft: 3, fontFamily: 'Lato, sans-serif' }}>min</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--foreground-muted)', marginTop: 2 }}>
+                    {data.prepTime ? `${data.prepTime} prep` : ''}
+                    {data.prepTime && data.cookTime ? ' · ' : ''}
+                    {data.cookTime ? `${data.cookTime} cook` : ''}
+                  </div>
+                </div>
               </div>
             )}
 
-            <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
+            {data.servings && (
+              <>
+                {totalTime && <div style={{ width: 1, height: 32, background: 'var(--tag-border)' }} />}
+                <div className="flex items-center gap-2.5">
+                  <Users size={18} strokeWidth={1.5} style={{ color: 'var(--tag-color)', opacity: 0.8 }} />
+                  <div>
+                    <div className="font-display font-semibold" style={{ fontSize: '22px', lineHeight: 1 }}>
+                      {data.servings}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--foreground-muted)', marginTop: 2 }}>servings</div>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="flex gap-4">
-              {data.prepTime ? (
-                <div>
-                  <div className="text-xl font-semibold leading-none">{data.prepTime}</div>
-                  <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>prep</div>
-                </div>
-              ) : (
-                <div
-                  className="flex flex-col items-center justify-center w-12 h-14 rounded-xl"
-                  style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
-                >
-                  <div className="text-base font-bold leading-none">?</div>
-                  <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>prep</div>
-                </div>
-              )}
-              {data.cookTime ? (
-                <div>
-                  <div className="text-xl font-semibold leading-none">{data.cookTime}</div>
-                  <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>cook</div>
-                </div>
-              ) : (
-                <div
-                  className="flex flex-col items-center justify-center w-12 h-14 rounded-xl"
-                  style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
-                >
-                  <div className="text-base font-bold leading-none">?</div>
-                  <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>cook</div>
-                </div>
-              )}
-            </div>
-
-            <div className="self-stretch w-px mx-1" style={{ background: color.border }} />
-
-            {data.servings ? (
-              <div className="flex flex-col items-center">
-                <div className="text-xl font-semibold leading-none">{data.servings}</div>
-                <div className="text-sm mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>servings</div>
-              </div>
-            ) : (
-              <div
-                className="flex flex-col items-center justify-center w-14 h-14 rounded-xl"
-                style={{ border: `1.5px dashed ${color.border}`, opacity: 0.5 }}
-              >
-                <div className="text-base font-bold leading-none">?</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.6 }}>servings</div>
+            {!totalTime && !data.servings && (
+              <div className="flex items-center gap-2" style={{ color: 'var(--foreground-faint)', fontSize: '14px' }}>
+                <ChefHat size={16} strokeWidth={1.5} />
+                <span>Edit to add time &amp; servings</span>
               </div>
             )}
           </div>
@@ -234,11 +206,21 @@ export default async function RecipeDetailPage({
       </div>
 
       {/* ── PHOTOS ── */}
-      <div className="px-[150px] mt-6">
-        {recipe.images.length > 0 && (
-          <ImageCarousel height={560} images={recipe.images} />
+      <div className="page-container" style={{ paddingTop: 48 }}>
+        {hasPhotos && (
+          <div
+            className="mb-3"
+            style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+              border: '1px solid var(--border)',
+              boxShadow: '0 2px 16px rgba(44,36,22,0.09)',
+            }}
+          >
+            <ImageCarousel height={480} images={recipe.images} />
+          </div>
         )}
-        <div className={recipe.images.length > 0 ? 'mt-3 flex justify-end' : ''}>
+        <div className={hasPhotos ? 'flex justify-end' : ''}>
           <SectionEditPhotos
             recipeId={recipe.id}
             images={recipe.images}
@@ -249,7 +231,7 @@ export default async function RecipeDetailPage({
 
       {/* ── BRANCH TABS ── */}
       {recipe.branches.length > 0 && (
-        <div className="mt-16">
+        <div className="mt-10">
           <BranchTabs
             recipeId={recipe.id}
             branches={recipe.branches}
@@ -261,7 +243,7 @@ export default async function RecipeDetailPage({
 
       {/* ── RECIPE BODY ── */}
       {(data.ingredients.length > 0 || data.instructions.length > 0) && (
-        <div className="px-[150px] mt-8 flex flex-col gap-8">
+        <div className="page-container mt-10 flex flex-col gap-10">
           {data.ingredients.length > 0 && (
             <IngredientsSection
               ingredients={data.ingredients}
@@ -296,18 +278,17 @@ export default async function RecipeDetailPage({
 
       {/* ── NOTES ── */}
       {data.notes && (
-        <div className="px-[150px] mt-8">
+        <div className="page-container mt-8">
           <div
-            className="rounded-2xl p-5"
-            style={{ background: color.bg, border: `1px solid ${color.border}` }}
+            className="rounded-2xl p-6"
+            style={{
+              background: 'var(--gold-light)',
+              border: '1px solid var(--border)',
+              borderLeft: `3px solid var(--gold)`,
+            }}
           >
             <div className="flex items-center justify-between mb-3">
-              <h2
-                className="text-sm font-bold uppercase tracking-widest"
-                style={{ color: 'var(--muted)' }}
-              >
-                Notes
-              </h2>
+              <h2 className="section-label">Chef's Notes</h2>
               <SectionEditNotes
                 recipeId={recipe.id}
                 branchId={activeBranch?.id}
@@ -316,47 +297,49 @@ export default async function RecipeDetailPage({
                 images={recipe.images}
               />
             </div>
-            <p className="leading-relaxed whitespace-pre-wrap">{data.notes}</p>
+            <p className="leading-relaxed whitespace-pre-wrap font-display italic" style={{ fontSize: '16px', color: 'var(--foreground)' }}>
+              {data.notes}
+            </p>
           </div>
         </div>
       )}
 
       {/* ── VERSION HISTORY ── */}
-      <div className="max-w-2xl mx-auto px-4 mt-28 mb-2">
+      <div className="page-container mt-16 mb-4">
+        <div className="ornament-divider mb-8" aria-hidden="true">✦</div>
         <div
           className="rounded-2xl overflow-hidden"
           style={{ border: '1px solid var(--border)' }}
         >
           <div
             className="flex items-center justify-between px-5 py-4"
-            style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)' }}
+            style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}
           >
-            <h2
-              className="text-sm font-bold uppercase tracking-widest"
-              style={{ color: 'var(--muted)' }}
-            >
-              Version History
+            <div className="flex items-center gap-3">
+              <h2 className="section-label">
+                Version History
+              </h2>
               {activeBranch && !activeBranch.isDefault && (
                 <span
-                  className="ml-2 font-normal normal-case tracking-normal px-2 py-0.5 rounded-full text-xs"
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
                   style={{ background: 'var(--accent)', color: 'white' }}
                 >
                   {activeBranch.name}
                 </span>
               )}
               <span
-                className="ml-2 font-normal normal-case tracking-normal px-2 py-0.5 rounded-full text-xs"
-                style={{ background: 'var(--border)' }}
+                className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                style={{ background: 'var(--gold-light)', color: 'var(--gold)' }}
               >
                 {branchVersions.length}
               </span>
-            </h2>
+            </div>
             <Link
               href={versionsHref}
-              className="text-sm font-medium"
+              className="text-sm font-semibold"
               style={{ color: 'var(--accent)' }}
             >
-              See all
+              See all →
             </Link>
           </div>
           <ul>
@@ -370,12 +353,14 @@ export default async function RecipeDetailPage({
                 >
                   <Link
                     href={`/recipes/${recipe.id}/versions/${v.versionNumber}${activeBranch && !activeBranch.isDefault ? `?branch=${activeBranch.id}` : ''}`}
-                    className="flex items-center gap-3 px-5 py-4"
-                    style={{ background: isCurrent ? 'var(--accent-light)' : 'transparent' }}
+                    className="flex items-center gap-4 px-5 py-4 transition-colors"
+                    style={{
+                      background: isCurrent ? 'var(--accent-light)' : 'var(--card)',
+                    }}
                   >
                     <span
-                      className="text-sm font-bold w-8 text-center flex-shrink-0"
-                      style={{ color: isCurrent ? 'var(--accent)' : 'var(--muted)' }}
+                      className="font-display font-semibold flex-shrink-0 w-8 text-center"
+                      style={{ color: isCurrent ? 'var(--accent)' : 'var(--foreground-faint)', fontSize: '15px' }}
                     >
                       v{v.versionNumber}
                     </span>
@@ -386,23 +371,21 @@ export default async function RecipeDetailPage({
                         </p>
                         {isCurrent && (
                           <span
-                            className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full"
+                            className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
                             style={{ background: 'var(--accent)', color: 'white' }}
                           >
                             current
                           </span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--foreground-muted)' }}>
                         {new Date(v.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
+                          month: 'short', day: 'numeric', year: 'numeric',
                         })}
                       </p>
                     </div>
-                    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" style={{ color: 'var(--muted)', flexShrink: 0 }}>
-                      <path d="M1 1l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style={{ color: 'var(--foreground-faint)', flexShrink: 0 }}>
+                      <path d="M1 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
                 </li>
@@ -413,8 +396,8 @@ export default async function RecipeDetailPage({
       </div>
 
       {/* ── FOOTER ── */}
-      <div className="px-[150px] mt-6 pb-10 flex flex-col gap-4">
-        <div className="pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
+      <div className="page-container mt-4 pb-12">
+        <div className="pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
           <DeleteRecipeButton id={recipe.id} title={recipe.title} />
         </div>
       </div>

@@ -3,6 +3,7 @@ import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import RecipesClient from '@/components/RecipesClient';
+import SignOutButton from '@/components/SignOutButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,34 +29,47 @@ export default async function RecipesPage() {
   ]);
 
   return (
-    <div className="px-[150px] py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">My Recipes</h1>
-          <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>
-            {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
-          </p>
-        </div>
+    <div className="page-container py-10">
+      {/* Page header */}
+      <div className="mb-10">
+        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 600, color: 'var(--foreground)' }}>
+          My Kitchen
+        </h1>
+        <p className="mt-1 section-label" style={{ color: 'var(--foreground-muted)', fontWeight: 400, letterSpacing: '0.04em', textTransform: 'none', fontSize: '15px' }}>
+          {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'} in your collection
+        </p>
       </div>
 
       {recipes.length === 0 ? (
-        <div className="text-center py-24">
-          <div className="text-7xl mb-5">🍳</div>
-          <p className="text-2xl font-bold mb-2">No recipes yet</p>
-          <p className="mb-8" style={{ color: 'var(--muted)' }}>
-            Add your first recipe to get started
-          </p>
+        <div className="text-center py-24 flex flex-col items-center gap-5">
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center"
+            style={{ background: 'var(--accent-light)' }}
+          >
+            <span style={{ fontSize: 40 }}>🍳</span>
+          </div>
+          <div>
+            <p className="text-2xl font-display font-semibold mb-2">No recipes yet</p>
+            <p style={{ color: 'var(--foreground-muted)' }}>
+              Add your first recipe to get started
+            </p>
+          </div>
           <Link
             href="/recipes/new"
-            className="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-xl"
-            style={{ background: 'var(--accent)' }}
+            className="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-xl mt-2"
+            style={{ background: 'var(--accent)', fontSize: '16px', letterSpacing: '0.02em' }}
           >
-            Add Recipe
+            Add a Recipe
           </Link>
         </div>
       ) : (
         <RecipesClient recipes={recipes} menus={menus} />
       )}
+
+      {/* Sign out — deliberate, not accidental */}
+      <div className="mt-16 pt-6 border-t flex justify-center" style={{ borderColor: 'var(--border)' }}>
+        <SignOutButton />
+      </div>
     </div>
   );
 }
