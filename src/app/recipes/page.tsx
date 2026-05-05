@@ -3,7 +3,6 @@ import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import RecipesClient from '@/components/RecipesClient';
-import SignOutButton from '@/components/SignOutButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,10 +65,6 @@ export default async function RecipesPage() {
         <RecipesClient recipes={recipes} menus={menus} />
       )}
 
-      {/* Sign out — deliberate, not accidental */}
-      <div className="mt-16 pt-6 border-t flex justify-center" style={{ borderColor: 'var(--border)' }}>
-        <SignOutButton />
-      </div>
     </div>
   );
 }

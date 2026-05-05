@@ -125,11 +125,12 @@ export default function RecipeCard({
             {title}
           </h2>
 
-          {/* Tag — below title; slot always 28px so cards with/without tags stay equal */}
-          <div style={{ minHeight: 28, marginTop: 8 }}>
-            {tags[0] && (
+          {/* Tags — up to 2 shown, +N badge for overflow; slot always reserves 28px */}
+          <div className="flex flex-wrap gap-1.5" style={{ minHeight: 28, marginTop: 8 }}>
+            {tags.slice(0, 2).map((tag) => (
               <button
-                onClick={(e) => { e.preventDefault(); onTagClick?.(tags[0]); }}
+                key={tag}
+                onClick={(e) => { e.preventDefault(); onTagClick?.(tag); }}
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
                 style={{
                   background: 'var(--tag-bg)',
@@ -139,8 +140,20 @@ export default function RecipeCard({
                   letterSpacing: '0.03em',
                 }}
               >
-                {tags[0]}
+                {tag}
               </button>
+            ))}
+            {tags.length > 2 && (
+              <span
+                className="text-xs px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'var(--surface)',
+                  color: 'var(--foreground-faint)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                +{tags.length - 2}
+              </span>
             )}
           </div>
 

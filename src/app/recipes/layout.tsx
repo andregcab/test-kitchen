@@ -1,4 +1,4 @@
-import BottomNav from "@/components/BottomNav";
+import TopHeader from "@/components/TopHeader";
 
 export default function RecipesLayout({
   children,
@@ -6,9 +6,9 @@ export default function RecipesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1 pb-28">{children}</main>
-      <BottomNav />
+    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+      <TopHeader />
+      <main>{children}</main>
     </div>
   );
 }
