@@ -3,6 +3,9 @@ import { ImageResponse } from 'next/og';
 export const size = { width: 512, height: 512 };
 export const contentType = 'image/png';
 
+// Lucide ChefHat path — closed shape, fills cleanly as a solid silhouette
+const HAT_PATH = "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z";
+
 export default function Icon() {
   return new ImageResponse(
     (
@@ -10,27 +13,18 @@ export default function Icon() {
         style={{
           width: 512,
           height: 512,
-          background: '#f97316',
-          borderRadius: 112,
+          background: '#4a6741',
+          borderRadius: 115,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        {/* Stylised pot / chef hat silhouette — a simple flame */}
-        <svg width="300" height="300" viewBox="0 0 100 100" fill="none">
-          {/* Pot body */}
-          <rect x="20" y="45" width="60" height="42" rx="10" fill="white" />
-          {/* Pot rim */}
-          <rect x="14" y="40" width="72" height="10" rx="5" fill="white" />
-          {/* Left handle */}
-          <rect x="6" y="43" width="14" height="8" rx="4" fill="white" />
-          {/* Right handle */}
-          <rect x="80" y="43" width="14" height="8" rx="4" fill="white" />
-          {/* Steam lines */}
-          <path d="M38 32 Q34 24 38 16 Q42 8 38 2" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" />
-          <path d="M50 32 Q46 24 50 16 Q54 8 50 2" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" />
-          <path d="M62 32 Q58 24 62 16 Q66 8 62 2" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" />
+        {/* viewBox 24x24 → rendered at 340px gives good weight at all favicon sizes */}
+        <svg width="340" height="340" viewBox="0 0 24 24" fill="none">
+          <path d={HAT_PATH} fill="white" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Brim divider line — slightly darker so it reads at larger sizes */}
+          <path d="M6 17h12" stroke="#4a6741" strokeWidth="1.2" strokeLinecap="round" />
         </svg>
       </div>
     ),

@@ -8,11 +8,15 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'Test Kitchen',
     startupImage: '/api/icon?size=512',
   },
   icons: {
+    icon: [
+      { url: '/api/icon?size=32', sizes: '32x32', type: 'image/png' },
+      { url: '/api/icon?size=192', sizes: '192x192', type: 'image/png' },
+    ],
     apple: '/api/icon?size=180',
   },
 };

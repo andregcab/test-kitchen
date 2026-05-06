@@ -4,8 +4,8 @@
   "description": "Your personal recipe collection",
   "start_url": "/recipes",
   "display": "standalone",
-  "background_color": "#fdf4e0",
-  "theme_color": "#c04a12",
+  "background_color": "#f5f0e8",
+  "theme_color": "#4a6741",
   "orientation": "portrait",
   "icons": [
     {

@@ -3,9 +3,12 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
+const HAT_PATH = "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z";
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const size = parseInt(searchParams.get('size') ?? '192', 10);
+  const iconSize = Math.round(size * 0.665);
 
   return new ImageResponse(
     (
@@ -13,87 +16,17 @@ export async function GET(req: NextRequest) {
         style={{
           width: size,
           height: size,
-          background: '#c04a12',
-          borderRadius: size * 0.22,
+          background: '#4a6741',
+          borderRadius: Math.round(size * 0.225),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: size * 0.04,
-          }}
-        >
-          {/* Pot body */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* Steam lines */}
-            <div style={{ display: 'flex', gap: size * 0.06, marginBottom: size * 0.03 }}>
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: size * 0.025,
-                    height: size * 0.1,
-                    background: 'rgba(255,255,255,0.7)',
-                    borderRadius: size * 0.02,
-                  }}
-                />
-              ))}
-            </div>
-            {/* Lid */}
-            <div
-              style={{
-                width: size * 0.42,
-                height: size * 0.06,
-                background: 'white',
-                borderRadius: size * 0.03,
-                marginBottom: size * 0.01,
-              }}
-            />
-            {/* Pot */}
-            <div
-              style={{
-                width: size * 0.44,
-                height: size * 0.28,
-                background: 'white',
-                borderRadius: `${size * 0.04}px ${size * 0.04}px ${size * 0.12}px ${size * 0.12}px`,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'center',
-              }}
-            >
-              {/* Handles */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: -(size * 0.06),
-                  top: size * 0.06,
-                  width: size * 0.06,
-                  height: size * 0.1,
-                  background: 'white',
-                  borderRadius: size * 0.02,
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  right: -(size * 0.06),
-                  top: size * 0.06,
-                  width: size * 0.06,
-                  height: size * 0.1,
-                  background: 'white',
-                  borderRadius: size * 0.02,
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none">
+          <path d={HAT_PATH} fill="white" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 17h12" stroke="#4a6741" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
       </div>
     ),
     { width: size, height: size },
