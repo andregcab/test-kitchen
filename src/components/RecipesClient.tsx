@@ -3,7 +3,8 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import RecipeCard from "@/components/RecipeCard";
-import { BookOpen, Plus, Search, X } from "lucide-react";
+import { getTagColor } from "@/lib/tagColors";
+import { BookOpen, Plus, Search, X, Trash2 } from "lucide-react";
 
 interface Menu {
   id: string;
@@ -38,6 +39,8 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const [newCookbookName, setNewCookbookName] = useState("");
   const [creatingCookbook, setCreatingCookbook] = useState(false);
   const [showNewInput, setShowNewInput] = useState(false);
+
+  const [deletingMenuId, setDeletingMenuId] = useState<string | null>(null);
 
   const [localRecipes, setLocalRecipes] = useState(recipes);
   const [search, setSearch] = useState("");
@@ -99,6 +102,13 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
     setShowNewInput(false);
     setCreatingCookbook(false);
     router.refresh();
+  }
+
+  async function deleteMenu(id: string) {
+    await fetch(`/api/menus/${id}`, { method: 'DELETE' });
+    setMenus((prev) => prev.filter((m) => m.id !== id));
+    if (activeMenuId === id) setActiveMenuId(null);
+    setDeletingMenuId(null);
   }
 
   const favorites = filteredRecipes.filter((r) => r.isFavorite);
@@ -187,38 +197,122 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
 
           <div
             className="grid gap-3"
-            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
           >
             {filteredMenus.map((menu) => {
               const active = activeMenuId === menu.id;
+              const confirming = deletingMenuId === menu.id;
+              const color = getTagColor([menu.name]);
               return (
-                <button
+                <div
                   key={menu.id}
-                  onClick={() => setActiveMenuId(active ? null : menu.id)}
-                  className="flex items-start gap-3 p-4 rounded-2xl text-left transition-all active:scale-[0.98]"
+                  data-tag-index={color.index}
+                  data-active={active ? "true" : undefined}
+                  className="cookbook-card rounded-2xl overflow-hidden"
                   style={{
-                    background: active ? "var(--accent)" : "var(--card)",
-                    color: active ? "white" : "var(--foreground)",
-                    border: `1px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                    boxShadow: active ? "0 2px 12px rgba(74,103,65,0.2)" : "none",
+                    border: active ? '2px solid var(--accent)' : '1px solid var(--border)',
+                    boxShadow: active ? '0 2px 12px rgba(74,103,65,0.18)' : '0 1px 4px rgba(44,36,22,0.05)',
+                    background: 'var(--card)',
                   }}
                 >
-                  <BookOpen
-                    size={20}
-                    strokeWidth={1.5}
-                    className="flex-shrink-0 mt-0.5"
-                    style={{ color: active ? 'rgba(255,255,255,0.8)' : 'var(--gold)' }}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-semibold leading-snug truncate" style={{ fontSize: '15px' }}>{menu.name}</p>
-                    <p
-                      className="text-sm mt-0.5"
-                      style={{ color: active ? "rgba(255,255,255,0.7)" : "var(--foreground-muted)" }}
+                  {confirming ? (
+                    /* ── DELETE CONFIRMATION ── */
+                    <div
+                      style={{
+                        padding: '16px 14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 10,
+                        minHeight: 120,
+                        justifyContent: 'center',
+                      }}
                     >
-                      {menu._count.recipes} {menu._count.recipes === 1 ? "recipe" : "recipes"}
-                    </p>
-                  </div>
-                </button>
+                      <p style={{ fontSize: '13px', color: 'var(--foreground)', fontWeight: 600, lineHeight: 1.3 }}>
+                        Delete "{menu.name}"?
+                      </p>
+                      <p style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>
+                        Recipes won't be deleted.
+                      </p>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          onClick={() => setDeletingMenuId(null)}
+                          style={{
+                            flex: 1, padding: '6px 0', borderRadius: 8, fontSize: '12px', fontWeight: 600,
+                            background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--foreground)',
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => deleteMenu(menu.id)}
+                          style={{
+                            flex: 1, padding: '6px 0', borderRadius: 8, fontSize: '12px', fontWeight: 600,
+                            background: 'var(--error)', border: 'none', color: 'white',
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Colored band */}
+                      <div
+                        style={{
+                          height: 64,
+                          background: active ? 'var(--accent)' : 'var(--tag-bg)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          transition: 'background 200ms ease',
+                        }}
+                      >
+                        <button
+                          onClick={() => setActiveMenuId(active ? null : menu.id)}
+                          style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          aria-label={`Filter by ${menu.name}`}
+                        >
+                          <BookOpen
+                            size={22}
+                            strokeWidth={1.5}
+                            style={{ color: active ? 'rgba(255,255,255,0.9)' : 'var(--tag-color)', opacity: active ? 1 : 0.75 }}
+                          />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDeletingMenuId(menu.id); }}
+                          className="cookbook-delete"
+                          style={{
+                            position: 'absolute', top: 6, right: 6,
+                            width: 28, height: 28, borderRadius: 8,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'rgba(0,0,0,0.18)', border: 'none', cursor: 'pointer',
+                            color: 'rgba(255,255,255,0.85)',
+                          }}
+                          aria-label={`Delete ${menu.name}`}
+                        >
+                          <Trash2 size={13} strokeWidth={2} />
+                        </button>
+                      </div>
+
+                      {/* Card body */}
+                      <button
+                        onClick={() => setActiveMenuId(active ? null : menu.id)}
+                        style={{ width: '100%', padding: '10px 14px 12px', textAlign: 'left' }}
+                      >
+                        <p
+                          className="font-semibold leading-snug truncate"
+                          style={{ fontSize: '14px', color: active ? 'var(--accent)' : 'var(--foreground)' }}
+                        >
+                          {menu.name}
+                        </p>
+                        <p style={{ fontSize: '12px', color: 'var(--foreground-muted)', marginTop: 2 }}>
+                          {menu._count.recipes} {menu._count.recipes === 1 ? 'recipe' : 'recipes'}
+                        </p>
+                      </button>
+                    </>
+                  )}
+                </div>
               );
             })}
           </div>

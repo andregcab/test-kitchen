@@ -11,7 +11,8 @@ export default async function RecipesPage() {
   if (!session) redirect('/login');
   const { userId } = session;
 
-  const [recipes, menus] = await Promise.all([
+  const [user, recipes, menus] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId }, select: { displayName: true } }),
     prisma.recipe.findMany({
       where: { userId },
       orderBy: [{ isFavorite: 'desc' }, { updatedAt: 'desc' }],
@@ -27,12 +28,14 @@ export default async function RecipesPage() {
     }),
   ]);
 
+  const kitchenName = user?.displayName ? `${user.displayName}'s Kitchen` : 'My Kitchen';
+
   return (
     <div className="page-container py-10">
       {/* Page header */}
       <div className="mb-10">
-        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 600, color: 'var(--foreground)' }}>
-          My Kitchen
+        <h1 className="font-display" style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 600, color: 'var(--foreground)' }}>
+          {kitchenName}
         </h1>
         <p className="mt-1 section-label" style={{ color: 'var(--foreground-muted)', fontWeight: 400, letterSpacing: '0.04em', textTransform: 'none', fontSize: '15px' }}>
           {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'} in your collection

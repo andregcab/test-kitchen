@@ -209,6 +209,16 @@ select {
   :root:not([data-theme="light"]) .menu-picker-btn:hover { background: rgba(0,0,0,0.48); }
 }
 
+/* ── COOKBOOK CARD — trash revealed on hover or when active ── */
+.cookbook-card .cookbook-delete {
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+.cookbook-card:hover .cookbook-delete,
+.cookbook-card[data-active="true"] .cookbook-delete {
+  opacity: 1;
+}
+
 /* ── CONTAINER ── */
 .page-container {
   width: 100%;

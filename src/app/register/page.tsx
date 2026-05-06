@@ -26,7 +26,7 @@ export default function RegisterPage() {
       body: JSON.stringify({ username, password }),
     });
     if (res.ok) {
-      router.push('/recipes');
+      router.push('/onboarding');
     } else {
       const json = await res.json();
       setError(json.error ?? 'Something went wrong. Try again.');

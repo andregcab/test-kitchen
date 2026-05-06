@@ -5,6 +5,7 @@ import { RecipeData } from '@/lib/types';
 import TopHeader from '@/components/TopHeader';
 import SignOutButton from '@/components/SignOutButton';
 import ThemeToggle from '@/components/ThemeToggle';
+import DisplayNameForm from '@/components/DisplayNameForm';
 import { Clock, Star, BookOpen, Users } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -73,12 +74,12 @@ export default async function ProfilePage() {
       <div className="page-container py-12">
         {/* Page header */}
         <div className="mb-10">
-          <p className="section-label mb-2">Signed in as</p>
+          <p className="section-label mb-2">Your Kitchen</p>
           <h1
             className="font-display"
             style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 600, color: 'var(--foreground)' }}
           >
-            {user.username}
+            {user.displayName ? `${user.displayName}'s Kitchen` : 'My Kitchen'}
           </h1>
         </div>
 
@@ -140,13 +141,16 @@ export default async function ProfilePage() {
         <section>
           <h2 className="section-label mb-5">Account</h2>
           <div
-            className="rounded-2xl p-5"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', display: 'inline-block' }}
+            className="rounded-2xl p-5 flex flex-col gap-5"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 400 }}
           >
-            <p style={{ fontSize: '14px', color: 'var(--foreground-muted)', marginBottom: 12 }}>
-              Signed in as <strong style={{ color: 'var(--foreground)' }}>{user.username}</strong>
-            </p>
-            <SignOutButton />
+            <DisplayNameForm currentName={user.displayName ?? ''} />
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+              <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', marginBottom: 10 }}>
+                Signed in as <strong style={{ color: 'var(--foreground)' }}>{user.username}</strong>
+              </p>
+              <SignOutButton />
+            </div>
           </div>
         </section>
       </div>
