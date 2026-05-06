@@ -209,6 +209,23 @@ select {
   :root:not([data-theme="light"]) .menu-picker-btn:hover { background: rgba(0,0,0,0.48); }
 }
 
+/* ── RECIPE GRID — responsive columns ── */
+.recipe-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px) {
+  .recipe-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 960px) {
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
 /* ── COOKBOOK CARD — trash revealed on hover or when active ── */
 .cookbook-card .cookbook-delete {
   opacity: 0;

@@ -62,10 +62,10 @@ export default function RecipeCard({
           background: 'var(--card)',
         }}
       >
-        {/* ── IMAGE / SWATCH — always 200px, favorite button only ── */}
+        {/* ── IMAGE / SWATCH — aspect ratio scales with column width ── */}
         <div
           className="relative"
-          style={{ height: 200, flexShrink: 0, background: 'var(--tag-bg)' }}
+          style={{ aspectRatio: '3/2', flexShrink: 0, background: 'var(--tag-bg)' }}
         >
           {!hasPhoto && (
             <div

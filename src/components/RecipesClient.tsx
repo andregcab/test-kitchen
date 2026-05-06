@@ -403,7 +403,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 <h3 className="section-label mb-4" style={{ color: 'var(--gold)', letterSpacing: '0.12em' }}>
                   ★ Favorites
                 </h3>
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                <div className="recipe-grid">
                   {favorites.map((r) => (
                     <RecipeCard
                       key={r.id}
@@ -425,7 +425,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 {favorites.length > 0 && (
                   <h3 className="section-label mb-4">All Recipes</h3>
                 )}
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                <div className="recipe-grid">
                   {rest.map((r) => (
                     <RecipeCard
                       key={r.id}
@@ -444,7 +444,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
             )}
           </div>
         ) : (
-          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+          <div className="recipe-grid">
             {filteredRecipes.map((r) => (
               <RecipeCard
                 key={r.id}
