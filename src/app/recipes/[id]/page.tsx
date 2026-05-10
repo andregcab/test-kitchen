@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { RecipeData } from '@/lib/types';
 import { getTagColor } from '@/lib/tagColors';
+import { getSession } from '@/lib/session';
 import DeleteRecipeButton from '@/components/DeleteRecipeButton';
 import BackButton from '@/components/BackButton';
 import MenuPicker from '@/components/MenuPicker';
@@ -15,6 +16,8 @@ import SectionEditIngredients from '@/components/SectionEditIngredients';
 import SectionEditInstructions from '@/components/SectionEditInstructions';
 import SectionEditNotes from '@/components/SectionEditNotes';
 import SectionEditPhotos from '@/components/SectionEditPhotos';
+import ShareRecipeButton from '@/components/ShareRecipeButton';
+import MarkSeen from '@/components/MarkSeen';
 import { Clock, ChefHat, Users, ExternalLink } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -29,20 +32,26 @@ export default async function RecipeDetailPage({
   const { id } = await params;
   const { branch: branchParam } = await searchParams;
 
-  const recipe = await prisma.recipe.findUnique({
-    where: { id },
-    include: {
-      currentVersion: true,
-      versions: { orderBy: { versionNumber: 'desc' } },
-      menus: { select: { id: true } },
-      branches: {
-        include: { currentVersion: true },
-        orderBy: { order: 'asc' },
+  const [recipe, session] = await Promise.all([
+    prisma.recipe.findUnique({
+      where: { id },
+      include: {
+        currentVersion: true,
+        versions: { orderBy: { versionNumber: 'desc' } },
+        menus: { select: { id: true } },
+        branches: {
+          include: { currentVersion: true },
+          orderBy: { order: 'asc' },
+        },
       },
-    },
-  });
+    }),
+    getSession(),
+  ]);
 
   if (!recipe) notFound();
+
+  const isOwner = session?.userId === recipe.userId;
+  const isNew = !!recipe.sharedFromRecipeId && !recipe.seenAt;
 
   const activeBranch = branchParam
     ? recipe.branches.find((b) => b.id === branchParam)
@@ -67,6 +76,7 @@ export default async function RecipeDetailPage({
 
   return (
     <div>
+      <MarkSeen recipeId={recipe.id} isNew={isNew} />
       {/* ── HERO — data-tag-index wires CSS vars for both light + dark ── */}
       <div
         data-tag-index={color.index}
@@ -83,6 +93,9 @@ export default async function RecipeDetailPage({
                 initialMenuIds={recipe.menus.map((m) => m.id)}
                 borderColor="var(--tag-border)"
               />
+              {isOwner && (
+                <ShareRecipeButton recipeId={recipe.id} borderColor="var(--tag-border)" />
+              )}
               <SectionEditDetails
                 recipeId={recipe.id}
                 branchId={activeBranch?.id}
@@ -147,6 +160,13 @@ export default async function RecipeDetailPage({
               </p>
             );
           })()}
+
+          {/* Attribution */}
+          {recipe.sourceAttribution && (
+            <p className="mt-3 flex items-center gap-1.5" style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontStyle: 'italic' }}>
+              {recipe.sourceAttribution}
+            </p>
+          )}
 
           {/* Description */}
           {data.description && (

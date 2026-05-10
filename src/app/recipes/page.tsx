@@ -16,7 +16,15 @@ export default async function RecipesPage() {
     prisma.recipe.findMany({
       where: { userId },
       orderBy: [{ isFavorite: 'desc' }, { updatedAt: 'desc' }],
-      include: {
+      select: {
+        id: true,
+        title: true,
+        tags: true,
+        isFavorite: true,
+        images: true,
+        updatedAt: true,
+        sharedFromRecipeId: true,
+        seenAt: true,
         currentVersion: true,
         menus: { select: { id: true } },
       },

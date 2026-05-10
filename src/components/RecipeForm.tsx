@@ -688,7 +688,7 @@ export default function RecipeForm({
             ? 'Saving…'
             : isEdit
               ? 'Save Changes'
-              : 'Add Recipe'}
+              : 'Save Recipe'}
         </button>
       </div>
       {saveError && (

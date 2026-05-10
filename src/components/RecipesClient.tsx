@@ -21,6 +21,8 @@ interface Recipe {
   updatedAt: Date | string;
   currentVersion: { data: unknown } | null;
   menus: { id: string }[];
+  sharedFromRecipeId: string | null;
+  seenAt: Date | string | null;
 }
 
 type SortOption = "updated" | "alpha" | "cookTime";
@@ -77,6 +79,11 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
     }
 
     return [...list].sort((a, b) => {
+      // Unseen shared recipes always surface first regardless of sort mode
+      const aIsNew = !!a.sharedFromRecipeId && !a.seenAt;
+      const bIsNew = !!b.sharedFromRecipeId && !b.seenAt;
+      if (aIsNew !== bIsNew) return aIsNew ? -1 : 1;
+
       if (sort === "alpha") return a.title.localeCompare(b.title);
       if (sort === "cookTime") {
         const aTime = (a.currentVersion?.data as { cookTime?: number } | null)?.cookTime ?? 999;
@@ -116,8 +123,39 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
   const groupByFavorites = sort === "updated" && !search.trim() && !activeMenuId;
   const activeMenu = menus.find((m) => m.id === activeMenuId);
 
+  const unseenShared = localRecipes.filter((r) => r.sharedFromRecipeId && !r.seenAt);
+
   return (
     <div className="flex flex-col gap-12">
+
+      {/* ── NEW SHARED RECIPES BANNER ── */}
+      {unseenShared.length > 0 && !search.trim() && !activeMenuId && (
+        <div
+          className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4"
+          style={{
+            background: 'var(--accent-light)',
+            border: '1px solid var(--accent)',
+          }}
+        >
+          <div>
+            <p className="font-semibold" style={{ fontSize: '15px', color: 'var(--accent)' }}>
+              {unseenShared.length === 1
+                ? '1 new shared recipe'
+                : `${unseenShared.length} new shared recipes`}
+            </p>
+            <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', marginTop: 2 }}>
+              Someone shared a recipe with you
+            </p>
+          </div>
+          <button
+            onClick={() => setSearch('shared')}
+            className="flex-shrink-0 px-4 py-2 rounded-xl font-semibold text-sm text-white"
+            style={{ background: 'var(--accent)', fontSize: '13px' }}
+          >
+            Show all shared
+          </button>
+        </div>
+      )}
 
       {/* ── COOKBOOKS ── */}
       {(menus.length > 0 || showNewInput) && (
@@ -413,6 +451,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                       isFavorite={r.isFavorite}
                       images={r.images}
                       currentVersion={r.currentVersion}
+                      isNew={!!r.sharedFromRecipeId && !r.seenAt}
                       onFavoriteChange={(val) => handleFavoriteChange(r.id, val)}
                       onTagClick={setSearch}
                     />
@@ -435,6 +474,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                       isFavorite={r.isFavorite}
                       images={r.images}
                       currentVersion={r.currentVersion}
+                      isNew={!!r.sharedFromRecipeId && !r.seenAt}
                       onFavoriteChange={(val) => handleFavoriteChange(r.id, val)}
                       onTagClick={setSearch}
                     />
@@ -454,6 +494,7 @@ export default function RecipesClient({ recipes, menus: initialMenus }: Props) {
                 isFavorite={r.isFavorite}
                 images={r.images}
                 currentVersion={r.currentVersion}
+                isNew={!!r.sharedFromRecipeId && !r.seenAt}
                 onTagClick={setSearch}
               />
             ))}

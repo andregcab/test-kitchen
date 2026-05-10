@@ -21,6 +21,7 @@ interface Props {
   isFavorite: boolean;
   images?: string[];
   currentVersion: { data: unknown } | null;
+  isNew?: boolean;
   onFavoriteChange?: (isFavorite: boolean) => void;
   onTagClick?: (tag: string) => void;
 }
@@ -32,6 +33,7 @@ export default function RecipeCard({
   isFavorite: initialFavorite,
   images,
   currentVersion,
+  isNew,
   onFavoriteChange,
   onTagClick,
 }: Props) {
@@ -90,6 +92,27 @@ export default function RecipeCard({
               className="absolute inset-0"
               style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, transparent 45%)' }}
             />
+          )}
+
+          {isNew && (
+            <div
+              className="absolute inset-0"
+              style={{ background: 'rgba(255,255,255,0.52)', zIndex: 1 }}
+            />
+          )}
+
+          {isNew && (
+            <span
+              className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded-full font-semibold"
+              style={{
+                background: 'var(--accent)',
+                color: 'white',
+                fontSize: '11px',
+                letterSpacing: '0.04em',
+              }}
+            >
+              New
+            </span>
           )}
 
           <button
