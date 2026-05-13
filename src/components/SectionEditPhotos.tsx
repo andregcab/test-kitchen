@@ -18,6 +18,7 @@ export default function SectionEditPhotos({ recipeId, images: initialImages, tag
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function handleOpen() {
     setImages([...initialImages]);
@@ -30,19 +31,28 @@ export default function SectionEditPhotos({ recipeId, images: initialImages, tag
     const slots = MAX_IMAGES - images.length;
     const toUpload = files.slice(0, slots);
     setUploading(true);
+    setUploadError(null);
     const uploaded: string[] = [];
-    for (const file of toUpload) {
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      if (res.ok) {
-        const { url } = await res.json();
-        uploaded.push(url);
+    try {
+      for (const file of toUpload) {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+        if (res.ok) {
+          const { url } = await res.json();
+          uploaded.push(url);
+        } else {
+          const body = await res.json().catch(() => ({}));
+          setUploadError(body.error ?? 'Upload failed. Please try again.');
+        }
       }
+    } catch {
+      setUploadError('Could not reach the server. Please try again.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
-    setImages((prev) => [...prev, ...uploaded]);
-    setUploading(false);
-    e.target.value = '';
+    if (uploaded.length) setImages((prev) => [...prev, ...uploaded]);
   }
 
   async function handleSave() {
@@ -122,6 +132,9 @@ export default function SectionEditPhotos({ recipeId, images: initialImages, tag
             )}
           </div>
 
+          {uploadError && (
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{uploadError}</p>
+          )}
           <p className="text-sm" style={{ color: 'var(--muted)' }}>Up to {MAX_IMAGES} photos. Tap × to remove.</p>
 
           <div className="flex gap-3 pt-1">
