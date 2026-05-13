@@ -274,13 +274,14 @@ async function downloadImage(url: string, baseUrl: string): Promise<string | nul
     if (!contentType.startsWith('image/')) return null;
     const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
     const { randomUUID } = await import('crypto');
-    const { writeFile } = await import('fs/promises');
+    const { writeFile, mkdir } = await import('fs/promises');
     const path = await import('path');
     const filename = `${randomUUID()}.${ext}`;
-    const dest = path.join(process.cwd(), 'public', 'uploads', filename);
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     const buffer = Buffer.from(await res.arrayBuffer());
-    await writeFile(dest, buffer);
-    return `/uploads/${filename}`;
+    await mkdir(uploadsDir, { recursive: true });
+    await writeFile(path.join(uploadsDir, filename), buffer);
+    return `/api/uploads/${filename}`;
   } catch {
     return null;
   }
