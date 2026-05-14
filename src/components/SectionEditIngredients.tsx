@@ -31,11 +31,17 @@ export default function SectionEditIngredients({ recipeId, branchId, data, tags,
   const [saving, setSaving] = useState(false);
 
   function handleOpen() {
-    const ings = data.ingredients.map((i) => ({ ...i }));
-    setIngredients(ings);
+    // The AI parser splits "garlic finely grated" into name:"garlic" + notes:"finely grated".
+    // Merge them into one editable field so the user sees and edits the full description.
+    const rows = data.ingredients.map((ingredient) => ({
+      ...ingredient,
+      name: [ingredient.name, ingredient.notes].filter(Boolean).join(' '),
+      notes: '',
+    }));
+    setIngredients(rows);
     setCustomRows(
       new Set(
-        ings.map((ing, i) => (!UNITS.includes(ing.unit) && ing.unit !== '' ? i : -1)).filter((i) => i >= 0),
+        rows.map((row, idx) => (!UNITS.includes(row.unit) && row.unit !== '' ? idx : -1)).filter((idx) => idx >= 0),
       ),
     );
     setChangeNote('');

@@ -16,7 +16,7 @@ const SYSTEM_PROMPT = `You are a recipe parser. The user will show you one or mo
   "prepTime": number or null (minutes),
   "cookTime": number or null (minutes),
   "ingredients": [
-    { "amount": "string", "unit": "string", "name": "string", "notes": "string" }
+    { "amount": "string", "unit": "string", "name": "string" }
   ],
   "instructions": [
     { "step": number, "text": "string" }
@@ -27,7 +27,7 @@ const SYSTEM_PROMPT = `You are a recipe parser. The user will show you one or mo
 
 Rules:
 - Return ONLY the JSON object, no markdown, no explanation, no code fences.
-- For ingredients: amount is the numeric quantity (e.g. "1", "1/2", "2-3"), unit must be one of: tsp, tbsp, cup, fl oz, ml, L, oz, lb, g, kg — or empty string if none or not applicable. name is the ingredient name. notes is anything after a comma or in parentheses (e.g. "finely chopped", "room temperature").
+- For ingredients: amount is the numeric quantity (e.g. "1", "1/2", "2-3"), unit must be one of: tsp, tbsp, cup, fl oz, ml, L, oz, lb, g, kg — or empty string if none or not applicable. name is the full ingredient description including any preparation notes (e.g. "garlic, finely grated" or "butter, softened").
 - Steps must be numbered starting from 1. Combine steps across multiple pages in order.
 - If you cannot read part of the image clearly, do your best and leave that field as an empty string or null.
 - Tags should be 1-4 short culinary descriptors (e.g. "italian", "pasta", "vegetarian", "quick"). Do not include the word "recipe".
