@@ -263,6 +263,20 @@ function extractJsonLd(html: string): Record<string, unknown> | null {
   return null;
 }
 
+// Pull the visible text out of a page so the AI can parse recipes that aren't
+// published as schema.org structured data (common on blogs/Substack sites).
+const MAX_TEXT_LENGTH = 16000;
+
+function extractReadableText(html: string): string {
+  const $ = cheerio.load(html);
+  $('script, style, noscript, nav, header, footer, aside, form, iframe, svg').remove();
+  const main = $('main').first();
+  const article = $('article').first();
+  const root = main.length ? main : article.length ? article : $('body');
+  const text = cleanString(root.text().replace(/\s+/g, ' '));
+  return text.slice(0, MAX_TEXT_LENGTH);
+}
+
 const MAX_IMAGES = 3;
 
 async function downloadImage(url: string, baseUrl: string): Promise<string | null> {
@@ -320,8 +334,16 @@ async function extractImages(html: string, jsonLd: Record<string, unknown>, page
 export type ImportResult =
   | { ok: true; data: RecipeData; tags: string[]; images: string[] }
   | {
+      // No structured recipe data — carries the page's readable text and any
+      // images so the caller can fall back to AI parsing.
       ok: false;
-      reason: 'no_structured_data' | 'fetch_error' | 'invalid_url';
+      reason: 'no_structured_data';
+      text: string;
+      images: string[];
+    }
+  | {
+      ok: false;
+      reason: 'fetch_error' | 'invalid_url';
     };
 
 export async function importFromUrl(
@@ -330,10 +352,18 @@ export async function importFromUrl(
   let html: string;
   try {
     const res = await fetch(url, {
+      // Mimic a real browser — many recipe sites hard-block obvious bot
+      // user-agents with a 403 at the CDN/host level.
       headers: {
         'User-Agent':
-          'Mozilla/5.0 (compatible; test-kitchen-recipe-importer/1.0)',
-        Accept: 'text/html',
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Upgrade-Insecure-Requests': '1',
       },
       signal: AbortSignal.timeout(10000),
     });
@@ -344,7 +374,14 @@ export async function importFromUrl(
   }
 
   const jsonLd = extractJsonLd(html);
-  if (!jsonLd) return { ok: false, reason: 'no_structured_data' };
+  if (!jsonLd) {
+    return {
+      ok: false,
+      reason: 'no_structured_data',
+      text: extractReadableText(html),
+      images: await extractImages(html, {}, url),
+    };
+  }
 
   const ingredients = Array.isArray(jsonLd.recipeIngredient)
     ? (jsonLd.recipeIngredient as string[]).map(parseIngredientString)

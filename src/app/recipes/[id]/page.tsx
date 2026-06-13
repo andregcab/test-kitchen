@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { RecipeData } from '@/lib/types';
 import { getTagColor } from '@/lib/tagColors';
@@ -48,7 +48,9 @@ export default async function RecipeDetailPage({
     getSession(),
   ]);
 
-  if (!recipe) notFound();
+  // A deleted (or non-existent) recipe — e.g. hitting Back after deleting —
+  // should land on the recipe list, not a dead-end 404.
+  if (!recipe) redirect('/recipes');
 
   const isOwner = session?.userId === recipe.userId;
   const isNew = !!recipe.sharedFromRecipeId && !recipe.seenAt;
@@ -58,7 +60,7 @@ export default async function RecipeDetailPage({
     : recipe.branches.find((b) => b.isDefault);
 
   const activeVersion = activeBranch?.currentVersion ?? recipe.currentVersion;
-  if (!activeVersion) notFound();
+  if (!activeVersion) redirect('/recipes');
 
   const data = activeVersion.data as unknown as RecipeData;
   const totalTime = (data.prepTime ?? 0) + (data.cookTime ?? 0) || null;

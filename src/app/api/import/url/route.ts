@@ -26,5 +26,21 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await importFromUrl(url);
+
+  // No schema.org recipe data — fall back to AI parsing of the page text.
+  // Covers blogs/Substack sites that publish recipes as plain article body.
+  if (!result.ok && result.reason === 'no_structured_data' && result.text.trim()) {
+    const aiResult = await parseRecipeFromText(result.text, url);
+    if (aiResult.ok) {
+      return NextResponse.json({
+        ok: true,
+        data: aiResult.data,
+        tags: aiResult.tags,
+        images: result.images,
+      });
+    }
+    return NextResponse.json({ ok: false, reason: 'no_structured_data' });
+  }
+
   return NextResponse.json(result);
 }
