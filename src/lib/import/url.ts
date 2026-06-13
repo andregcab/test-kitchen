@@ -270,11 +270,16 @@ const MAX_TEXT_LENGTH = 16000;
 function extractReadableText(html: string): string {
   const $ = cheerio.load(html);
   $('script, style, noscript, nav, header, footer, aside, form, iframe, svg').remove();
-  const main = $('main').first();
-  const article = $('article').first();
-  const root = main.length ? main : article.length ? article : $('body');
-  const text = cleanString(root.text().replace(/\s+/g, ' '));
-  return text.slice(0, MAX_TEXT_LENGTH);
+  // Prefer <main>/<article>, but some templates leave those empty and put the
+  // recipe directly in <body> — pick whichever container actually has the most
+  // text so we never extract from an empty wrapper.
+  const candidates = [$('main').first(), $('article').first(), $('body')];
+  let best = '';
+  for (const el of candidates) {
+    const text = cleanString(el.text().replace(/\s+/g, ' '));
+    if (text.length > best.length) best = text;
+  }
+  return best.slice(0, MAX_TEXT_LENGTH);
 }
 
 const MAX_IMAGES = 3;
