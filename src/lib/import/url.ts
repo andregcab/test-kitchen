@@ -330,8 +330,18 @@ async function extractImages(html: string, jsonLd: Record<string, unknown>, page
     if (content) candidates.push(content);
   });
 
+  // Wayback snapshots rewrite image URLs, sometimes with the `im_` (raw file)
+  // modifier and sometimes without. Normalize all of them to the im_ form so
+  // the same image dedupes to one entry and we download the unmodified bytes.
+  const normalized = candidates.map((u) =>
+    u.replace(
+      /^https?:\/\/web\.archive\.org\/web\/(\d+)(?:im_)?\//,
+      'https://web.archive.org/web/$1im_/',
+    ),
+  );
+
   // Deduplicate and cap
-  const unique = [...new Set(candidates)].slice(0, MAX_IMAGES);
+  const unique = [...new Set(normalized)].slice(0, MAX_IMAGES);
   const downloaded = await Promise.all(unique.map((u) => downloadImage(u, pageUrl)));
   return downloaded.filter((u): u is string => u !== null);
 }
@@ -351,32 +361,68 @@ export type ImportResult =
       reason: 'fetch_error' | 'invalid_url';
     };
 
+// Mimic a real browser — many recipe sites hard-block obvious bot
+// user-agents with a 403 at the CDN/host level.
+const BROWSER_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+  Accept:
+    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'none',
+  'Upgrade-Insecure-Requests': '1',
+};
+
+async function fetchDirect(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: BROWSER_HEADERS,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
+// Sites behind a JavaScript bot challenge (Cloudflare's "Just a moment..."
+// interstitial — Serious Eats and the other Dotdash Meredith sites do this)
+// 403 every non-browser fetch regardless of headers. The Wayback Machine
+// crawls those same pages from allowlisted infrastructure, so its snapshots
+// contain the original markup, including the schema.org JSON-LD.
+async function fetchWaybackSnapshot(url: string): Promise<string | null> {
+  try {
+    const availRes = await fetch(
+      `https://archive.org/wayback/available?url=${encodeURIComponent(url)}`,
+      { signal: AbortSignal.timeout(8000) },
+    );
+    if (!availRes.ok) return null;
+    const avail = await availRes.json();
+    const closest = avail?.archived_snapshots?.closest;
+    if (!closest?.available || typeof closest.url !== 'string') return null;
+    // The availability API returns http:// snapshot URLs; request https.
+    const snapshotUrl = closest.url.replace(/^http:/, 'https:');
+    const res = await fetch(snapshotUrl, {
+      headers: BROWSER_HEADERS,
+      // archive.org is slower than origin sites; give it more room.
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
 export async function importFromUrl(
   url: string,
 ): Promise<ImportResult> {
-  let html: string;
-  try {
-    const res = await fetch(url, {
-      // Mimic a real browser — many recipe sites hard-block obvious bot
-      // user-agents with a 403 at the CDN/host level.
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Upgrade-Insecure-Requests': '1',
-      },
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) return { ok: false, reason: 'fetch_error' };
-    html = await res.text();
-  } catch {
-    return { ok: false, reason: 'fetch_error' };
-  }
+  let html = await fetchDirect(url);
+  if (html === null) html = await fetchWaybackSnapshot(url);
+  if (html === null) return { ok: false, reason: 'fetch_error' };
 
   const jsonLd = extractJsonLd(html);
   if (!jsonLd) {
